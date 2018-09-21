@@ -1,0 +1,3 @@
+xs.init = function (parent) {
+  
+};

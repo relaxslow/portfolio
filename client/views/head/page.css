@@ -1,0 +1,25 @@
+.headBar{
+    display: flex;
+    width: 100vw;
+    height: 40px;
+    background-color: #112537;
+    position:fixed;
+    top:0;
+}
+.headBar_logo{
+    position: absolute;
+    left: 10px;
+    top: 7px;
+    width: 30px;
+    height: 30px;
+    background: url("/assets/img/logo.svg");
+    background-repeat:no-repeat;
+    background-size: 30px 30px;
+    background-position: center;
+}
+.headBar_Menu{
+    position: absolute;
+    left: 50px;
+    width:70%;
+    height: 40px;
+}

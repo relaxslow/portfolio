@@ -370,7 +370,7 @@ function returnData(res, data) {
     return;
 }
 function renderHtml(res) {
-    res.setHeader('Content-type', "text/html;charset=utf8");
+    res.setHeader('Content-type', "text/html");
     var html = `<!DOCTYPE html>
 <html>
 <head>
@@ -381,7 +381,6 @@ function renderHtml(res) {
 <body onload="xs.load();">
 </body>
 </html>`;
-    res.setHeader('Content-Type', 'text/plain');
     res.end(html);
 }
 

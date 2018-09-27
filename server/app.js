@@ -371,7 +371,7 @@ function returnData(res, data) {
 }
 function renderHtml(res) {
     res.setHeader('Content-type', "text/html;charset=utf8");
-    var html = `<!DOCTYPE html>
+    var html = `
 <html>
 <head>
 <title>webgl</title>

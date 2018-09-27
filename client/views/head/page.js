@@ -11,7 +11,7 @@ xs.init = function (module) {
         .collect("headBar_Menu_button")
         .addData(["moduleName", moduleName])
         .click(function switchMainbody(e) {
-         xs.selectModule("//entry")
+         xs.selectModule("/entry")
                 .selectDiv("mainBody")
                 .clear()
                 .load(e.moduleName);

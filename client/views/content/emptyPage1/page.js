@@ -1,3 +1,0 @@
-xs.init = function (parent) {
-  
-};

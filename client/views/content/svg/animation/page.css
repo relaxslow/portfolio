@@ -1,0 +1,36 @@
+
+.cherry{
+    position: absolute;
+    transition: all 0.3s;
+    transform-origin: center;
+    top: 10px;
+    width: 90.115px;
+    height: 98.636px;
+}
+.cherryBody{
+   fill: url(#linearGradient4897);
+}
+
+.circlePath{
+    transition: all 0.3s;
+    transform-origin: center;
+}
+.cherryBodyColorDeep{
+    stop-color:#800000;
+    stop-opacity:1 ;
+  
+}
+.cherryBodyColorShallow{
+    stop-color:#ff0000; 
+    stop-opacity:1 ;
+  
+}
+.cherry:hover .cherryBodyColorDeep{
+   stop-color: blue;
+}
+.cherry:hover .cherryBodyColorShallow{
+    stop-color: deeppink;
+}
+.cherry:hover {
+    transform: scale(0.9);
+}

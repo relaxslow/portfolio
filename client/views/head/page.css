@@ -1,25 +1,30 @@
-.headBar{
-    display: flex;
-    width: 100vw;
-    height: 40px;
+.headBar {
+    display: block;
+    width: 100%;
+    height: 70px;
     background-color: #112537;
-    position:fixed;
-    top:0;
+    position: fixed;
+    top: 0;
 }
-.headBar_logo{
-    position: absolute;
-    left: 10px;
-    top: 7px;
-    width: 30px;
-    height: 30px;
-    background: url("/assets/img/logo.svg");
-    background-repeat:no-repeat;
-    background-size: 30px 30px;
-    background-position: center;
+
+.headBar_logo {
+  display:flex;
+
 }
-.headBar_Menu{
-    position: absolute;
-    left: 50px;
-    width:70%;
+
+.headBar_Menu {
+    left: 61px;
+    width: 100%;
     height: 40px;
+    background: #dfdfdf;
+    display: flex;
+}
+
+.logo_svg {
+    width: 261px;
+    height: 70px;
+    /* top: 10px; */
+}
+.headBar_Menu_Button{
+    
 }

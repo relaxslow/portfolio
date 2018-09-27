@@ -1,0 +1,84 @@
+.lab{
+    display: flex;
+    width: 100%;
+}
+.sideMenuBox {
+    display: flex;
+    flex-direction: column;
+    width: 120px;
+}
+
+
+.content {
+    position: relative;
+    width: 100%;
+    /* height: 100vh; */
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(151, 151, 151);
+}
+
+.button {
+    outline: none;
+    border-style: none;
+    transition: all 0.3s;
+    padding: 10px 10px 10px 10px;
+}
+
+.sideMenu {
+    background-color: rgb(104, 0, 0);
+    color: aliceblue;
+    height: 40px;
+}
+
+.sideMenu:hover {
+    background-color: #9b3636;
+}
+
+.subMenu {
+    width: 100%;
+    background-color: #2b0000;
+    color: aliceblue;
+}
+.boundingBox{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.subMenu:hover {
+    background-color: rgb(178, 0, 0);
+}
+
+.subMenuBox {
+    /* display: flex; */
+    /* flex-direction: column; */
+    width: 100%;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.popup {
+    height: initial;
+}
+
+.pullback {
+    height: 0;
+}
+
+@keyframes changeHeiToZero {
+    from {
+        height: initial;
+    }
+    to {
+        height: 0;
+    }
+}
+
+@keyframes changeHeiToOrigin {
+    from {
+        height: 0;
+    }
+    to {
+        height: initial;
+    }
+}

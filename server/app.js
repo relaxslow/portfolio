@@ -378,7 +378,7 @@ function renderHtml(res) {
 <link rel="stylesheet" type="text/css" href="/client/style.css">
 <script type="text/javascript" src="/client/xs.js"></script>
 </head>
-<body onload="xs.load();">
+<body onload="xs.load()">
 </body>
 </html>`;
     res.end(html);

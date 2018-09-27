@@ -1,3 +1,3 @@
 exports.map = {
-    "": "/client/views/index",
+    "": "/client/views/entry",
 };

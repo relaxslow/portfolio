@@ -94,7 +94,7 @@ function setDefaultLanguage(userData) {
 }
 let systemRoutine = {
     "loadNew": function (req, res) {
-        let file= req.parsedPath.slice(req.parsedPath.indexOf("/loadNew/")+"/loadNew/".length);
+        let file = req.parsedPath.slice(req.parsedPath.indexOf("/loadNew/") + "/loadNew/".length);
         let htmlFile = "./client/views/" + file + ".html";
         let jsFile = "./client/views/" + file + ".js";
         let cssFile = "./client/views/" + file + ".css";
@@ -104,7 +104,7 @@ let systemRoutine = {
         if (fs.existsSync(htmlFile)) htmlExist = "1";
         if (fs.existsSync(jsFile)) jsExist = "1";
         if (fs.existsSync(cssFile)) cssExist = "1";
-        res.end(htmlExist+jsExist+cssExist);
+        res.end(htmlExist + jsExist + cssExist);
     },
     "identify": function (req, res) {
         getBody(req, function (userData) {
@@ -371,7 +371,7 @@ function returnData(res, data) {
 }
 function renderHtml(res) {
     res.setHeader('Content-type', "text/html;charset=utf8");
-    var html = `
+    var html = `<!DOCTYPE html>
 <html>
 <head>
 <title>webgl</title>
@@ -381,6 +381,7 @@ function renderHtml(res) {
 <body onload="xs.load();">
 </body>
 </html>`;
+    res.set('Content-Type', 'text/html');
     res.end(html);
 }
 

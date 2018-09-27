@@ -432,7 +432,7 @@ xs.iteratechild = function (node, fun) {
 
 xs.init = function () {
     new xs.Div("new", document.body).class("main")
-        .load("/index");
+        .load("/entry");
 
 };
 xs.load = function (parent) {

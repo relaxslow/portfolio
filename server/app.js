@@ -381,7 +381,7 @@ function renderHtml(res) {
 <body onload="xs.load();">
 </body>
 </html>`;
-    res.set('Content-Type', 'text/html');
+    res.setHeader('Content-Type', 'text/html');
     res.end(html);
 }
 

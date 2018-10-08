@@ -61,8 +61,10 @@ xs.Debug.greenAlert = function (msg) {
 };
 
 
-
-xs.Task = {};
+xs.clearTask = function () {
+    this.queue.length = 0;
+};
+xs.Task = { name: "generalTaskManager" };
 xs.Task.queue = [];
 
 xs.Task.next = function () {
@@ -85,8 +87,9 @@ xs.Task.add = function (task) {
     this.queue.push(task);
 };
 
-xs.AnimationTask = {};
+xs.AnimationTask = { name: "animationTaskManager" };
 xs.AnimationTask.queue = [];
+
 xs.AnimationTask.next = function () {
     if (this.queue.length > 0) {
         let task = this.queue.shift();
@@ -264,6 +267,8 @@ xs.Div.prototype.load = function divLoad(name, folder, data) {
 
 
 xs.Div.prototype.clear = function divClear() {
+    xs.clearTask.call(xs.Task);
+    xs.clearTask.call(xs.AnimationTask);
     xs.control.cover(this);
     xs.iteratechild(this.div, removeCss);
     clearTimer.call(this);
@@ -292,7 +297,7 @@ xs.Div.prototype.clear = function divClear() {
                 let timer = this.timers[i];
                 clearTimeout(timer);
             }
-            this.timers=null;
+            this.timers = null;
         }
     }
     return this;

@@ -1,6 +1,6 @@
 .lab{
     display: grid;
-    grid-template-columns: 20% 5% 70% 5%;
+    grid-template-columns: 20vw 5vw 70vw 5vw;
     width: 100%;
     margin: 50px 0;
 }

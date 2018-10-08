@@ -1,23 +1,25 @@
+@font-face {
+    font-family: "OpenSans Light";
+    src: url("/assets/fonts/OpenSans-Light.ttf");
+}
 .headBar {
     display: block;
     width: 100%;
-    height: 70px;
+    height: 87px;
     background-color: #112537;
     position: fixed;
-    top: 0;
+    top: 0px;
 }
 
 .headBar_logo {
-  display:flex;
-
 }
 
 .headBar_Menu {
-    left: 61px;
-    width: 100%;
-    height: 40px;
+    height: 50px;
     background: #dfdfdf;
     display: flex;
+    justify-content: flex-end;
+    padding: 0 92px;
 }
 
 .logo_svg {
@@ -25,6 +27,16 @@
     height: 70px;
     /* top: 10px; */
 }
-.headBar_Menu_Button{
-    
+.headBar_Menu_button{
+    outline: none;
+    border-style: none;
+    transition: all 0.3s;
+    width: 100px;
+    padding: 10px 10px 10px 10px;
+    font-family: "OpenSans Light", serif;
+    font-size: 0.90em;
+}
+
+.active, .headBar_Menu_button:hover{
+    background-color: white;
 }

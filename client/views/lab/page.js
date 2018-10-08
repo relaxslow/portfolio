@@ -3,45 +3,61 @@
  * @param {xs.Div} module 
  */
 xs.init = function (module) {
-    module.selectDiv("content")
-        .load("/content/svg/animation/page");
-    let buttonData = [
-        // "basic"
-        "/content/basic/emptyPage1/page",
-        "/content/basic/emptyPage2/page",
-        //"svg",
-        "/content/svg/animation/page",
-
-        //"webgl",
-        "/content/webgl/pickObj/page"
-
-    ];
-
-    let namedata = ["basic", "svg", "webgl"];
-
     module.selectDiv("sideMenuBox")
-        .collect("subMenu")
-        .addData(["data", buttonData])
-        .click(function switchContent(e) {
-            module.selectDiv("content")
-                .clear()
-                .load(e.data);
+        .load("/popupMenu", xs.COMPONENT, {
+            menu: [
+                {
+                    text: "basic",
+                    initOpen: true,
+                    submenu: [
+                        { path: "/content/basic/codeArea", text: "code area" },
+                        { path: "/content/basic/emptyPage2", text: "empty page2" },
+                    ]
+                },
+                {
+                    text: "svg",
+                    initOpen: true,
+                    submenu: [
+                        { path: "/content/svg/animation", text: "animate Gradient",initActive: true },
+                        { path: "/content/svg/simplePieChart", text: "simple Pie Chart" },
+                        { path: "/content/svg/realPieChart", text: "real Pie Chart" },
+                        { path: "/content/svg/animatedLine", text: "animated line" },
+                    ]
+                },
+                {
+                    text: "webgl",
+                    submenu: [
+                        { path: "/content/webgl/pickObj", text: "pickObj" },
+                    ]
+                },
+                {
+                    text: "game",
+                    submenu: [
+                        { path: "/content/game/TicTacToa", text: "TicTacToe" },
+                    ]
+                }
+            ],
+            content: module.selectDiv("content")
         });
 
-    let popMenus = module.selectDiv("sideMenuBox")
-        .collect("subMenuBox")
-        .addData(["name", namedata])
-        .createPopupMenu(xs.PopUpMenu.CLOSE);
-    module.selectDiv("sideMenuBox")
-        .collect("sideMenu")
-        .addData(["menu", popMenus])
-        .click(function popOrPull(e) {
-            let menu = e.menu;
-            if (menu.status == xs.PopUpMenu.CLOSE) {
-                menu.popup();
-            }
-            else if (menu.status == xs.PopUpMenu.OPEN) {
-                menu.pullback();
-            }
-        });
+    // let buttonData = [
+    //     // "basic"
+    //     "/content/basic/codeArea",
+    //     "/content/basic/emptyPage2",
+    //     //"svg",
+    //     "/content/svg/animation",
+    //     "/content/svg/simplePieChart",
+    //     "/content/svg/realPieChart",
+    //     "/content/svg/animatedLine",
+
+
+    //     //"webgl",
+    //     "/content/webgl/pickObj",
+    //     //game
+    //     "/content/game/TicTacToa"
+    // ];
+
+    // let namedata = ["basic", "svg", "webgl"];
+
+
 };

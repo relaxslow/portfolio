@@ -92,19 +92,163 @@ function setDefaultLanguage(userData) {
     if (userData.language === "undefined")
         userData.language = "USA";
 }
+function find3File(fullPath) {
+    let htmlFile = fullPath + ".html";
+    let jsFile = fullPath + ".js";
+    let cssFile = fullPath + ".css";
+    let htmlExist = "0";
+    let jsExist = "0";
+    let cssExist = "0";
+    if (fs.existsSync(htmlFile)) htmlExist = "1";
+    if (fs.existsSync(jsFile)) jsExist = "1";
+    if (fs.existsSync(cssFile)) cssExist = "1";
+    return htmlExist + jsExist + cssExist;
+}
+function readHtmlFile(fileFullName, res) {
+    let result;
+    fs.readFile(fileFullName, function (err, data) {
+        if (err) {
+            result = ["err", err];
+        } else {
+            result = ["ok", data];
+        }
+        sendResult("text/html", result, res);
+    });
+
+
+}
+function sendResult(type, result, res) {
+    if (result[0] === "err") {
+        res.statusCode = 500;
+        res.end(`Error: can't read the file: ${result[1]}.`);
+        return null;
+    } else {
+        res.setHeader('Content-type', type);
+        res.end(result[1]);
+    }
+
+}
 let systemRoutine = {
     "loadNew": function (req, res) {
-        let file = req.parsedPath.slice(req.parsedPath.indexOf("/loadNew/") + "/loadNew/".length);
-        let htmlFile = "./client/views/" + file + ".html";
-        let jsFile = "./client/views/" + file + ".js";
-        let cssFile = "./client/views/" + file + ".css";
-        let htmlExist = "0";
-        let jsExist = "0";
-        let cssExist = "0";
-        if (fs.existsSync(htmlFile)) htmlExist = "1";
-        if (fs.existsSync(jsFile)) jsExist = "1";
-        if (fs.existsSync(cssFile)) cssExist = "1";
-        res.end(htmlExist + jsExist + cssExist);
+        let path = req.parsedUrl.query.data;
+        let file = req.parsedPath.slice(req.parsedPath.indexOf("/loadNew") + "/loadNew".length);
+        let result=find3File(`.${path + file}`);
+        res.end(result);
+    },
+    "readHtml": function (req, res) {
+        let path = req.parsedUrl.query.data;
+        let file= req.parsedPath.slice(req.parsedPath.indexOf("readHtml") + "readHtml".length);
+        let fileFullName = `.${path+file}.html`;
+        readHtmlFile(fileFullName, res);
+
+    },
+    "readCodeFile": function (req, res) {
+        let filepath = req.parsedPath.slice(req.parsedPath.indexOf("readCodeFile") + "readCodeFile".length);
+        let fileFullName = `./assets/code${filepath}.txt`;
+        fs.readFile(fileFullName, 'utf8', function (err, data) {
+            if (err) {
+                res.statusCode = 500;
+                res.end(`Error: can't read the file: ${err}.`);
+                return null;
+            } else {
+                let arr = data.split(/\r?\n/);
+                for (let i = 0; i < arr.length; i++) {
+                    let line = arr[i];
+                    let s = line.split("//");
+                    let normal = s[0];
+                    let comment = s[1];
+                    comment = markComment(comment);
+                    normal = markKeyWord(normal);
+                    normal = markSysProperty(normal);
+                    normal = markFun(normal);
+
+                    arr[i] = `<code> ${normal + comment}</code><br>`;
+                }
+                let result = arr.join("");
+                res.setHeader('Content-type', 'text/html');
+                res.end(result);
+            }
+        });
+        function markComment(str) {
+            return `<span class='codeComment'> //${str}</span>`;
+        }
+        function markKeyWord(str) {
+            const keywords =
+                [
+                    "function",
+                    "typeof",
+                    "let",
+                    "instanceof",
+                    "return"
+                ];
+            for (let i = 0; i < keywords.length; i++) {
+                let re = new RegExp(keywords[i], 'g');
+                str = str.replace(re, "<em class='keywords'>" + keywords[i] + "</em>");
+            }
+            return str;
+        }
+        function markSysProperty(str) {
+            const systemProperty =
+                [
+                    "constructor",
+                    "prototype"
+                ];
+            for (let i = 0; i < systemProperty.length; i++) {
+                let re = new RegExp(systemProperty[i], 'g');
+                str = str.replace(re, "<span class='systemProperty'>" + systemProperty[i] + "</span>");
+            }
+            return str;
+        }
+        function markSysFun(str) {
+            const systemFun =
+                [
+                    "isPrototypeOf",
+                ];
+            for (let i = 0; i < systemFun.length; i++) {
+                let re = new RegExp(systemFun[i], 'g');
+                str = str.replace(re, "<span class='systemFun'>" + systemFun[i] + "</span>");
+            }
+            return str;
+        }
+        function markFun(str) {
+
+            let re = new RegExp(/\w+\(/, "g");
+            let a = str.replace(re, "_______");
+            let arr = [];
+            let m;
+            do {
+                m = re.exec(str);
+                if (m) {
+                    arr.push(m[0]);
+                }
+            } while (m);
+            for (let i = 0; i < arr.length; i++) {
+                let s = arr[i];
+                let n = s.slice(0, s.indexOf("("));
+                if (isSystemFun(n)) {
+                    arr[i] = `<span class='systemFun'>${n}</span>(`;
+                } else {
+                    arr[i] = `<span class='customFun'>${n}</span>(`;
+                }
+                a = a.replace(new RegExp("_______", "g"), arr[i]);
+            }
+
+
+            return a;
+            function isSystemFun(str) {
+                const systemFun =
+                    [
+                        "isPrototypeOf",
+                    ];
+                for (let i = 0; i < systemFun.length; i++) {
+                    if (str === systemFun[i])
+                        return true;
+
+                }
+                return false;
+
+            }
+        }
     },
     "identify": function (req, res) {
         getBody(req, function (userData) {
@@ -238,20 +382,8 @@ let systemRoutine = {
             res.end("no");
         }
     },
-    "readHtmlFile": function (req, res) {
-        let filepath = req.parsedPath.slice(req.parsedPath.indexOf("readHtmlFile") + "readHtmlFile".length);
-        let fileFullName = `./client/views/${filepath}.html`;
-        fs.readFile(fileFullName, function (err, data) {
-            if (err) {
-                res.statusCode = 500;
-                res.end(`Error: can't read the file: ${err}.`);
-                return null;
-            } else {
-                res.setHeader('Content-type', 'text/html');
-                res.end(data);
-            }
-        });
-    },
+
+   
     "getShader": function (req, res) {
         let filePath = new Buffer(req.b_Id, 'base64').toString('ascii');
         fs.readFile(`.${filePath}`, function (err, data) {
@@ -265,6 +397,7 @@ let systemRoutine = {
             }
         });
     },
+
 
 };
 let subRoutine = {
@@ -378,7 +511,7 @@ function renderHtml(res) {
 <link rel="stylesheet" type="text/css" href="/client/style.css">
 <script type="text/javascript" src="/client/xs.js"></script>
 </head>
-<body onload="xs.load()">
+<body onload="xs.begin()">
 </body>
 </html>`;
     res.end(html);

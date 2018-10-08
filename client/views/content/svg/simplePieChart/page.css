@@ -1,0 +1,24 @@
+:root {
+    --primaryColor: #0074d9;
+    --pieDashArrTotal:314;
+}
+
+.chart {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    /* margin: 0 auto; */
+    transform: rotate(-90deg);
+}
+
+.pie {
+   fill: #ddd;
+   stroke: var(--primaryColor);
+   stroke-width: 100;
+   stroke-dasharray: 10 var(--pieDashArrTotal);
+   transition: stroke-dasharray .3s ease;
+}
+
+.chart:hover .pie {
+    stroke-dasharray: 100 var(--pieDashArrTotal);
+}

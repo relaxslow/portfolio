@@ -1,0 +1,10 @@
+.realPieBox{
+    display: flex;
+    flex-direction: column;
+}
+.realPieSVG {
+    /* // the contents will scale to fit because of viewBox */
+    height: 200px;
+    width: 200px;
+    transition: all 0.3 ease;
+  }

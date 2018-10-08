@@ -1,32 +1,37 @@
-
 window.xs = {};
-xs.Debug = {};
-xs.Debug.redAlert = function (msg) {
-    window.stop();
-    console.trace();
-    throw new Error(msg);
-
-
+xs.control = {};
+xs.control.waitingServer = 0;
+xs.control.waitingLoad = 0;
+xs.control.hidden = [];
+xs.control.uncover = function () {
+    for (let i = 0; i < this.hidden.length; i++) {
+        let module = this.hidden[i];
+        module.div.style = null;
+        xs.Debug.log("uncover module " + module.name);
+    }
+    this.hidden.length = 0;
 };
-xs.Debug.yellowAlert = function (msg) {
-    console.log(`%c${msg}`, 'background: #000000; color: #ffff00');
-
+xs.control.cover = function (module) {
+    xs.Debug.log("cover module " + module.name);
+    this.hidden.push(module);
+    module.div.style.visibility = "hidden";
 };
-xs.Debug.greenAlert = function (msg) {
-    console.log(`%c ${msg}`, 'background: #222; color: #bada55');
-};
-
-xs.sendRequest = function (url, fun) {
-    // url += "?data=" + encodeURIComponent(JSON.stringify(jsonObj));
+xs.sendRequest = function (url, fun, owner, data) {
+    url += "?data=" + encodeURIComponent(data);//parsedUrl.query.data
     let xhttp = new XMLHttpRequest();
+    xhttp.owner = owner;
     xhttp.open("get", url, true);
     xhttp.setRequestHeader("x-requested-with", "XMLHttpRequest");
     xhttp.setRequestHeader("Content-Type", "text/plain");
     xhttp.send();
+    xs.control.waitingServer++;
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            if (fun != undefined)
-                fun(this.responseText);
+            if (fun != undefined) {
+                xs.control.waitingServer--;
+                fun.call(this.owner, this.responseText);
+
+            }
             if (this.readyState == 4 && this.status == 500) {
                 xs.Debug.redAlert("internal server error");
             }
@@ -35,21 +40,74 @@ xs.sendRequest = function (url, fun) {
     };
 };
 
+xs.Debug = {};
+xs.Debug.log = function (msg) {
+    console.log(msg);
+};
+xs.Debug.logWithColor = function (msg, fColor, bColor) {
+    console.log(`%c${msg}`, "background: #" + bColor + "; color: #" + fColor);
+};
+xs.Debug.redAlert = function (msg) {
+    window.stop();
+    console.trace();
+    throw new Error(msg);
+};
+
+xs.Debug.yellowAlert = function (msg) {
+    xs.Debug.logWithColor(msg, "ffff00", "000000");
+};
+xs.Debug.greenAlert = function (msg) {
+    xs.Debug.logWithColor(msg, "bada55", "222");
+};
+
+
 
 xs.Task = {};
 xs.Task.queue = [];
+
 xs.Task.next = function () {
     if (this.queue.length > 0) {
         let task = this.queue.shift();
         task.host[task.fun](task.p, task);
     }
     else {
-        console.log("--- process ok---");
+        //         xs.Debug.log("--- system ---");
+        if (xs.control.waitingServer == 0 &&
+            xs.control.waitingLoad == 0) {
+            xs.control.uncover();
+        }
+
     }
 
 };
+xs.Task.add = function (task) {
+    // task.error = new Error();
+    this.queue.push(task);
+};
 
-xs.Div = function (option, param) {
+xs.AnimationTask = {};
+xs.AnimationTask.queue = [];
+xs.AnimationTask.next = function () {
+    if (this.queue.length > 0) {
+        let task = this.queue.shift();
+        task.host[task.fun](task.p, task);
+    }
+    else {
+        xs.Debug.log("--- animation ---");
+    }
+};
+xs.AnimationTask.add = function (task) {
+    this.queue.push(task);
+};
+xs.getDiv = function getDiv(div) {
+    if (div.wrapper == null) {
+        let wrapper = new xs.Div("wrap", div);
+        return wrapper;
+    } else {
+        return div.wrapper;
+    }
+};
+xs.Div = function Div(option, param) {
     this.div = null;
     if (option === "wrap") {
         if (param == null) {
@@ -57,356 +115,354 @@ xs.Div = function (option, param) {
         }
         this.div = param;
         this.div.wrapper = this;
+
     }
     else if (option === "new") {
         this.div = document.createElement("div");
         if (param == null) {
-            // param = xs.curParent;
             xs.Debug.redAlert("need input a parent to append");
         }
         param.appendChild(this.div);
         this.div.wrapper = this;
     }
     this.operating = null;
+    this.css = [];
+
 };
-// xs.Div.prototype.noOperating = function () {
-//     if (this.operating.length == 0)
-//         return true;
-//     else
-//         return false;
-// }
-// xs.Div.prototype.addOperating = function (name) {
-//     this.operating.push(name);
-// }
-// xs.Div.prototype.removeOperating = function (name) {
-//     xs.removeOperating(this.operating, name);
-// }
-xs.Div.prototype.class = function (name) {
+
+xs.Div.prototype.addClass = function divAddClass(name) {
+    this.name = name;
     this.div.classList.add(name);
+    xs.Debug.log("addClass " + name);
     return this;
 };
-xs.viewFolder = "/client/views";
-xs.Div.prototype.loadHtml = function (name) {
-    this.loadHtmlOk = (html) => {
+xs.Div.prototype.removeClass = function divRomoveClass(name) {
+    this.div.classList.remove(name);
+    xs.Debug.log("removeClass " + name);
+    return this;
+};
+xs.Div.prototype.sendRequest = function sendRequest(url, fun, data) {
+    xs.sendRequest(url, fun, this, data);
+};
+xs.Div.prototype.STR_LOAD_HTML = "loadHtml : ";
+xs.Div.prototype.STR_LOAD_JS = "loadJS : ";
+xs.Div.prototype.STR_LOAD_CSS = "loadCSS : ";
+
+xs.Div.prototype.loadHtml = function divLoadHtml(name) {
+    let taskName = this.STR_LOAD_HTML + name;
+    this.sendRequest(`/readHtml${name}/page`, loadHtmlOk, xs.currentFolder);
+    this.operating = "waiting " + taskName;
+    function loadHtmlOk(html) {
         this.div.innerHTML = html;
-        this.operating = null;
-        console.log("finish load html:" + name);
+        this.operating = taskName;
+        xs.Debug.log(taskName);
         xs.Task.next();
-    };
-
-    if (this.operating) {
-        xs.Task.queue.push({ host: this, fun: "loadHtml", p: name });
-    } else {
-        //   let bind = recieveHtml.bind(this);
-        xs.sendRequest(`/readHtmlFile${name}`, this.loadHtmlOk);
-        this.operating = "loadHtml " + name;
-
     }
-
 
 };
 
-xs.Div.prototype.loadJs = function (name) {
-    this.loadJsOk = (evt) => {
-        console.log("finish load js:" + name);
-        document.getElementsByTagName("head")[0].removeChild(evt.currentTarget);
-        if (xs.init == null) {
-            xs.Debug.yellowAlert("xs.init not define in file:" + name + ".js");
-        } else {
-            xs.load(this);
+xs.loadJs = function loadJs(name, fun) {
+    let script = document.createElement('script');
+    script.setAttribute("type", "text/javascript");
+    script.setAttribute("src", name + ".js");
+    script.onload = function (evt) {
+        let script = evt.currentTarget;
+        document.getElementsByTagName("head")[0].removeChild(script);
+        fun.call(script.Div);
+    };
+    script.Div = this;
+    document.getElementsByTagName("head")[0].appendChild(script);
+};
+xs.Div.prototype.loadJs = function divLoadJs(name) {
+    let taskName = this.STR_LOAD_JS + name;
+    this.operating = "waiting " + taskName;
+    xs.control.waitingLoad++;
+    xs.loadJs.call(this, xs.currentFolder + name + "/page", loadJsOk);
 
-        }
-        this.div.style = null;
+    function loadJsOk() {
+        xs.Debug.log(taskName);
+        xs.control.waitingLoad--;
+        if (xs.init == null) xs.Debug.yellowAlert("xs.init not define in file:" + name + ".js");
+        else this.loadModuleOk(this);
         this.operating = null;
         xs.Task.next();
-    };
 
-    if (this.operating) {
-        xs.Task.queue.push({ host: this, fun: "loadJs", p: name });
-    } else {
-        let script = document.createElement('script');
-        script.setAttribute("type", "text/javascript");
-        script.setAttribute("src", xs.viewFolder + name + ".js");
-        script.onload = this.loadJsOk;
-        document.getElementsByTagName("head")[0].appendChild(script);
-        this.operating = "loadJs " + name;
     }
 
 
 };
 xs.cssInfo = {};
-xs.Div.prototype.loadCss = function (name) {
-    this.loadCssOk = (evt) => {
-        console.log("finish load css:" + name);
-        xs.cssInfo[name].push(this);
-        this.operating = null;
-        xs.Task.next();
+xs.loadCss = function loadCss(name, loadOkfun) {
+    let css = document.createElement("link");
+    this.css.push(css);
+    css.setAttribute("rel", "stylesheet");
+    css.setAttribute("type", "text/css");
+    css.setAttribute("href", name + ".css");
+    css.Div = this;
+    css.onload = function (evt) {
+        let css = evt.currentTarget;
+        loadOkfun.call(css.Div, css);
     };
-    if (xs.operating) {
-        xs.Task.queue.push({ host: this, fun: "loadCss", p: name });
-    } else {
-        if (xs.cssInfo[name] == null) {
-            xs.cssInfo[name] = [];
-            let css = document.createElement("link");
-            this.css = css;
-            css.setAttribute("rel", "stylesheet");
-            css.setAttribute("type", "text/css");
-            css.setAttribute("href", xs.viewFolder + name + ".css");
-            css.onload = this.loadCssOk;
-            document.getElementsByTagName("head")[0].appendChild(css);
-            this.operating = "loadCss " + name;
-        } else {
-            xs.cssInfo[name].push(this);
-        }
-    }
-
+    document.getElementsByTagName("head")[0].appendChild(css);
 
 };
-xs.Div.prototype.load = function (name) {
-    if (this.operating) {
-        xs.Task.queue.push({ host: this, fun: "load", p: name });
-        return this;
+
+xs.Div.prototype.loadCss = function divLoadCss(name) {
+    if (xs.cssInfo[name] == null) {
+        xs.cssInfo[name] = [];
+        this.operating = "waiting " + this.STR_LOAD_CSS + name;
+        xs.control.waitingLoad++;
+        xs.loadCss.call(this, xs.currentFolder + name + "/page", loadCssOk);
     } else {
-        this.name = name;
-        this.build = (info) => {
-            if (info[0] === "0" && info[1] === "0") {
-                xs.Debug.redAlert("error loading module " + name + ", both js and html no found ");
-            } else {
-                if (info[2] === "1") this.loadCss(name);
-                if (info[0] === "1") this.loadHtml(name);
-                if (info[1] === "1") this.loadJs(name);
-            }
-
-
-        };
-        xs.sendRequest(`/loadNew${name}`, this.build);
+        xs.cssInfo[name].push(this);
+    }
+    return this;
+    function loadCssOk(css) {
+        xs.control.waitingLoad--;
+        css.name = name;
+        xs.cssInfo[name].push(this);
+        let taskName = this.STR_LOAD_CSS + name;
+        this.operating = taskName;
+        xs.Debug.log(taskName);
         xs.Task.next();
-        return this;
+    }
+};
+
+xs.currentFolder = null;
+xs.VIEW = "/client/views";
+xs.COMPONENT = "/client/component";
+xs.CODE = "/assets/code";
+xs.Div.prototype.load = function divLoad(name, folder, data) {
+    if (folder == null) {
+        xs.currentFolder = xs.VIEW;
+    }
+    else {
+        xs.currentFolder = folder;
+    }
+    this.name = name;
+    this.loadModuleOk = loadModuleOk;
+    this.sendRequest(`/loadNew${this.name}/page`, build, xs.currentFolder);
+    return this;
+
+    function build(info) {
+        if (info[0] === "0" && info[1] === "0") {
+            xs.Debug.redAlert("error loading module " + this.name + ", both js and html no found ");
+        } else {
+
+            if (info[2] === "1") this.runA([this.loadCss, this.name, null]);
+            if (info[0] === "1") this.runA([this.loadHtml, this.name, this.STR_LOAD_CSS + this.name]);
+            if (info[1] === "1") this.runA([this.loadJs, this.name, this.STR_LOAD_HTML + this.name]);
+        }
     }
 
+    /**@param {xs.Div} parent */
+    function loadModuleOk(parent) {
+        parent.runA([xs.init, parent, null, data]);
+        xs.init = null;
+    }
 };
-xs.Div.prototype.clear = function () {
-    this.div.style.visibility = "hidden";
-    removeSingleCss(this.div);
-    xs.iteratechild(this.div, removeSingleCss);
-    /**
-     * 
-     * @param {Element} node 
-     */
-    function removeSingleCss(node) {
-        let wrapper = node.wrapper;
-        if (node.tagName === "DIV" &&
-            wrapper != null &&
-            wrapper.css != null) {
-            let arr = xs.cssInfo[wrapper.name];
-            arr.splice(arr.indexOf(node), 1);
-            if (arr.length == 0) {
-                wrapper.css.parentNode.removeChild(wrapper.css);
-                delete xs.cssInfo[wrapper.name];
-            }
-        }
 
+
+xs.Div.prototype.clear = function divClear() {
+    xs.control.cover(this);
+    xs.iteratechild(this.div, removeCss);
+    clearTimer.call(this);
+    xs.Debug.log("clear " + this.name);
+
+    function removeCss(div) {
+        let wrapper = div.wrapper;
+        if (wrapper != null &&
+            wrapper.css.length != 0) {
+            for (let i = 0; i < wrapper.css.length; i++) {
+                let css = wrapper.css[i];
+                let arr = xs.cssInfo[css.name];
+                arr.splice(arr.indexOf(div), 1);
+                css.parentNode.removeChild(css);
+                if (arr.length == 0) {
+                    delete xs.cssInfo[css.name];
+                }
+            }
+            wrapper.css.length = 0;
+        }
+    }
+
+    function clearTimer() {
+        if (this.timers) {
+            for (let i = 0; i < this.timers.length; i++) {
+                let timer = this.timers[i];
+                clearTimeout(timer);
+            }
+            this.timers=null;
+        }
     }
     return this;
 };
-/**
- * 
- * @param {*} name 
- * @return {xs.Collection}
- */
-xs.Div.prototype.collect = function (name, task) {
-    let result;
-    if (this.operating) {
-        if (task != null) xs.Task.queue.push(task);
-        else result = new xs.Collection();
-        xs.Task.queue.push({ host: this, fun: "collect", p: name, r: result });
-        result.operating = "collect " + name;
-        return result;
-    }
-    else {
-        if (task != null) result = task.r;
-        else result = new xs.Collection();
-        result.init(name, this.div);
-        result.operating = null;
-        xs.Task.next();
-        return result;
-    }
+
+
+xs.init = null;
+xs.begin = function () {
+    new xs.Div("new", document.body).addClass("main")
+        .clear()
+        .load("/entry");
 };
-
-/**
- * 
- * @param {string} name 
- * @return {xs.Div}
- */
-xs.Div.prototype.selectDiv = function (name, task) {
-    if (this.operating) {
+xs.Div.prototype.runA = function divRunA(param, task) {
+    let [fun, p, signal, data] = param;
+    if (this.operating !== signal) {
         if (task) {
-            xs.Task.queue.push(task);
+            xs.Task.add(task);
         } else {
-            let result = new xs.Div();
-            result.operating = "selectDiv" + name;
-            xs.Task.queue.push({ host: this, fun: "selectDiv", p: name, r: result });
-            return result;
+            xs.Task.add({ host: this, fun: "runA", p: param });
+            return this;
         }
-
     } else {
-        let div = this.div.getElementsByClassName(name)[0];
+        fun.call(this, p, data);
         if (task) {
-            div.wrapper = task.r;
-            task.r.div = div;
-            div.wrapper.operating = null;
-        } else {
-            if(div.wrapper==null)
-            new xs.Div("wrap", div);
-            
+            xs.Task.next();
+        }
+        else {
+            return this;
         }
 
-        console.log("select Div " + name);
-        xs.Task.next();
-        return div.wrapper;
     }
+};
+
+xs.Div.prototype.collect = function divCollect(name) {
+    let collection = new xs.Collection();
+    collection.module = this;
+    collection.init(name, this.div);
+    xs.Debug.log("collect : " + name);
+    return collection;
 
 };
 
-// xs.selectDiv = function (name, parent) {
-//     if (parent == null)
-//         xs.Debug.redAlert("parent not specified");
-//     let div = parent.getElementsByClassName(name)[0];
-//     if (div.wrapper == null)
-//         new xs.Div("wrap", div);
-//     return div.wrapper;
-// };
+
+xs.Div.prototype.selectDiv = function divSelect(name) {
+    let div = this.div.getElementsByClassName(name)[0];
+    xs.Debug.log("selectDiv : " + name);
+    if (div.wrapper == null)
+        div.wrapper = new xs.Div("wrap", div);
+    return div.wrapper;
+
+};
+
 
 //collection
-xs.Collection = function () {
+xs.Collection = function Collection() {
     this.group = null;
     this.name = null;
+    this.operating = null;
 };
-xs.Collection.prototype.init = function (className, parent) {
+xs.Collection.prototype.add = function collectionAdd(any) {
+    if (this.group == null)
+        this.group = [];
+    this.group.push(any);
+};
+xs.Collection.prototype.init = function collectionInit(className, parent) {
     this.name = "collection " + className;
-    this.group = parent.getElementsByClassName(className);
+    this.group = parent.querySelectorAll(className);
+
 };
-xs.attachData = function (group, name, data) {
-    if (group.length != data.length)
-        xs.Debug.redAlert("data number(" + data.length + ") not equal to element number(" + group.length + ")!");
+xs.attachData = function attachData(group, name, obj) {
+    let data;
+    if (Array.isArray(obj)) data = obj;
+    else if (obj instanceof xs.Collection) data = obj.group;
+    if (group.length != data.length) {
+        xs.Debug.taskError("data number(" + data.length + ") not equal to element number(" + group.length + ")!");
+    }
     for (let i = 0; i < group.length; i++) {
         group[i][name] = data[i];
     }
 
 };
-xs.Collection.prototype.addData = function (param) {
+xs.Collection.prototype.addData = function collectionAddData(param, task) {
     let [name, data] = param;//name: the name of property that stored in element
-    if (this.operating) {
-        xs.Task.queue.push({ host: this, fun: "addData", p: param });
-    } else {
-        xs.attachData(this.group, name, data);
-        xs.Task.next();
+    xs.attachData(this.group, name, data);
+    xs.Debug.log("addData:" + name);
+    return this;
+};
 
+xs.Collection.prototype.run = function collectionRun(fun) {
+
+    for (let i = 0; i < this.group.length; i++) {
+        const element = this.group[i];
+        fun(element);
+    }
+    return this;
+
+
+};
+
+
+xs.Collection.prototype.runOneByOne = function collectionRunOneByOne(startTime, fun) {
+    if (startTime.length != this.group.length)
+        xs.Debug.redAlert("data in startTime(" + startTime.length + ") mismatch element number(" + group.length + ")");
+    if (this.module.timers == null) {
+        this.module.timers = [];
+    }
+    start.call(this, 0);
+    function start(i) {
+        this.over = false;
+        fun(this.group[i]);
+        let timer = setTimeout(() => {
+            i++;
+            if (i < startTime.length)
+                start.call(this, i);
+            else {
+                if (this.nextTask) {
+                    this.nextTask.host.operating = null;
+                    this.nextTask.taskManager.next();
+                }
+
+
+            }
+
+        }, startTime[i]);
+        this.module.timers.push(timer);
     }
     return this;
 };
-xs.Collection.prototype.createPopupMenu = function (initStatus, task) {
-    let newGroup;
+//Asynchronize run function
+xs.Collection.prototype.runA = function collectionRunA(fun, task) {
     if (this.operating) {
-        if (task != null) xs.Task.queue.push(task);
-        else {
-            newGroup = [];
-            newGroup.operating = "wait for collection " + this.name + " ready";
-            xs.Task.queue.push({ host: this, fun: "createPopupMenu", p: initStatus, r: newGroup });
+        if (task) {
+            xs.Task.add(task);
         }
+        return this;
+    } else {
+        this.run(fun);
     }
-    else {
-        if (task != null) newGroup = task.r;
-        else newGroup = [];
-
-        for (let i = 0; i < this.group.length; i++) {
-            const element = this.group[i];
-            if (element.tagName === "DIV") {
-                let popupMenu = new xs.PopUpMenu(element, initStatus);
-                popupMenu.pullback();
-                newGroup.push(popupMenu);
-            }
-            else
-                xs.Debug.redAlert("element is not a div");
-        }
-        xs.Task.next();
-
-    }
-    return newGroup;
 };
-xs.Collection.prototype.click = function (fun) {
-    if (this.operating) {
-        xs.Task.queue.push({ host: this, fun: "click", p: fun });
-    }
-    else {
-        for (let i = 0; i < this.group.length; i++) {
-            const element = this.group[i];
+xs.Collection.prototype.then = function collectionThen(taskManager, collection, fun) {
+    collection.operating = "waiting signal to run";
+    this.nextTask = {};
+    this.nextTask.host = collection;
+    this.nextTask.taskManager = taskManager;
+    xs.AnimationTask.add({ host: collection, fun: "runA", p: fun });
+};
+
+xs.Collection.prototype.click = function collectionClick(fun, task) {
+    addClickToAll(this);
+    xs.Debug.log("addClickTo : " + this.name);
+    return this;
+
+    function addClickToAll(collection) {
+        for (let i = 0; i < collection.group.length; i++) {
+            const element = collection.group[i];
             element.addEventListener("click", clickfun);
         }
-        xs.Task.next();
     }
     function clickfun(evt) {
         fun(evt.currentTarget);
     }
 };
-//popup menu
-xs.PopUpMenu = function (div, openOrClose) {
-    this.div = div;
-    div.menu = this;
-    this.status = openOrClose;
-    if (openOrClose == xs.PopUpMenu.CLOSE) {
-        div.style.height = "0px";
-    }
-};
-xs.PopUpMenu.CLOSE = "close";
-xs.PopUpMenu.OPEN = "open";
-xs.PopUpMenu.prototype.transitionend = function (evt) {
-    let element = evt.currentTarget;
-    element.removeEventListener('transitionend', arguments.callee);
-    element.style.height = null;
-};
-xs.PopUpMenu.prototype.popup = function () {
-    let element = this.div;
-    var sectionHeight = element.scrollHeight;
-    element.style.height = sectionHeight + 'px';
-    element.addEventListener('transitionend', this.transitionend);
-    element.menu.status = xs.PopUpMenu.OPEN;
-};
-xs.PopUpMenu.prototype.pullback = function () {
-    let element = this.div;
-    element.removeEventListener('transitionend', this.transitionend);
-    var sectionHeight = element.scrollHeight;
-    var elementTransition = element.style.transition;
-    element.style.transition = '';
-    requestAnimationFrame(function () {
-        element.style.height = sectionHeight + 'px';
-        element.style.transition = elementTransition;
-        requestAnimationFrame(function () {
-            element.style.height = 0 + 'px';
-        });
-    });
 
-    this.status = xs.PopUpMenu.CLOSE;
-};
 
-xs.system = {};
-xs.system.operating = null;
-xs.loadGoogleFont = function (name) {
-    this.loadFontOk = () => {
-        console.log("finsh load font " + name);
-        xs.system.operating = null;
-        xs.Task.next();
-    };
-    let css = document.createElement("link");
-    css.setAttribute("rel", "stylesheet");
-    css.setAttribute("href", 'https://fonts.googleapis.com/css?family=' + name);
-    css.onload = loadOk;
-    document.getElementsByTagName("head")[0].appendChild(css);
-    xs.system.operating = "loadGoogleFont";
-};
 
-xs.selectModule = function (name) {
-    function isNodeWanted(node) {
+xs.selectModule = function selectModule(name) {
+    let result = xs.iteratechild(document.body, isModule);
+    return result;
+
+    function isModule(node) {
         if (node.tagName === "DIV" &&
             node.wrapper != null &&
             node.wrapper.name === name) {
@@ -414,10 +470,10 @@ xs.selectModule = function (name) {
         }
         return null;
     }
-    let result = xs.iteratechild(document.body, isNodeWanted);
-    return result;
+
 };
 xs.iteratechild = function (node, fun) {
+    fun(node);
     for (let i = 0; i < node.childNodes.length; i++) {
         const child = node.childNodes[i];
         let result = fun(child);
@@ -430,12 +486,5 @@ xs.iteratechild = function (node, fun) {
 };
 
 
-xs.init = function () {
-    new xs.Div("new", document.body).class("main")
-        .load("/entry");
 
-};
-xs.load = function (parent) {
-    xs.init(parent);
-    xs.init = null;
-};
+

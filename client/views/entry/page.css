@@ -1,0 +1,19 @@
+.main {
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 110px;
+}
+
+
+.mainBody {
+    /* display: grid; */
+    /* grid-template-columns: auto auto auto auto auto; */
+    /* grid-gap: 50px 100px; */
+    min-height: calc(100vh - 357px);
+    /* margin: 8px; */
+    /* position: relative; */
+    /* overflow: hidden; */
+    /* border: black; */
+    /* border-style: solid; */
+}

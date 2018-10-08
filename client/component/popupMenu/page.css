@@ -1,0 +1,77 @@
+.sideMenuBox {
+    display: flex;
+    flex-direction: column;
+    /* width: 184px; */
+}
+.button {
+    outline: none;
+    border-style: none;
+    transition: all 0.3s;
+    padding: 14px 3px;
+    font-size: 0.8em;
+}
+
+.sideMenu {
+    background-color: rgb(223, 223, 223);
+    color: black;
+    height: 57px;
+    font-family: "OpenSans Light", serif;
+}
+
+button.button.sideMenu {}
+
+.sideMenu:hover {
+    background-color: #ff5f5f;
+    font-size: 1em;
+}
+
+.subMenu {
+    width: 100%;
+    background-color: #2b0000;
+    color: aliceblue;
+    height: auto;
+    min-height: 50px;
+}
+.boundingBox{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.subMenu:hover,.subMenuActive {
+    background-color: rgb(178, 0, 0);
+    font-size: 1em;
+}
+
+.subMenuBox {
+    /* display: flex; */
+    /* flex-direction: column; */
+    width: 100%;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.popup {
+    height: initial;
+}
+
+.pullback {
+    height: 0;
+}
+
+@keyframes changeHeiToZero {
+    from {
+        height: initial;
+    }
+    to {
+        height: 0;
+    }
+}
+
+@keyframes changeHeiToOrigin {
+    from {
+        height: 0;
+    }
+    to {
+        height: initial;
+    }
+}

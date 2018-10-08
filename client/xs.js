@@ -64,7 +64,7 @@ xs.Debug.greenAlert = function (msg) {
 xs.clearTask = function () {
     this.queue.length = 0;
 };
-xs.Task = { name: "generalTaskManager" };
+xs.Task = { name: "System Task" };
 xs.Task.queue = [];
 
 xs.Task.next = function () {
@@ -73,7 +73,6 @@ xs.Task.next = function () {
         task.host[task.fun](task.p, task);
     }
     else {
-        //         xs.Debug.log("--- system ---");
         if (xs.control.waitingServer == 0 &&
             xs.control.waitingLoad == 0) {
             xs.control.uncover();
@@ -87,7 +86,7 @@ xs.Task.add = function (task) {
     this.queue.push(task);
 };
 
-xs.AnimationTask = { name: "animationTaskManager" };
+xs.AnimationTask = { name: "Animation Task" };
 xs.AnimationTask.queue = [];
 
 xs.AnimationTask.next = function () {
@@ -153,7 +152,7 @@ xs.Div.prototype.STR_LOAD_CSS = "loadCSS : ";
 
 xs.Div.prototype.loadHtml = function divLoadHtml(name) {
     let taskName = this.STR_LOAD_HTML + name;
-    this.sendRequest(`/readHtml${name}/page`, loadHtmlOk, xs.currentFolder);
+    this.sendRequest(`/readHtml${name}/page`, loadHtmlOk, this.currentFolder);
     this.operating = "waiting " + taskName;
     function loadHtmlOk(html) {
         this.div.innerHTML = html;
@@ -180,7 +179,7 @@ xs.Div.prototype.loadJs = function divLoadJs(name) {
     let taskName = this.STR_LOAD_JS + name;
     this.operating = "waiting " + taskName;
     xs.control.waitingLoad++;
-    xs.loadJs.call(this, xs.currentFolder + name + "/page", loadJsOk);
+    xs.loadJs.call(this, this.currentFolder + name + "/page", loadJsOk);
 
     function loadJsOk() {
         xs.Debug.log(taskName);
@@ -215,7 +214,7 @@ xs.Div.prototype.loadCss = function divLoadCss(name) {
         xs.cssInfo[name] = [];
         this.operating = "waiting " + this.STR_LOAD_CSS + name;
         xs.control.waitingLoad++;
-        xs.loadCss.call(this, xs.currentFolder + name + "/page", loadCssOk);
+        xs.loadCss.call(this, this.currentFolder + name + "/page", loadCssOk);
     } else {
         xs.cssInfo[name].push(this);
     }
@@ -231,20 +230,20 @@ xs.Div.prototype.loadCss = function divLoadCss(name) {
     }
 };
 
-xs.currentFolder = null;
+// xs.currentFolder = null;
 xs.VIEW = "/client/views";
 xs.COMPONENT = "/client/component";
 xs.CODE = "/assets/code";
 xs.Div.prototype.load = function divLoad(name, folder, data) {
     if (folder == null) {
-        xs.currentFolder = xs.VIEW;
+        this.currentFolder = xs.VIEW;
     }
     else {
-        xs.currentFolder = folder;
+        this.currentFolder = folder;
     }
     this.name = name;
     this.loadModuleOk = loadModuleOk;
-    this.sendRequest(`/loadNew${this.name}/page`, build, xs.currentFolder);
+    this.sendRequest(`/loadNew${this.name}/page`, build, this.currentFolder);
     return this;
 
     function build(info) {

@@ -40,7 +40,7 @@ xs.init = function (module, data) {
     //     },
     //      ...
     // ]
-    //generate html
+    //generate html--------------------------------------------------------------------
     // <div class="sideMenuBox">
     //      <button class="button sideMenu">basic</button>
     //      <div class="subMenuBox">
@@ -51,6 +51,7 @@ xs.init = function (module, data) {
     // </div>
     //--------------------------------------------------------------------------------
     function buildMenu(menus) {
+        let setActiveMenu = false;
         for (let i = 0; i < menus.length; i++) {
             let menudata = menus[i];
             let menu = document.createElement("BUTTON");
@@ -71,9 +72,12 @@ xs.init = function (module, data) {
                     subMenu.contentPath = submenudata.path;
 
                     if (submenudata.initActive) {
+                        if (setActiveMenu)
+                            xs.Debug.redAlert("only allow one menu active ")
                         subMenu.classList.add("subMenuActive");
                         module.activeSubMenu = subMenu;//active
                         content.load(subMenu.contentPath);
+                        setActiveMenu = true;
                     }
 
                     subMenu.classList.add("button", "subMenu");

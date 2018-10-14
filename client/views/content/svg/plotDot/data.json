@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Song Xu",
+        "age": 27,
+        "company": "Microsoft",
+        "company rank": 50,
+        "working experience": 1.5,
+        "country": "China"
+    },
+    {
+        "name": "Jingying Zhang",
+        "age": 28,
+        "company": "Google",
+        "company rank": 78,
+        "working experience": 5,
+        "country": "China"
+    },
+    {
+        "name": "Peter",
+        "age": 30,
+        "company": "Blizzard",
+        "company rank": 100,
+        "working experience": 3,
+        "country": "United State"
+    },
+    {
+        "name": "Lumn",
+        "age": 43,
+        "company": "UBISoft",
+        "company rank": 32,
+        "working experience": 11.3,
+        "country": "africa"
+    }
+]

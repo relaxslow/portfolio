@@ -132,19 +132,21 @@ let systemRoutine = {
     "loadNew": function (req, res) {
         let path = req.parsedUrl.query.data;
         let file = req.parsedPath.slice(req.parsedPath.indexOf("/loadNew") + "/loadNew".length);
-        let result=find3File(`.${path + file}`);
+        let result = find3File(`.${path + file}`);
         res.end(result);
     },
     "readHtml": function (req, res) {
         let path = req.parsedUrl.query.data;
-        let file= req.parsedPath.slice(req.parsedPath.indexOf("readHtml") + "readHtml".length);
-        let fileFullName = `.${path+file}.html`;
+        let file = req.parsedPath.slice(req.parsedPath.indexOf("readHtml") + "readHtml".length);
+        let fileFullName = `.${path + file}.html`;
         readHtmlFile(fileFullName, res);
 
     },
     "readCodeFile": function (req, res) {
         let filepath = req.parsedPath.slice(req.parsedPath.indexOf("readCodeFile") + "readCodeFile".length);
-        let fileFullName = `./assets/code${filepath}.txt`;
+        let fileFullName = `./assets/code${filepath}.js`;
+        const REPLACE_STR = "____________";
+        const replaceRegex = new RegExp(REPLACE_STR);
         fs.readFile(fileFullName, 'utf8', function (err, data) {
             if (err) {
                 res.statusCode = 500;
@@ -154,23 +156,50 @@ let systemRoutine = {
                 let arr = data.split(/\r?\n/);
                 for (let i = 0; i < arr.length; i++) {
                     let line = arr[i];
+                    let spaces = line.match(/\s+/g);
+                    let indent = "";
+                    if (spaces) {
+                        indent = spaces[0];
+                    }
                     let s = line.split("//");
+
                     let normal = s[0];
                     let comment = s[1];
                     comment = markComment(comment);
+                    normal = markString(normal);
                     normal = markKeyWord(normal);
                     normal = markSysProperty(normal);
                     normal = markFun(normal);
 
-                    arr[i] = `<code> ${normal + comment}</code><br>`;
+                    arr[i] = `<pre> ${indent + normal + comment}</pre><br>`;
                 }
                 let result = arr.join("");
                 res.setHeader('Content-type', 'text/html');
                 res.end(result);
             }
         });
+
+
         function markComment(str) {
-            return `<span class='codeComment'> //${str}</span>`;
+            if (str == undefined)
+                return "";
+            else
+                return `<span class='codeComment'> //${str}</span>`;
+        }
+        function markString(str) {
+            let regex = new RegExp(/("(.*?)")|('(.*?)')/, "g");
+            let quotes = str.match(regex);
+            if (quotes == null) return str;
+            let a = str.replace(regex, REPLACE_STR);
+            for (let i = 0; i < quotes.length; i++) {
+                const quote = quotes[i];
+                let word = quote.slice(1, -1);
+                let symbol = quote[0];
+                word = `${symbol}<span class="codeString">${word}</span>${symbol}`;
+                a = a.replace(replaceRegex, word);
+            }
+
+            return a;
         }
         function markKeyWord(str) {
             const keywords =
@@ -213,7 +242,7 @@ let systemRoutine = {
         function markFun(str) {
 
             let re = new RegExp(/\w+\(/, "g");
-            let a = str.replace(re, "_______");
+            let a = str.replace(re, REPLACE_STR);
             let arr = [];
             let m;
             do {
@@ -230,7 +259,7 @@ let systemRoutine = {
                 } else {
                     arr[i] = `<span class='customFun'>${n}</span>(`;
                 }
-                a = a.replace(new RegExp("_______", "g"), arr[i]);
+                a = a.replace(replaceRegex, arr[i]);
             }
 
 
@@ -383,7 +412,7 @@ let systemRoutine = {
         }
     },
 
-   
+
     "getShader": function (req, res) {
         let filePath = new Buffer(req.b_Id, 'base64').toString('ascii');
         fs.readFile(`.${filePath}`, function (err, data) {
@@ -402,7 +431,7 @@ let systemRoutine = {
 };
 let subRoutine = {
     "": function (req, res) {
-        renderHtml(res);
+        readHtmlFile("./client/index.html", res);
     },
     "getMainMenu": function (req, res) {
         let mainMenu = config.mainMenu;

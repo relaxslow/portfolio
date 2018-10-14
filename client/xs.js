@@ -342,6 +342,9 @@ xs.Div.prototype.collect = function divCollect(name) {
 
 xs.Div.prototype.selectDiv = function divSelect(name) {
     let div = this.div.getElementsByClassName(name)[0];
+    if (div == null) {
+        xs.Debug.redAlert("can't find element with class name" + name);
+    }
     xs.Debug.log("selectDiv : " + name);
     if (div.wrapper == null)
         div.wrapper = new xs.Div("wrap", div);

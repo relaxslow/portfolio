@@ -8,20 +8,20 @@ xs.init = function (module) {
             menu: [
                 {
                     text: "basic",
-                    initOpen: true,
                     submenu: [
-                        { path: "/content/basic/codeArea", text: "code area" },
-                        { path: "/content/basic/emptyPage2", text: "empty page2" },
+                        { path: "/content/basic/Javascript", text: "Javascript" },
+                        { path: "/content/basic/nodeJs", text: "Node.js" },
                     ]
                 },
                 {
                     text: "svg",
                     initOpen: true,
                     submenu: [
-                        { path: "/content/svg/animation", text: "animate Gradient",initActive: true },
+                        { path: "/content/svg/animation", text: "animate Gradient" },
                         { path: "/content/svg/simplePieChart", text: "simple Pie Chart" },
                         { path: "/content/svg/realPieChart", text: "real Pie Chart" },
                         { path: "/content/svg/animatedLine", text: "animated line" },
+                        {path:"/content/svg/plotDot",text:"plot dot", initActive: true},
                     ]
                 },
                 {

@@ -15,19 +15,22 @@ xs.init = function (module) {
                 },
                 {
                     text: "svg",
-                    initOpen: true,
                     submenu: [
                         { path: "/content/svg/animation", text: "animate Gradient" },
                         { path: "/content/svg/simplePieChart", text: "simple Pie Chart" },
                         { path: "/content/svg/realPieChart", text: "real Pie Chart" },
                         { path: "/content/svg/animatedLine", text: "animated line" },
-                        {path:"/content/svg/plotDot",text:"plot dot", initActive: true},
+                        {path:"/content/svg/plotDot",text:"plot dot", },
                     ]
                 },
                 {
+                    initOpen: true,
                     text: "webgl",
                     submenu: [
                         { path: "/content/webgl/pickObj", text: "pickObj" },
+                        { path: "/content/webgl/threeJsTest", text: "threeJs" },
+                        { path: "/content/webgl/drawLine", text: "threeJs-drawLine",initActive: true },
+
                     ]
                 },
                 {

@@ -8,12 +8,23 @@
     display: flex;
     justify-content: flex-end;
     background-color: #FF9800;
-    height: 51px;
+    height: 34px;
 }
 
 .codeHeadText {
     color: #fcfcfc;
     margin: 10px 20px;
+    /* width: 100%; */
+    /* height: 100%; */
+    /* text-align: center; */
+    font-size: 11px;
+    /* align-content: center; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* right: 20px; */
+    /* position: relative; */
+    /* text-align: center; */
+    /* align-content: center; */
 }
 
 .codeContent {
@@ -21,6 +32,7 @@
     padding: 10px 50px;
     background-color: #3e3e3e;
     color: #f0f0f0;
+    overflow-x: scroll;
 }
 
 .keywords {

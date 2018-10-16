@@ -3,11 +3,10 @@ body{
     flex-direction: column;
     margin: 0px;
     overflow-x: hidden;
-
     font-family: 'Open Sans', sans-serif;
     background: #fff;
     font-weight: 300;
-    line-height: 2;
+    line-height: 1.2;
     letter-spacing: .5px;
     font-size: calc(17px + .1vw);
 }
@@ -18,4 +17,6 @@ b{
 pre {
     display: inline;
     margin: 0;
+    /* padding: 0; */
+    /* line-height: 11px; */
 }

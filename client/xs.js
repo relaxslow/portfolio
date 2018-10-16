@@ -129,6 +129,7 @@ xs.Div = function Div(option, param) {
     }
     this.operating = null;
     this.css = [];
+    this.animationIDs = [];
 
 };
 
@@ -167,6 +168,7 @@ xs.loadJs = function loadJs(name, fun) {
     let script = document.createElement('script');
     script.setAttribute("type", "text/javascript");
     script.setAttribute("src", name + ".js");
+    script.setAttribute("defer", "defer");
     script.onload = function (evt) {
         let script = evt.currentTarget;
         document.getElementsByTagName("head")[0].removeChild(script);
@@ -269,18 +271,26 @@ xs.Div.prototype.clear = function divClear() {
     xs.clearTask.call(xs.Task);
     xs.clearTask.call(xs.AnimationTask);
     xs.control.cover(this);
-    xs.iteratechild(this.div, removeCss);
-    clearTimer.call(this);
+    xs.iteratechild(this.div, clean);
+ 
+
     xs.Debug.log("clear " + this.name);
 
-    function removeCss(div) {
+    function clean(div) {
         let wrapper = div.wrapper;
-        if (wrapper != null &&
-            wrapper.css.length != 0) {
+        if (wrapper != null) {
+            removeCss(wrapper);
+            removeAnimationID(wrapper);
+            clearTimer.call(wrapper);
+        }
+
+    }
+    function removeCss(wrapper) {
+        if (wrapper.css.length != 0) {
             for (let i = 0; i < wrapper.css.length; i++) {
                 let css = wrapper.css[i];
                 let arr = xs.cssInfo[css.name];
-                arr.splice(arr.indexOf(div), 1);
+                arr.splice(arr.indexOf(wrapper.div), 1);
                 css.parentNode.removeChild(css);
                 if (arr.length == 0) {
                     delete xs.cssInfo[css.name];
@@ -299,12 +309,20 @@ xs.Div.prototype.clear = function divClear() {
             this.timers = null;
         }
     }
+    function removeAnimationID(wrapper) {
+        if (wrapper.animationID != null) {
+            cancelAnimationFrame(wrapper.animationID);
+
+        }
+
+    }
     return this;
 };
 
 
 xs.init = null;
 xs.begin = function () {
+    xs.initThreeJs();
     new xs.Div("new", document.body).addClass("main")
         .clear()
         .load("/entry");
@@ -492,6 +510,9 @@ xs.iteratechild = function (node, fun) {
     return null;
 };
 
-
-
-
+xs.initThreeJs = function () {
+    xs.renderer = new THREE.WebGLRenderer();
+}
+xs.resetThreeJs = function () {
+    xs.renderer.domElement.classList = "";
+}

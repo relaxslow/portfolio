@@ -1,0 +1,11 @@
+.ThreeJsTest{
+    width: 400px;
+    height: 300px;
+    background-color: #000;
+    border: 1px solid black;
+    margin: 100px;
+    padding: 0px;
+    position: static; /* fixed or static */
+    top: 100px;
+    left: 100px;
+}

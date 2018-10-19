@@ -196,9 +196,9 @@ xs.Div.prototype.loadJs = function divLoadJs(name) {
 
 };
 xs.cssInfo = {};
+xs.cssRef = {};
 xs.loadCss = function loadCss(name, loadOkfun) {
     let css = document.createElement("link");
-    this.css.push(css);
     css.setAttribute("rel", "stylesheet");
     css.setAttribute("type", "text/css");
     css.setAttribute("href", name + ".css");
@@ -218,13 +218,18 @@ xs.Div.prototype.loadCss = function divLoadCss(name) {
         xs.control.waitingLoad++;
         xs.loadCss.call(this, this.currentFolder + name + "/page", loadCssOk);
     } else {
+        this.css.push(name);//
         xs.cssInfo[name].push(this);
+        this.operating = this.STR_LOAD_CSS + name;
+        xs.Task.next();
     }
     return this;
     function loadCssOk(css) {
+        this.css.push(name);
         xs.control.waitingLoad--;
         css.name = name;
         xs.cssInfo[name].push(this);
+        xs.cssRef[name] = css;
         let taskName = this.STR_LOAD_CSS + name;
         this.operating = taskName;
         xs.Debug.log(taskName);
@@ -268,11 +273,12 @@ xs.Div.prototype.load = function divLoad(name, folder, data) {
 
 
 xs.Div.prototype.clear = function divClear() {
+    this.operating = null;
     xs.clearTask.call(xs.Task);
     xs.clearTask.call(xs.AnimationTask);
     xs.control.cover(this);
     xs.iteratechild(this.div, clean);
- 
+
 
     xs.Debug.log("clear " + this.name);
 
@@ -280,21 +286,24 @@ xs.Div.prototype.clear = function divClear() {
         let wrapper = div.wrapper;
         if (wrapper != null) {
             removeCss(wrapper);
-            removeAnimationID(wrapper);
             clearTimer.call(wrapper);
         }
 
     }
+
     function removeCss(wrapper) {
         if (wrapper.css.length != 0) {
             for (let i = 0; i < wrapper.css.length; i++) {
-                let css = wrapper.css[i];
+                let css = xs.cssRef[wrapper.css[i]];
                 let arr = xs.cssInfo[css.name];
                 arr.splice(arr.indexOf(wrapper.div), 1);
-                css.parentNode.removeChild(css);
+
                 if (arr.length == 0) {
+                    css.parentNode.removeChild(css);
                     delete xs.cssInfo[css.name];
+                    delete xs.cssRef[css.name];
                 }
+
             }
             wrapper.css.length = 0;
         }
@@ -309,20 +318,14 @@ xs.Div.prototype.clear = function divClear() {
             this.timers = null;
         }
     }
-    function removeAnimationID(wrapper) {
-        if (wrapper.animationID != null) {
-            cancelAnimationFrame(wrapper.animationID);
 
-        }
-
-    }
     return this;
 };
 
 
 xs.init = null;
 xs.begin = function () {
-    xs.initThreeJs();
+    // xs.initThreeJs();
     new xs.Div("new", document.body).addClass("main")
         .clear()
         .load("/entry");
@@ -370,7 +373,27 @@ xs.Div.prototype.selectDiv = function divSelect(name) {
 
 };
 
+xs.Div.prototype.buildFrame = function buildThreeJsCanvas(wid, hei, name, data) {
+    this.operating = "waiting loadiframe";
+    xs.control.waitingLoad++;
+    let iframe = document.createElement("iframe");
+    iframe.src = name;
+    iframe.width = wid;
+    iframe.height = hei;
+    iframe.frameBorder = 0;
+    iframe.style.backgroundColor = "#9c9c9c";
+    iframe.onload = iframeLoadOk;
+    this.div.appendChild(iframe);
 
+    function iframeLoadOk(evt) {
+        let frame = evt.currentTarget;
+        if (frame.contentWindow.start)
+            frame.contentWindow.start(data);
+        xs.control.waitingLoad--;
+        this.operating = null;
+        xs.Task.next();
+    }
+}
 //collection
 xs.Collection = function Collection() {
     this.group = null;
@@ -481,8 +504,6 @@ xs.Collection.prototype.click = function collectionClick(fun, task) {
     }
 };
 
-
-
 xs.selectModule = function selectModule(name) {
     let result = xs.iteratechild(document.body, isModule);
     return result;
@@ -510,9 +531,5 @@ xs.iteratechild = function (node, fun) {
     return null;
 };
 
-xs.initThreeJs = function () {
-    xs.renderer = new THREE.WebGLRenderer();
-}
-xs.resetThreeJs = function () {
-    xs.renderer.domElement.classList = "";
-}
+
+

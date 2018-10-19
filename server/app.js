@@ -156,11 +156,8 @@ let systemRoutine = {
                 let arr = data.split(/\r?\n/);
                 for (let i = 0; i < arr.length; i++) {
                     let line = arr[i];
-                    let spaces = line.match(/\s+/g);
-                    let indent = "";
-                    if (spaces) {
-                        indent = spaces[0];
-                    }
+                    let spaceAtBegin = line.match(/^\s*/g);
+                    let indent = spaceAtBegin;
                     let s = line.split("//");
 
                     let normal = s[0];
@@ -171,7 +168,7 @@ let systemRoutine = {
                     normal = markSysProperty(normal);
                     normal = markFun(normal);
 
-                    arr[i] = `<pre> ${indent + normal + comment}</pre><br>`;
+                    arr[i] = `<pre>${indent + normal + comment}</pre><br>`;
                 }
                 let result = arr.join("");
                 res.setHeader('Content-type', 'text/html');
@@ -206,9 +203,9 @@ let systemRoutine = {
                 [
                     "function",
                     "typeof",
-                    "let",
+                    "let","var",
                     "instanceof",
-                    "return"
+                    "return","new"
                 ];
             for (let i = 0; i < keywords.length; i++) {
                 let re = new RegExp(keywords[i], 'g');
@@ -432,6 +429,10 @@ let systemRoutine = {
 let subRoutine = {
     "": function (req, res) {
         readHtmlFile("./client/index.html", res);
+        // readHtmlFile("./client/views/content/webgl/drawLine/displayFonts.html", res);
+        // readHtmlFile("./client/views/content/webgl/loadModel/iframe.html", res);
+        // readHtmlFile("./client/views/content/webgl/drawLine/updateBuffer.html", res);
+
     },
     "getMainMenu": function (req, res) {
         let mainMenu = config.mainMenu;

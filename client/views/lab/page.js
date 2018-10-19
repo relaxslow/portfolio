@@ -29,7 +29,6 @@ xs.init = function (module) {
                     submenu: [
                        
                         { path: "/content/webgl/threeJsTest", text: "threeJs-start",initActive: true  },
-                        { path: "/content/webgl/drawLine", text: "threeJs-drawLine" },
                         { path: "/content/webgl/loadModel", text: "threeJs-loadGLTF", },
                         { path: "/content/webgl/pickObj", text: "pickObj", },
 

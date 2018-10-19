@@ -1,6 +1,4 @@
-/** @param {xs.Div} module a wrapper of div */
 xs.init = function (module) {
-
     module.selectDiv("drawLine")
         .buildFrame(300, 300, "/client/views/content/webgl/threeJsTest/iframe.html");
     module.selectDiv("lineCode")

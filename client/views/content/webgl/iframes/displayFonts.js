@@ -5,6 +5,16 @@ let [renderer, scene] = initThree(0xffffff);
 camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 1500);
 camera.position.set(0, 300, 700);
 cameraTarget = new THREE.Vector3(0, 20, 0);
+//controls
+controls = new THREE.TrackballControls(camera);
+controls.rotateSpeed = 5.0;
+controls.zoomSpeed = 3.2;
+controls.panSpeed = 0.8;
+controls.noZoom = false;
+controls.noPan = true;
+controls.staticMoving = false;
+controls.dynamicDampingFactor = 0.2;
+controls.addEventListener('change', renderScene);
 //light
 var light = new THREE.AmbientLight(0x444444); // soft white light
 scene.add(light);
@@ -60,17 +70,18 @@ function refreshText() {
     textMesh1.rotation.y = Math.PI * 2;
     scene.add(textMesh1);
 
-    renderer.clear();
-    renderer.render(scene, camera);
+
+    renderScene();
 }
 
 animate();
 function animate() {
+  
     requestAnimationFrame(animate);
-    render();
+    renderScene();
+    controls.update();
 }
-function render() {
-    camera.lookAt(cameraTarget);
-    renderer.clear();
+
+function renderScene() {
     renderer.render(scene, camera);
 }

@@ -208,7 +208,7 @@ let systemRoutine = {
                     "return","new"
                 ];
             for (let i = 0; i < keywords.length; i++) {
-                let re = new RegExp(keywords[i], 'g');
+                let re = new RegExp("\\b"+keywords[i]+"\\b", 'g');
                 str = str.replace(re, "<em class='keywords'>" + keywords[i] + "</em>");
             }
             return str;

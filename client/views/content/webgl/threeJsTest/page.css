@@ -3,3 +3,10 @@
     border-width: 1px;
     border-color: bisque;
 }
+.drawLine, .displayText{
+    display: inline-flex;
+    border-style: solid;
+    border-width: 1px;
+    border-color: bisque;
+    position: relative;
+}

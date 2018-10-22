@@ -43,18 +43,32 @@ controls.target.set(0, 1.5, 0);
 controls.update();
 controls.addEventListener('change', renderScene);
 
-document.addEventListener("keydown", keyDown, false);
+document.body.addEventListener("keydown", keyDown, false);
 function keyDown(event) {
     let finger1 = Obj3D.objs["finger1"];
     let finger2 = Obj3D.objs["finger2"];
-   
+    let arm1 = Obj3D.objs["arm1"];
+    let joint1 = Obj3D.objs["joint1"];
+    let joint2 = Obj3D.objs["joint2"];
     var keyCode = event.which;
-    if (keyCode == 65) {
-        finger1.rotate(Axis.z, -20);
-        finger2.rotate(Axis.z, 20);
-    } else if (keyCode == 68) {
-        finger1.rotate(Axis.z, 20);
-        finger2.rotate(Axis.z, -20);
+    if (keyCode == 65) {//a
+        arm1.rotate(Axis.y, 10);
+    } else if (keyCode == 68) {//d
+        arm1.rotate(Axis.y, -10);
+    } else if (keyCode == 87) {//w
+        joint1.rotate(Axis.x, 10);
+    } else if (keyCode == 83) {//s
+        joint1.rotate(Axis.x, -10);
+    } else if (keyCode == 81) {//q
+        finger1.rotate(Axis.z, -10);
+        finger2.rotate(Axis.z, 10);
+    } else if (keyCode == 69) {//e
+        finger1.rotate(Axis.z, 10);
+        finger2.rotate(Axis.z, -10);
+    } else if (keyCode == 90) {//z
+        joint2.rotate(Axis.y, 10);
+    } else if (keyCode == 67) {//c
+        joint2.rotate(Axis.y, -10);
     }
     renderScene();
 };
@@ -81,7 +95,7 @@ let material = new THREE.MeshLambertMaterial({
 });
 let cube = new THREE.Mesh(geometry, material);
 cube.name = "boxMesh";
-cube.visible = false;
+cube.visible = true;
 cube.geometry.translate(0, 0.5, 0);
 scene.add(cube);
 
@@ -184,11 +198,11 @@ Obj3D.prototype.rotate = function (axis, angle) {
 
     return this;
 }
-new Obj3D("arm0", obj).scale(1, 0.4, 1);
+new Obj3D("arm0", obj).scale(1.5, 0.4, 1.5);
 
-new Obj3D("arm1", obj, "arm0").scale(0.4, 1, 0.4).translate(0, 0.4, 0).rotate(Axis.y, 45);
-new Obj3D("joint1", obj, "arm1").scale(0.6, 0.4, 0.4).translate(0, 1, 0).rotate(Axis.x, 20);
-new Obj3D("arm2", obj, "joint1").scale(0.4, 1, 0.4).translate(0, 0.4, 0);
+new Obj3D("arm1", obj, "arm0").scale(1, 1, 1).translate(0, 0.4, 0);
+new Obj3D("joint1", obj, "arm1").scale(0.6, 0.4, 0.4).translate(0, 1, 0);
+new Obj3D("arm2", obj, "joint1").scale(0.4, 1, 0.4).translate(0, 0.4, 0).rotate(Axis.x,60);
 new Obj3D("joint2", obj, "arm2").scale(0.8, 0.5, 0.5).translate(0, 1, 0);
 new Obj3D("finger1", obj, "joint2").scale(0.1, 0.2, 0.1).translate(-0.3, 0.5, 0);
 new Obj3D("finger2", obj, "joint2").scale(0.1, 0.2, 0.1).translate(0.3, 0.5, 0);

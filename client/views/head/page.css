@@ -13,7 +13,7 @@
 
 
 .headBar_Menu {
-    height: 50px;
+    height: 32px;
     background: #dfdfdf;
     display: flex;
     justify-content: flex-end;
@@ -30,7 +30,7 @@
     border-style: none;
     transition: all 0.3s;
     width: 100px;
-    padding: 10px 10px 10px 10px;
+    /* padding: 5px; */
     font-family: "OpenSans Light", serif;
     font-size: 0.90em;
 }

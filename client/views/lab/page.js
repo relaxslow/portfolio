@@ -9,7 +9,7 @@ xs.init = function (module) {
                 {
                     text: "basic",
                     submenu: [
-                        { path: "/content/basic/Javascript", text: "Javascript",},
+                        { path: "/content/basic/Javascript", text: "Javascript", },
                         { path: "/content/basic/nodeJs", text: "Node.js" },
                     ]
                 },
@@ -20,16 +20,16 @@ xs.init = function (module) {
                         { path: "/content/svg/simplePieChart", text: "simple Pie Chart" },
                         { path: "/content/svg/realPieChart", text: "real Pie Chart" },
                         { path: "/content/svg/animatedLine", text: "animated line" },
-                        {path:"/content/svg/plotDot",text:"plot dot", },
+                        { path: "/content/svg/plotDot", text: "plot dot", },
                     ]
                 },
                 {
                     initOpen: true,
                     text: "webgl",
                     submenu: [
-                       
-                        { path: "/content/webgl/threeJsTest", text: "threeJs-start",initActive: true  },
+                        { path: "/content/webgl/threeJsTest", text: "threeJs-start" },
                         { path: "/content/webgl/loadModel", text: "threeJs-loadGLTF", },
+                        { path: "/content/webgl/robotArm", text: "robotArm", initActive: true },
                         { path: "/content/webgl/pickObj", text: "pickObj", },
 
                     ]

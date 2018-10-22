@@ -1,12 +1,12 @@
-//quick navigate
+##quick navigate
 alt + -> previous cursor position
 alt + <- next cursor position
 
-//hide minimap
+##hide minimap
 "editor.minimap.enabled": false,
 
 
-//install glsl lint and set glslangValidator
+##install glsl lint and set glslangValidator
 If you are uning Windows or Linux, the best way to install glslangValidator is to install Vulkan SDK.
 Get the SDK from here:
 

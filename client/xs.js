@@ -384,14 +384,19 @@ xs.Div.prototype.buildFrame = function buildThreeJsCanvas(wid, hei, name, data) 
     iframe.style.backgroundColor = "#9c9c9c";
     iframe.onload = iframeLoadOk;
     this.div.appendChild(iframe);
-
+ 
     function iframeLoadOk(evt) {
         let frame = evt.currentTarget;
+          frame.contentWindow.addEventListener("click",focus);
         if (frame.contentWindow.start)
             frame.contentWindow.start(data);
         xs.control.waitingLoad--;
         this.operating = null;
         xs.Task.next();
+    }
+    function focus(evt) {
+        let window = evt.currentTarget;
+        window.focus();
     }
 }
 //collection

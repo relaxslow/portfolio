@@ -201,8 +201,8 @@ Obj3D.prototype.rotate = function (axis, angle) {
 new Obj3D("arm0", obj).scale(1.5, 0.4, 1.5);
 
 new Obj3D("arm1", obj, "arm0").scale(1, 1, 1).translate(0, 0.4, 0);
-new Obj3D("joint1", obj, "arm1").scale(0.6, 0.4, 0.4).translate(0, 1, 0);
-new Obj3D("arm2", obj, "joint1").scale(0.4, 1, 0.4).translate(0, 0.4, 0).rotate(Axis.x,60);
+new Obj3D("joint1", obj, "arm1").scale(0.6, 0.4, 0.4).translate(0, 1, 0).rotate(Axis.x,60);
+new Obj3D("arm2", obj, "joint1").scale(0.4, 1, 0.4).translate(0, 0.4, 0);
 new Obj3D("joint2", obj, "arm2").scale(0.8, 0.5, 0.5).translate(0, 1, 0);
 new Obj3D("finger1", obj, "joint2").scale(0.1, 0.2, 0.1).translate(-0.3, 0.5, 0);
 new Obj3D("finger2", obj, "joint2").scale(0.1, 0.2, 0.1).translate(0.3, 0.5, 0);

@@ -1,20 +1,20 @@
 
 let [renderer, scene] = initThree(0xffffff);
 
-camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 1, 1000);
+camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 camera.position.set(-5, 12, 10);
 camera.lookAt(scene.position);
 
 
 
 
-controls = new THREE.TrackballControls(camera);
+let controls = new THREE.TrackballControls(camera);
 controls.rotateSpeed = 5.0;
 controls.zoomSpeed = 3.2;
 controls.panSpeed = 0.8;
 controls.noZoom = false;
 controls.noPan = true;
-controls.staticMoving = false;
+controls.staticMoving = false;//set to false and enable damping moving
 controls.dynamicDampingFactor = 0.2;
 controls.addEventListener('change', renderScene);
 
@@ -59,9 +59,9 @@ function animationLoop() {
 function loadModelOk(obj) {
     model = obj.scene;
     let mesh = model.children[0];
-    let matt= new THREE.Matrix4();
-//     matt.setTranslation(0,10,0);
-    mesh.geometry.translate( 0, 0.5, 0 );
+    let matt = new THREE.Matrix4();
+    //     matt.setTranslation(0,10,0);
+    mesh.geometry.translate(0, 0.5, 0);
     // dae.position.set(0.4, 0, 0.8);
 
 

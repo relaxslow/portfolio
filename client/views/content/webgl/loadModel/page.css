@@ -4,3 +4,19 @@
     border-width: 1px;
     border-color: bisque;
 }
+
+.blenderScreen{
+    flex-shrink: 0;
+    border-style: solid;
+    border-color: beige;
+    background-image: url(/assets/img/blender.jpg);
+    background-clip: padding-box;
+    background-size: 400px, 23px;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    width: 400px;
+    height: 400px;
+}
+.compareView{
+    display: flex;
+}

@@ -203,12 +203,12 @@ let systemRoutine = {
                 [
                     "function",
                     "typeof",
-                    "let","var",
+                    "let", "var",
                     "instanceof",
-                    "return","new"
+                    "return", "new"
                 ];
             for (let i = 0; i < keywords.length; i++) {
-                let re = new RegExp("\\b"+keywords[i]+"\\b", 'g');
+                let re = new RegExp("\\b" + keywords[i] + "\\b", 'g');
                 str = str.replace(re, "<em class='keywords'>" + keywords[i] + "</em>");
             }
             return str;
@@ -430,7 +430,7 @@ let subRoutine = {
     "": function (req, res) {
         readHtmlFile("./client/index.html", res);
         // readHtmlFile("./client/views/content/webgl/iframes/begin.html", res);
-        // readHtmlFile("./client/views/content/webgl/iframes/robotarm.html", res);
+        // readHtmlFile("./client/views/content/webgl/iframes/draw2D/main.html", res);
         // readHtmlFile("./client/views/content/webgl/loadModel/iframe.html", res);
         // readHtmlFile("./client/views/content/webgl/drawLine/updateBuffer.html", res);
 

@@ -45,7 +45,7 @@ let model,
 
 // loader.options.convertUpAxis = true;
 // loader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/392/iphone6.dae', loadCollada);
-loader2.load('/assets/3d/box.gltf', loadModelOk);
+loader2.load('/assets/3d/trophy/box.gltf', loadModelOk);
 
 
 function renderScene() {

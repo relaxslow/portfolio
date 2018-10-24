@@ -2,8 +2,9 @@ let backgroundColor = 0x000000;
 let renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.autoClear = false;
 document.body.appendChild(renderer.domElement);
-var scene = new THREE.Scene();
+let scene = new THREE.Scene();
 scene.background = new THREE.Color(backgroundColor);
 
 document.body.onunload = function () {
@@ -25,11 +26,20 @@ window.addEventListener('resize', onWindowResize, false);
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    camera2D.right = window.innerWidth;
+    camera2D.bottom = window.innerHeight;
+    camera2D.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    renderScene();
 }
 let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(3.8, 3.8, 3.8);
-// camera.lookAt(new THREE.Vector3(0, 0, 0));
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+
+
+
 
 let controls = new THREE.TrackballControls(camera);
 controls.rotateSpeed = 3.0;
@@ -50,7 +60,7 @@ function keyDown(event) {
     let arm1 = Obj3D.objs["arm1"];
     let joint1 = Obj3D.objs["joint1"];
     let joint2 = Obj3D.objs["joint2"];
-    var keyCode = event.which;
+    let keyCode = event.which;
     if (keyCode == 65) {//a
         arm1.rotate(Axis.y, 10);
     } else if (keyCode == 68) {//d
@@ -72,7 +82,45 @@ function keyDown(event) {
     }
     renderScene();
 };
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+document.body.addEventListener('mousedown', function (event) {
 
+    // For the following method to work correctly, set the canvas position *static*; margin > 0 and padding > 0 are OK
+    mouse.x = ((event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - ((event.clientY - renderer.domElement.offsetTop) / renderer.domElement.clientHeight) * 2 + 1;
+
+    // For this alternate method, set the canvas position *fixed*; set top > 0, set left > 0; padding must be 0; margin > 0 is OK
+    //mouse.x = ( ( event.clientX - container.offsetLeft ) / container.clientWidth ) * 2 - 1;
+    //mouse.y = - ( ( event.clientY - container.offsetTop ) / container.clientHeight ) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    intersects = raycaster.intersectObjects(Obj3D.pickupMeshes);
+
+    if (intersects.length > 0) {
+        let select = intersects[0].object;
+        console.log("pick!!" + select.name);
+        selectObj(select);
+    }
+
+}, false);
+
+let selectMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+function selectObj(obj) {
+    if (obj.material != selectMaterial) {
+        obj.materialOrigin = obj.material;
+        obj.material = selectMaterial;
+    }
+    for (let i = 0; i < Obj3D.pickupMeshes.length; i++) {
+        const one = Obj3D.pickupMeshes[i];
+        if (one.material == selectMaterial && one != obj)
+            one.material = one.materialOrigin;
+
+    }
+
+    renderScene();
+}
 
 let color = '#111111',
     ambientLight = new THREE.AmbientLight('#111111'),
@@ -105,10 +153,10 @@ let wiremat = new THREE.LineBasicMaterial({ color: 0x777777, linewidth: 1 });
 let cube1Wire = new THREE.LineSegments(wireGeo, wiremat);
 cube1Wire.name = "boxWireMesh";
 
-var objOriginGeometry = new THREE.BufferGeometry();
+let objOriginGeometry = new THREE.BufferGeometry();
 let indices = [0, 1, 2, 3, 4, 5]
 let originLength = 0.2;
-var vertices = new Float32Array([
+let vertices = new Float32Array([
     0.0, 0.0, 0.0,
     originLength, 0.0, 0.0,
 
@@ -162,10 +210,11 @@ function Obj3D(name, srcObj, parentName) {
     parent.add(this.root);
 
     Obj3D.objs[name] = this;
-
+    Obj3D.pickupMeshes.push(this.root.children[0]);
     return this;
 }
 Obj3D.objs = {};
+Obj3D.pickupMeshes = [];
 Obj3D.oMat = new THREE.Matrix4();
 
 Obj3D.prototype.scale = function (x, y, z) {
@@ -201,17 +250,65 @@ Obj3D.prototype.rotate = function (axis, angle) {
 new Obj3D("arm0", obj).scale(1.5, 0.4, 1.5);
 
 new Obj3D("arm1", obj, "arm0").scale(1, 1, 1).translate(0, 0.4, 0);
-new Obj3D("joint1", obj, "arm1").scale(0.6, 0.4, 0.4).translate(0, 1, 0).rotate(Axis.x,60);
+new Obj3D("joint1", obj, "arm1").scale(0.6, 0.4, 0.4).translate(0, 1, 0).rotate(Axis.x, 60);
 new Obj3D("arm2", obj, "joint1").scale(0.4, 1, 0.4).translate(0, 0.4, 0);
 new Obj3D("joint2", obj, "arm2").scale(0.8, 0.5, 0.5).translate(0, 1, 0);
 new Obj3D("finger1", obj, "joint2").scale(0.1, 0.2, 0.1).translate(-0.3, 0.5, 0);
 new Obj3D("finger2", obj, "joint2").scale(0.1, 0.2, 0.1).translate(0.3, 0.5, 0);
 
-// let arm1=obj.clone();
-// arm0.add(arm1);
-// operateMatrix.identity();
-// operateMatrix.makeTranslation(0,0.4,0);
-// arm1.applyMatrix(operateMatrix);
+let scene2D, camera2D;
+function init2D() {
+    camera2D = new THREE.OrthographicCamera(0, window.innerWidth, 0, window.innerHeight, 1, 1000);
+    camera2D.position.z = 2;
+    scene2D = new THREE.Scene();
+    drawCube();
+    drawLine();
+    drawBasicTriangle();
+}
+function drawLine() {
+
+    let material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    let geometry = new THREE.Geometry();
+    geometry.vertices.push(
+        new THREE.Vector3(10, 20, 0),
+        new THREE.Vector3(10, 40, 0),
+        new THREE.Vector3(100, 40, 0),
+    );
+    let line = new THREE.Line(geometry, material);
+    scene2D.add(line);
+
+}
+function drawCube() {
+    let geometry = new THREE.BoxGeometry(20, 20, 20);
+    let material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+    let cube = new THREE.Mesh(geometry, material);
+    scene2D.add(cube);
+    cube.matrixAutoUpdate = false;
+    let oMat = new THREE.Matrix4();
+    oMat.makeTranslation(10, 20, 0);
+    cube.applyMatrix(oMat);
+}
+
+function drawBasicTriangle() {
+    var triangleGeometry = new THREE.Geometry();
+    triangleGeometry.vertices.push(
+        new THREE.Vector3(0.0, -1.0, 0.0),
+        new THREE.Vector3(-1.0, 1.0, 0.0),
+        new THREE.Vector3(1.0, 1.0, 0.0)
+    );
+    triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
+    var triangleMaterial = new THREE.MeshBasicMaterial({
+        color: 0xFFFFFF,
+        // side: THREE.DoubleSide
+    });
+    var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial);
+    scene2D.add(triangleMesh);
+    triangleMesh.position.set(30, 10, 0);
+    triangleMesh.scale.set(10, 10, 1);
+}
+
+init2D();
 
 
 // let origin = new THREE.AxesHelper(1.25);
@@ -220,7 +317,10 @@ new Obj3D("finger2", obj, "joint2").scale(0.1, 0.2, 0.1).translate(0.3, 0.5, 0);
 renderScene();
 
 function renderScene() {
+    renderer.clear();
     renderer.render(scene, camera);
+    renderer.clearDepth();
+    renderer.render(scene2D, camera2D);
 }
 function loop() {
     requestAnimationFrame(loop);

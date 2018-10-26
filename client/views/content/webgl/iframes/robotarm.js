@@ -1,11 +1,12 @@
 let backgroundColor = 0x000000;
+let hideWireframe = true;
 let renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.autoClear = false;
 document.body.appendChild(renderer.domElement);
 let scene = new THREE.Scene();
-scene.background = new THREE.Color(backgroundColor);
+// scene.background = new THREE.Color(backgroundColor);
 
 document.body.onunload = function () {
     // cancelAnimationFrame(window.animationID);
@@ -31,8 +32,9 @@ function onWindowResize() {
     camera2D.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    renderScene();
+    // renderScene();
 }
+
 let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(3.8, 3.8, 3.8);
 camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -80,7 +82,7 @@ function keyDown(event) {
     } else if (keyCode == 67) {//c
         joint2.rotate(Axis.y, -10);
     }
-    renderScene();
+    // renderScene();
 };
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
@@ -119,7 +121,7 @@ function selectObj(obj) {
 
     }
 
-    renderScene();
+    // renderScene();
 }
 
 let color = '#111111',
@@ -143,7 +145,7 @@ let material = new THREE.MeshLambertMaterial({
 });
 let cube = new THREE.Mesh(geometry, material);
 cube.name = "boxMesh";
-cube.visible = true;
+cube.visible = hideWireframe;
 cube.geometry.translate(0, 0.5, 0);
 scene.add(cube);
 
@@ -188,8 +190,6 @@ obj.add(objOriginMesh);
 obj.cube = cube;
 obj.wire = cube1Wire;
 obj.origin = objOriginMesh;
-// scene.add(obj);
-// cube1Wire.position.set(0,1,0);
 
 function Obj3D(name, srcObj, parentName) {
     this.axis = new THREE.Vector3(0, 0, 0);
@@ -228,7 +228,6 @@ Obj3D.prototype.translate = function (x, y, z) {
     Obj3D.oMat.identity();
     Obj3D.oMat.makeTranslation(x, y, z);
     this.root.applyMatrix(Obj3D.oMat);
-    this.axis = this.axis.applyMatrix4(Obj3D.oMat);
     return this;
 }
 Obj3D.quaternion = new THREE.Quaternion();
@@ -314,7 +313,7 @@ init2D();
 // let origin = new THREE.AxesHelper(1.25);
 // origin.name = "sceneOrigin";
 // scene.add(origin);
-renderScene();
+// renderScene();
 
 function renderScene() {
     renderer.clear();
@@ -322,9 +321,34 @@ function renderScene() {
     renderer.clearDepth();
     renderer.render(scene2D, camera2D);
 }
+window.addEventListener('focus',getfocus);
+function getfocus(){
+  initLastTime();
+}
+let lastTime;
+function initLastTime(){
+     lastTime = Date.now();
+}
+initLastTime();
+
+let framerate = 12;
+let frametime = 1000 / framerate;
 function loop() {
-    requestAnimationFrame(loop);
-    controls.update();
+    let time = Date.now();
+    let elapes = time - lastTime;
+    while (elapes >= frametime) {
+     
+        update(frametime);
+        renderScene();
+        elapes -= frametime;
+         lastTime +=frametime;
+    }
+      controls.update();
+   requestAnimationFrame(loop);
+
 };
 
 loop();
+function update(delta){
+    
+}

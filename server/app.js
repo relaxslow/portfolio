@@ -428,9 +428,12 @@ let systemRoutine = {
 };
 let subRoutine = {
     "": function (req, res) {
-        readHtmlFile("./client/index.html", res);
+        // readHtmlFile("./client/index.html", res);
         // readHtmlFile("./client/views/content/webgl/iframes/begin.html", res);
         // readHtmlFile("./client/views/content/webgl/iframes/draw2D/main.html", res);
+        readHtmlFile("./client/views/content/webgl/iframes/robotarm.html", res);
+        // readHtmlFile("./client/views/content/webgl/iframes/transparent/main.html", res);
+        // readHtmlFile("./client/views/content/webgl/iframes/transparentBackground/transparent.html", res);
         // readHtmlFile("./client/views/content/webgl/loadModel/iframe.html", res);
         // readHtmlFile("./client/views/content/webgl/drawLine/updateBuffer.html", res);
 

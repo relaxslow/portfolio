@@ -16,6 +16,7 @@ xs.init = function (module) {
                 {
                     text: "svg",
                     submenu: [
+                        { path: "/content/svg/createSVG", text: "create SVG" },
                         { path: "/content/svg/animation", text: "animate Gradient" },
                         { path: "/content/svg/simplePieChart", text: "simple Pie Chart" },
                         { path: "/content/svg/realPieChart", text: "real Pie Chart" },
@@ -28,9 +29,10 @@ xs.init = function (module) {
                     text: "webgl",
                     submenu: [
                         { path: "/content/webgl/threeJsTest", text: "threeJs-start" },
+                        { path: "/content/webgl/draw2d", text: "draw2D",initActive: true  },
                         { path: "/content/webgl/loadModel", text: "threeJs-loadGLTF", },
-                        { path: "/content/webgl/robotArm", text: "robotArm", initActive: true },
-                        { path: "/content/webgl/pickObj", text: "pickObj", },
+                        { path: "/content/webgl/robotArm", text: "robotArm", },
+                       
 
                     ]
                 },

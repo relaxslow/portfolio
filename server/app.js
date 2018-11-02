@@ -428,14 +428,14 @@ let systemRoutine = {
 };
 let subRoutine = {
     "": function (req, res) {
-        // readHtmlFile("./client/index.html", res);
-        // readHtmlFile("./client/views/content/webgl/iframes/begin.html", res);
-        // readHtmlFile("./client/views/content/webgl/iframes/draw2D/main.html", res);
-        readHtmlFile("./client/views/content/webgl/iframes/robotarm.html", res);
-        // readHtmlFile("./client/views/content/webgl/iframes/transparent/main.html", res);
-        // readHtmlFile("./client/views/content/webgl/iframes/transparentBackground/transparent.html", res);
-        // readHtmlFile("./client/views/content/webgl/loadModel/iframe.html", res);
-        // readHtmlFile("./client/views/content/webgl/drawLine/updateBuffer.html", res);
+        readHtmlFile("./client/index.html", res);
+        // readHtmlFile("./iframes/begin/main.html", res);
+        // readHtmlFile("./iframes/draw2D/main.html", res);
+        // readHtmlFile("./iframes/robotarm/main.html", res);
+        // readHtmlFile("./iframes/transparent/main.html", res);
+        // readHtmlFile("./iframes/transparentBackground/transparent.html", res);
+        // readHtmlFile("./iframes/loadGLTF/main.html", res);
+        // readHtmlFile("./iframes/line/animateLine.html", res);
 
     },
     "getMainMenu": function (req, res) {

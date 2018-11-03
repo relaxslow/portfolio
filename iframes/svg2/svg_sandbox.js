@@ -1,9 +1,9 @@
 var selectedObject = null;
 let mouseEvent;
 function onDocumentMouseMove(event) {
-	mouseEvent=event;
-    event.preventDefault();
-    testIntersect();
+	mouseEvent = event;
+	event.preventDefault();
+	testIntersect();
 }
 
 var raycaster = new THREE.Raycaster();
@@ -11,18 +11,18 @@ var mouseVector = new THREE.Vector3();
 
 function getIntersects(x, y) {
 
-    x = (x / window.innerWidth) * 2 - 1;
-    y = - (y / window.innerHeight) * 2 + 1;
+	x = (x / window.innerWidth) * 2 - 1;
+	y = - (y / window.innerHeight) * 2 + 1;
 
-    mouseVector.set(x, y, 0.5);
-    raycaster.setFromCamera(mouseVector, camera);
+	mouseVector.set(x, y, 0.5);
+	raycaster.setFromCamera(mouseVector, camera);
 
-    return raycaster.intersectObject(group, true);
+	return raycaster.intersectObject(group, true);
 
 }
 
-function onDocumentMouseDown(){
-	if(selectedObject){
+function onDocumentMouseDown() {
+	if (selectedObject) {
 		console.log(selectedObject.name);
 	}
 }
@@ -41,8 +41,8 @@ function init() {
 	camera.position.z = 1200;
 	scene = new THREE.Scene();
 	controls = initControl3D();
-	document.body.addEventListener('mousemove',onDocumentMouseMove,false);
-	document.body.addEventListener('mousedown',onDocumentMouseDown,false);
+	document.body.addEventListener('mousemove', onDocumentMouseMove, false);
+	document.body.addEventListener('mousedown', onDocumentMouseDown, false);
 
 
 	// CUSTOM
@@ -77,22 +77,34 @@ function init() {
 		point.setFromSpherical(spherical);
 		return point;
 	}
+	function randomOnSphereEven(radius) {
+		//pick numbers between 0 and 1
+		var u = Math.random();
+		var v = Math.random();
+		// create random spherical coordinate
+		var theta =Math.acos(2 * u - 1);
+		var phi = Math.acos(2 * v - 1);
+			spherical.set(radius, phi, theta);
+		
+		 point.setFromSpherical(spherical);
+		 return point;
+	}
 	for (var i = 0; i < imgs.length; i++) {
 		var texture = new THREE.TextureLoader().load(`/iframes/draw2D/headshot/${imgs[i]}.jpg`);
-		 var material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff,});//sizeAttenuation: false
+		var material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, });//sizeAttenuation: false
 		// var geometry = new THREE.PlaneGeometry(1,1);
-		let plane=new THREE.Sprite(material);
-		plane.scale.set(200, 250, 1);
+		let plane = new THREE.Sprite(material);
+		plane.scale.set(20, 20, 1);
 		// plane.scale.set(0.3,0.5,1)
-		plane.name=imgs[i];
-		
-		let randomPoint = randomOnSphere(500, 360, 360);
+		plane.name = imgs[i];
+
+		let randomPoint = randomOnSphereEven(500);
 		plane.position.copy(randomPoint);
 		group.add(plane);
 		// plane.position.x = Math.random() * 1000 - 500;
 		// plane.position.y = Math.random() * 1000 - 500;
 		// plane.position.z = Math.random() * 1000 - 500;
-	
+
 
 	}
 
@@ -116,9 +128,9 @@ function init() {
 	window.addEventListener('resize', onWindowResize, false);
 
 }
-function faceCamera(group){
-	for(let i=0;i<group.length;i++){
-		const plane=group[i];
+function faceCamera(group) {
+	for (let i = 0; i < group.length; i++) {
+		const plane = group[i];
 		plane.quaternion.copy(camera.quaternion)
 	}
 }
@@ -136,7 +148,7 @@ function initMouseDown() {
 		if (intersects.length > 0) {
 			let select = intersects[0].object;
 			console.log("pick!!" + select.name);
-// 			selectObj(select);
+			// 			selectObj(select);
 		}
 
 	}, false);
@@ -158,37 +170,37 @@ function animate() {
 }
 
 function render() {
-	group.rotation.x += 0.01;
-	group.rotation.y += 0.01;
-	testIntersect();
+	// group.rotation.x += 0.01;
+	// group.rotation.y += 0.01;
+	// testIntersect();
 	renderer.render(scene, camera);
 }
-function testIntersect(){
+function testIntersect() {
 	if (selectedObject) {
 
-        selectedObject.material.color.set('#ffffff');
-        selectedObject = null;
+		selectedObject.material.color.set('#ffffff');
+		selectedObject = null;
 
-    }
+	}
+	if(!mouseEvent)return;
+	var intersects = getIntersects(mouseEvent.layerX, mouseEvent.layerY);
+	if (intersects.length > 0) {
 
-    var intersects = getIntersects(mouseEvent.layerX, mouseEvent.layerY);
-    if (intersects.length > 0) {
+		var res = intersects.filter(function (res) {
 
-        var res = intersects.filter(function (res) {
+			return res && res.object;
 
-            return res && res.object;
+		})[0];
 
-        })[0];
+		if (res && res.object) {
 
-        if (res && res.object) {
-
-            selectedObject = res.object;
+			selectedObject = res.object;
 			selectedObject.material.color.set('#f00');
-			
 
-        }
 
-    }
+		}
+
+	}
 
 }
 

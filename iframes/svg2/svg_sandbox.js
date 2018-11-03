@@ -66,7 +66,10 @@ function init() {
 		"PeterDinklage",
 		"SophieTurner",
 		"Stephen Dillane",
-		"Zoe Saldana"
+		"Zoe Saldana",
+		"bob",
+		"Helen-Super",
+		"Jack-Jack"
 	];
 	let spherical = new THREE.Spherical();
 	let point = new THREE.Vector3();
@@ -77,29 +80,35 @@ function init() {
 		point.setFromSpherical(spherical);
 		return point;
 	}
-	function randomOnSphereEven(radius) {
-		//pick numbers between 0 and 1
-		var u = Math.random();
-		var v = Math.random();
+	function randomOnSphereEven(radius, PhiNum, thetaNum) {
+		let points = [];
+		phiSpan = Math.PI / (PhiNum+1);
+		thetaSpan = Math.PI * 2 / thetaNum;
 		// create random spherical coordinate
-		var theta =Math.acos(2 * u - 1);
-		var phi = Math.acos(2 * v - 1);
-			spherical.set(radius, phi, theta);
-		
-		 point.setFromSpherical(spherical);
-		 return point;
+		for (let i = 1; i < PhiNum+1; i++) {
+			phi = phiSpan * i;
+			for (let j = 0; j < thetaNum; j++) {
+				theta = thetaSpan * j
+				spherical.set(radius, phi, theta);
+				let point=new THREE.Vector3();
+				point.setFromSpherical(spherical)
+				points.push(point);
+			}
+		}
+		return points;
 	}
+	let points= randomOnSphereEven(500,4,5);
 	for (var i = 0; i < imgs.length; i++) {
 		var texture = new THREE.TextureLoader().load(`/iframes/draw2D/headshot/${imgs[i]}.jpg`);
 		var material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, });//sizeAttenuation: false
 		// var geometry = new THREE.PlaneGeometry(1,1);
 		let plane = new THREE.Sprite(material);
-		plane.scale.set(20, 20, 1);
+		plane.scale.set(200, 250, 1);
 		// plane.scale.set(0.3,0.5,1)
 		plane.name = imgs[i];
 
-		let randomPoint = randomOnSphereEven(500);
-		plane.position.copy(randomPoint);
+
+		plane.position.copy(points[i]);
 		group.add(plane);
 		// plane.position.x = Math.random() * 1000 - 500;
 		// plane.position.y = Math.random() * 1000 - 500;
@@ -170,9 +179,9 @@ function animate() {
 }
 
 function render() {
-	// group.rotation.x += 0.01;
-	// group.rotation.y += 0.01;
-	// testIntersect();
+	group.rotation.x += 0.01;
+	group.rotation.y += 0.01;
+	testIntersect();
 	renderer.render(scene, camera);
 }
 function testIntersect() {
@@ -182,7 +191,7 @@ function testIntersect() {
 		selectedObject = null;
 
 	}
-	if(!mouseEvent)return;
+	if (!mouseEvent) return;
 	var intersects = getIntersects(mouseEvent.layerX, mouseEvent.layerY);
 	if (intersects.length > 0) {
 

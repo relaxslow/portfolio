@@ -2,7 +2,6 @@ xs.init = function (module, data) {
     let { menu, content } = data;
     buildMenu(menu);
 
-
     module.collect(".subMenu")
         .click(function switchContent(e) {
             module.activeSubMenu.classList.remove("subMenuActive");
@@ -13,9 +12,9 @@ xs.init = function (module, data) {
                 .load(e.contentPath);
         });
 
-
     let popMenus = module.collect(".subMenuBox")
         .createPopupMenu();
+        
     module.collect(".sideMenu")
         .addData(["menu", popMenus])
         .click(function popOrPull(e) {

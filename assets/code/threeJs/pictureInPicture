@@ -1,0 +1,14 @@
+https://stackoverflow.com/questions/29267919/draw-2-scenes-in-the-same-canvas-three-js
+If you have two scenes, and you want to create a picture-in-picture effect, you can use the following pattern. First set autoClear:
+
+renderer.autoClear = false; // important!
+Then in your render loop, use a pattern like this one:
+
+renderer.clear();
+renderer.setViewport( 0, 0, window.innerWidth, window.innerHeight );
+renderer.render( scene, camera );
+
+renderer.clearDepth(); // important! clear the depth buffer
+renderer.setViewport( 10, window.innerHeight - insetHeight - 10, insetWidth, insetHeight );
+renderer.render( scene2, camera );
+three.js r.71

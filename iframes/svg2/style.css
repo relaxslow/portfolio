@@ -1,0 +1,12 @@
+body {
+    background-color: #ffffff;
+    margin: 0px;
+    overflow: hidden;
+    position: relative;
+}
+
+#chart {
+    position: absolute;
+    top: 192px;
+    left: 641px;
+}

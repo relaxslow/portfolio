@@ -1,3 +1,9 @@
+//features
+//2 layer of scene
+//controls 2d
+function PhotoSphere(){
+
+}
 function Controls2D(camera2d) {
     Controls2D.instance = this;
     document.addEventListener('mousemove', this.mouseMoveListener, false);

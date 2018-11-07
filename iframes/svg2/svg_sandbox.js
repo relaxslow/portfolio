@@ -34,7 +34,7 @@ function onDocumentMouseDown() {
 	group.tweenY.stop();
 	if (selectedObject) {
 		console.log(selectedObject.name);
-		generatePictureInUICamera()
+		// generatePictureInUICamera()
 	}
 }
 function onDocumentMouseUp() {

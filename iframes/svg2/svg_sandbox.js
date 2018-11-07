@@ -18,7 +18,7 @@ var raycaster = new THREE.Raycaster();
 var mouseVector = new THREE.Vector3();
 
 function getIntersects(x, y) {
-
+	//todo
 	x = (x / Width) * 2 - 1;
 	y = - (y / Height) * 2 + 1;
 
@@ -414,13 +414,10 @@ function testIntersect() {
 
 	}
 	if (!mouseEvent) return;
-	var intersects = getIntersects(mouseEvent.layerX, mouseEvent.layerY);
+	var intersects = getIntersects(mouseEvent.clientX, mouseEvent.clientY);
 	if (intersects.length > 0) {
-
 		var res = intersects.filter(function (res) {
-
 			return res && res.object;
-
 		})[0];
 
 		if (res && res.object) {

@@ -1,19 +1,450 @@
+let imgs = [
+	"AlfieAllen",
+	"ChrisPratt",
+	"EmiliaClarke",
+	"Eugene Simon",
+	"IsaacHempsteadWright",
+	"Iwan Rheon",
+	"Jack Gleeson",
+	"KitHairington",
+	"LenaHeadey",
+	"LiamCunningham",
+	"MaisieWilliams",
+	"NatalieDormer",
+	"NikolajCoster-Waldau",
+	"PeterDinklage",
+	"SophieTurner",
+	"Stephen Dillane",
+	"Zoe Saldana",
+	"bob",
+	"Helen-Super",
+	"Jack-Jack"
+];
+let personsInfo = [
+	{
+		education: "Master",
+		workingExp: 5,
+		salary: 3000
+	},
+	{
+		education: "Bachelor",
+		workingExp: 2,
+		salary: 2000
+	},
+	{
+		education: "PhD",
+		workingExp: 1,
+		salary: 1234
+	},
+	{
+		education: "Master",
+		workingExp: 4,
+		salary: 5604
+	},
+	{
+		education: "Master",
+		workingExp: 0.4,
+		salary: 2357
+	},
+	{
+		education: "PhD",
+		workingExp: 8,
+		salary: 6943
+	},
+	{
+		education: "Bachelor",
+		workingExp: 2.4,
+		salary: 4320
+	},
+	{
+		education: "Master",
+		workingExp: 7,
+		salary: 2934
+	},
+	{
+		education: "Master",
+		workingExp: 15,
+		salary: 6704
+	},
+	{
+		education: "Master",
+		workingExp: 1.5,
+		salary: 5930
+	},
+	{
+		education: "PhD",
+		workingExp: 0.8,
+		salary: 8604
+	},
+	{
+		education: "PhD",
+		workingExp: 4,
+		salary: 5964
+	},
+	{
+		education: "Bachelor",
+		workingExp: 7,
+		salary: 3495
+	},
+	{
+		education: "Master",
+		workingExp: 2.3,
+		salary: 9543
+	},
+	{
+		education: "Master",
+		workingExp: 6,
+		salary: 4839
+	},
+	{
+		education: "Master",
+		workingExp: 3.6,
+		salary: 3945
+	},
+	{
+		education: "PhD",
+		workingExp: 5.4,
+		salary: 1543
+	},
+	{
+		education: "Bachelor",
+		workingExp: 5,
+		salary: 5694
+	},
+	{
+		education: "Master",
+		workingExp: 8,
+		salary: 1293
+	},
+	{
+		education: "PhD",
+		workingExp: 10,
+		salary: 4303
+	},
+]
+function topSalary() {
+	let result = [];
+	result.push([0, personsInfo[0].salary]);
+	for (let i = 1; i < personsInfo.length; i++) {
+		let s = personsInfo[i].salary;
+		let done = false;
+		for (let j = 0; j < result.length; j++) {
+			if (s <= result[j][1]) {
+				continue;
+			}
+			else if (s > result[j][1]) {
+				result.splice(j, 0, [i, s]);
+				done = true;
+				break;
+			}
+		}
+		if (!done)
+			result.push([i, s]);
+	}
+	return result;
+}
+let section_workingExp = [
+	[0, 1, 0, 100],
+	[1, 3, 100, 200],
+	[3, 5, 200, 300],
+	[5, 10, 300, 400],
+	[10, 15, 400, 500]
+];
+function getWorkingExpSection(year) {
+	for (let i = 0; i < section_workingExp.length; i++) {
+		let [low, high, min, max] = section_workingExp[i];
+		if (year >= low && year <= high) {
+			return [min, max];
+		}
+	}
+}
+let section_education = [
+	["Bachelor", 0, 100],
+	["Master", 100, 200],
+	["PhD", 200, 300]
+];
+
+let showStatus = "showBall";
+//button
+let bubbleBut = document.getElementsByClassName("bubble")[0];
+let barBut = document.getElementsByClassName("bar")[0];
+let ballBut = document.getElementsByClassName("ball")[0];
+bubbleBut.addEventListener("click", clickBubbleButton);
+barBut.addEventListener("click", clickBarButton);
+ballBut.addEventListener("click", clickBallButton);
+let content = document.getElementsByClassName("content")[0];
+function clickBubbleButton() {
+	// console.log("analyze!");
+	clearBallVars();
+	if (showStatus != "showBubble") {
+		if (showStatus === "showBar") {
+			flyAllFromBarToBubble();
+		}
+		else if (showStatus === "showBall") {
+			flyAllFromBallToBubble();
+		}
+		loadHtml(content, "/iframes/svg2/bubbleAxis");
+		showStatus = "showBubble";
+
+	}
+}
+let sortSalary = topSalary();
+let barWid = 500;
+function clickBarButton() {
+	if (showStatus != "showBar") {
+		if (showStatus === "showBall") {
+			flyAllFromBallToBar();
+		} else if (showStatus === "showBubble") {
+			flyAllFromBubbleToBar();
+		}
+		loadHtml(content, "/iframes/svg2/top10Salary", function () {
+			let firstBar = content.getElementsByClassName("horizontalBar")[0];
+			firstBar.index = sortSalary[0][0];
+			y = 77;
+			x = 33;
+			firstBar.style.top = y + "px";
+			firstBar.style.left = x + "px";
+			animateElementCss(firstBar, "width", 0, barWid, 1.5, "ease-in-out", barTransitionEnd);
+			// firstBar.style.width = "0px";
+			// firstBar.offsetWidth;
+			// firstBar.style.transition = 'width 1.5s ease-in-out ';
+			// firstBar.style.width = `${barWid}px`;
+			// firstBar.addEventListener("transitionend", barTransitionEnd, false);
+
+			for (let i = 1; i < 10; i++) {
+				let newBar = firstBar.cloneNode(true);
+				newBar.index = sortSalary[i][0];
+				content.appendChild(newBar);
+				y += bubbleHei;
+				newBar.style.top = y + "px";
+				let wid = sortSalary[i][1] / sortSalary[0][1] * barWid;
+
+				animateElementCss(newBar, "width", 0, wid, 1.5, "ease-in-out", barTransitionEnd);
+				// newBar.style.width = "0px";
+				// newBar.offsetWidth;
+				// newBar.style.transition = 'width 1.5s ease-in-out ';
+				// newBar.style.width = `${wid}px`;
+				// newBar.addEventListener("transitionend", barTransitionEnd, false);
+			}
+		});
+		showStatus = "showBar";
+	}
+}
+
+function barTransitionEnd(event) {
+	let bar = event.currentTarget;
+	let text = bar.getElementsByClassName("SalaryText")[0];
+	text.innerHTML = `$ ${personsInfo[bar.index].salary}`;
+
+}
+function animateElementCss(element, whichStyle, from, to, duration, ease, endFun) {
+	element.style[whichStyle] = `${from}px`;
+	element.offsetWidth;//or // getComputedStyle(element).opacity;
+	element.style.transition = `${whichStyle} ${duration}s ${ease} `;
+	element.style[whichStyle] = `${to}px`;
+	element.addEventListener("transitionend", endFun, false);
+}
+let name, experience, education, salary;
+function clearBallVars() {
+	name = null;
+	experience = null;
+	education = null;
+	salary = null;
+}
+function clickBallButton() {
+	if (showStatus != "showBall") {
+		flyAllToBall();
+		loadHtml(content, "/iframes/svg2/detailInfo", function () {
+			name = content.getElementsByClassName("name")[0];
+			experience = content.getElementsByClassName("experience")[0];
+			education = content.getElementsByClassName("education")[0];
+			salary = content.getElementsByClassName("salary")[0];
+		});
+		showStatus = "showBall";
+	}
+}
+
+
+
+function getEducationSection(degree) {
+	for (let i = 0; i < section_education.length; i++) {
+		let [degreeName, min, max] = section_education[i];
+		if (degree === degreeName) {
+			return [min, max];
+		}
+	}
+}
+
+function flyAllFromBubbleToBar() {
+	toBar();
+
+}
+function toBar() {
+	let visibleGroup = [];
+	let x = axisOrigin.x + bubbleWid / 2 + 10;
+	let y = axisOrigin.y - 300;
+	for (let i = 0; i < 10; i++) {
+		let index = sortSalary[i][0];
+		let uiphoto = UIPhotoGroup[index];
+		moveToChart(uiphoto, x, y);
+		y += bubbleHei;
+		visibleGroup.push(index);
+	}
+
+	for (let i = 0; i < UIPhotoGroup.length; i++) {
+		UIPhotoGroup[i].visible = false;
+		for (let j = 0; j < visibleGroup.length; j++) {
+			if (i == visibleGroup[j]) {
+				UIPhotoGroup[i].visible = true;
+				break;
+			}
+		}
+
+	}
+
+}
+function flyAllFromBallToBar() {
+	for (let i = 0; i < personsInfo.length; i++) {
+		let photo = photoGroup.children[i];
+		let uiphoto = generatePictureInUICamera(photo);
+		uiphoto.index = photo.index;
+	}
+	toBar();
+	photoGroup.visible = false;
+	photoGroup.tweenX.stop();
+	photoGroup.tweenY.stop();
+}
+function flyAllFromBarToBubble() {
+	toBubble();
+}
+function toBubble() {
+	for (let i = 0; i < UIPhotoGroup.length; i++) {
+		let uiphoto = UIPhotoGroup[i]
+		uiphoto.visible = true;
+		let year = personsInfo[uiphoto.index].workingExp;
+		let degree = personsInfo[uiphoto.index].education;
+		let [workingExpMin, workingExpMax] = getWorkingExpSection(year);
+		let [educationMin, educationMax] = getEducationSection(degree)
+		let randX = bubbleWid / 2 + workingExpMin + Math.random() * (workingExpMax - workingExpMin - bubbleWid);
+		let randY = bubbleHei / 2 + educationMin + Math.random() * (educationMax - educationMin - bubbleHei);
+		let finalx = axisOrigin.x + randX;
+		let finaly = axisOrigin.y - randY;
+
+		moveToChart(uiphoto, finalx, finaly);
+	}
+}
+function flyAllFromBallToBubble() {
+	for (let i = 0; i < photoGroup.children.length; i++) {
+		let photo = photoGroup.children[i];
+		let uiphoto = generatePictureInUICamera(photo);
+		uiphoto.index = photo.index;
+	}
+	toBubble();
+	photoGroup.visible = false;
+	photoGroup.tweenX.stop();
+	photoGroup.tweenY.stop();
+	//active button
+
+}
+
+function flyAllToBall() {
+	for (let i = 0; i < UIPhotoGroup.length; i++) {
+		let uiphoto = UIPhotoGroup[i];
+
+		let param = {
+			x: uiphoto.position.x,
+			y: uiphoto.position.y,
+			sx: uiphoto.scale.x,
+			sy: uiphoto.scale.y
+
+		}
+		let tween = new TWEEN.Tween(param)
+			.to({
+				x: uiphoto.originPosX,
+				y: uiphoto.originPosY,
+				sx: uiphoto.originScaleX,
+				sy: uiphoto.originScaleY
+			}, 500)
+			.onUpdate(function (p) {
+				uiphoto.position.x = p.x;
+				uiphoto.position.y = p.y;
+				uiphoto.scale.x = p.sx;
+				uiphoto.scale.y = p.sy;
+				render();
+			})
+			.onComplete(function (obj) {
+				for (let i = 0; i < UIPhotoGroup.length; i++) {
+					sceneUI.remove(UIPhotoGroup[i]);
+				}
+				UIPhotoGroup.length = 0;
+				photoGroup.visible = true;
+				photoGroup.tweenX.start();
+				photoGroup.tweenY.start();
+			})
+			.start();
+	}
+}
+//param
 let Width = 600, Height = 600;
-let photoWid = 200, photohei = 250;
+let photoWid = 200, photohei = 250;//inBall
 let photoRatio = 250 / 200
 let axisWid = 500, axisHei = 300;
 let axisOrigin = new THREE.Vector3(700, 500);
+let detailOrigin = new THREE.Vector3(300, 500);
 
 //mouse
 var selectedObject = null;
 let mouseDown = false;
 let mouseEvent;
 function onDocumentMouseMove(event) {
-	mouseEvent = event;
+	//if mouse out of border, mouseEvent=null
+	let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
+	if (!inBallArea)
+		mouseEvent = null;
+	else
+		mouseEvent = event;
 	event.preventDefault();
 	testIntersect();
+
+
+}
+function displaySelectPhotoInfo() {
+	if (!selectedObject) return;
+	if (name) {
+		name.innerHTML = selectedObject.name;
+		experience.innerHTML = personsInfo[selectedObject.index].workingExp;
+		education.innerHTML = personsInfo[selectedObject.index].education;
+		salary.innerHTML = personsInfo[selectedObject.index].salary;
+
+	}
+
+}
+function testIntersect() {
+	if (showStatus !== "showBall") return;
+	if (!mouseEvent) return;
+	if (selectedObject) {
+		selectedObject.material.color.set('#ffffff');
+		selectedObject = null;
+	}
+	var intersects = getIntersects(mouseEvent.clientX, mouseEvent.clientY);
+	if (intersects.length > 0) {
+		var res = intersects.filter(function (res) {
+			return res && res.object;
+		})[0];
+		if (res && res.object) {
+			selectedObject = res.object;
+			selectedObject.material.color.set('#f00');
+		}
+	}
+	displaySelectPhotoInfo();
 }
 
+function testMouseInArea(event, beginX, beginY, endX, endY) {
+	let x = event.clientX, y = event.clientY;
+	if (x < beginX || x > endX || y < beginY || y > endY)
+		return false;
+	return true;
+}
 var raycaster = new THREE.Raycaster();
 var mouseVector = new THREE.Vector3();
 
@@ -25,42 +456,71 @@ function getIntersects(x, y) {
 	mouseVector.set(x, y, 0.5);
 	raycaster.setFromCamera(mouseVector, camera);
 
-	return raycaster.intersectObject(group, true);
+	return raycaster.intersectObject(photoGroup, true);
 
 }
 
 function onDocumentMouseDown() {
-	group.tweenX.stop();
-	group.tweenY.stop();
-	if (selectedObject) {
-		console.log(selectedObject.name);
-		// generatePictureInUICamera()
+	if (showStatus === "showBall") {
+		let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
+		if (!inBallArea) {
+			controls.enabled = false;
+			return;
+		} else {
+			controls.enabled = true;
+			event.preventDefault();
+			photoGroup.tweenX.stop();
+			photoGroup.tweenY.stop();
+
+			if (selectedObject) {
+
+			}
+		}
 	}
+
+
+	// if (selectedObject) {
+	// 	console.log(selectedObject.name);
+	// 	let uiphoto = generatePictureInUICamera(selectedObject);
+	// 	let randX = Math.random() * axisWid;
+	// 	let randY = Math.random() * axisHei;
+	// 	moveToChart(uiphoto, randX, randY);
+	// }
 }
 function onDocumentMouseUp() {
-	group.tweenX.start();
-	group.tweenY.start();
-}
+	if (showStatus === "showBall") {
+		let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
+		if (!inBallArea) {
+			return;
+		}
+		else {
+			photoGroup.tweenX.start();
+			photoGroup.tweenY.start();
+		}
+	}
 
-let CposX = 700, CposY = 500//chart transform
-function generatePictureInUICamera() {
-	let [proj, scalex] = toScreenPosition(selectedObject, camera);
+
+}
+let UIPhotoGroup = [];
+function generatePictureInUICamera(obj) {
+	let [proj, scalex] = toScreenPosition(obj, camera);
 	scaley = scalex * photoRatio;
-	let uiphoto = createPhotoMesh(selectedObject.name);
+	let uiphoto = createPhotoMesh(obj.name);
+	uiphoto.name = obj.name;
 	uiphoto.position.set(proj.x, proj.y, 0);
 	uiphoto.scale.set(scalex, -scaley, 1);
+	uiphoto.originScaleX = scalex;
+	uiphoto.originScaleY = -scaley;
+	uiphoto.originPosX = proj.x;
+	uiphoto.originPosY = proj.y;
 	sceneUI.add(uiphoto);
-
-	let randX = Math.random() * axisWid;
-	let randY = Math.random() * axisHei;
-	moveToChart(uiphoto, randX, randY);
+	UIPhotoGroup.push(uiphoto);
+	return uiphoto;
 
 
 }
-function moveToChart(obj, x, y) {
-
-	let finalToX = axisOrigin.x + x;
-	let finalToY = axisOrigin.y - y;
+let bubbleWid = 20, bubbleHei = 30;
+function moveToChart(obj, finalx, finaly) {
 	let param = {
 		x: obj.position.x,
 		y: obj.position.y,
@@ -69,7 +529,7 @@ function moveToChart(obj, x, y) {
 
 	}
 	let tween = new TWEEN.Tween(param)
-		.to({ x: finalToX, y: finalToY, sx: 40, sy: -60 }, 500)
+		.to({ x: finalx, y: finaly, sx: bubbleWid, sy: -bubbleHei }, 500)
 		.onUpdate(function (p) {
 			obj.position.x = p.x;
 			obj.position.y = p.y;
@@ -106,12 +566,12 @@ function toScreenPosition(obj, camera) {
 
 }
 
-//BEGIN
+//scene
 
 var camera, scene, renderer, stats, controls;
 let cameraUI, sceneUI;
 let textures = {};
-var group;
+var photoGroup;
 
 init();
 
@@ -132,31 +592,10 @@ function init() {
 	document.body.addEventListener('mouseup', onDocumentMouseUp, false);
 
 	//photos
-	group = new THREE.Group();
-	scene.add(group);
+	photoGroup = new THREE.Group();
+	scene.add(photoGroup);
 
-	let imgs = [
-		"AlfieAllen",
-		"ChrisPratt",
-		"EmiliaClarke",
-		"Eugene Simon",
-		"IsaacHempsteadWright",
-		"Iwan Rheon",
-		"Jack Gleeson",
-		"KitHairington",
-		"LenaHeadey",
-		"LiamCunningham",
-		"MaisieWilliams",
-		"NatalieDormer",
-		"NikolajCoster-Waldau",
-		"PeterDinklage",
-		"SophieTurner",
-		"Stephen Dillane",
-		"Zoe Saldana",
-		"bob",
-		"Helen-Super",
-		"Jack-Jack"
-	];
+
 	function loadAllTextures(name) {
 		for (let i = 0; i < imgs.length; i++) {
 			let texture = new THREE.TextureLoader().load(`/iframes/draw2D/headshot/${imgs[i]}.jpg`);
@@ -192,24 +631,25 @@ function init() {
 		let plane = createPhotoSprite(imgs[i]);
 		plane.name = imgs[i];
 		plane.position.copy(points[i]);
-		group.add(plane);
+		plane.index = photoGroup.children.length;
+		photoGroup.add(plane);
 		// plane.position.x = Math.random() * 1000 - 500;
 		// plane.position.y = Math.random() * 1000 - 500;
 		// plane.position.z = Math.random() * 1000 - 500;
 
 
 	}
-	// group.rotation.x += 0.005;
-	// group.rotation.y -= 0.01;
+	// photoGroup.rotation.x += 0.005;
+	// photoGroup.rotation.y -= 0.01;
 
-	group.tweenX = new TWEEN.Tween(group.rotation)
+	photoGroup.tweenX = new TWEEN.Tween(photoGroup.rotation)
 		.to({ x: 360 }, 500000)
 		.repeat(Infinity)
 		.onUpdate(function () {
 			render();
 		})
 		.start();
-	group.tweenY = new TWEEN.Tween(group.rotation)
+	photoGroup.tweenY = new TWEEN.Tween(photoGroup.rotation)
 		.to({ y: 360 }, 1000000)
 		.repeat(Infinity)
 		.onUpdate(function () {
@@ -230,7 +670,7 @@ function init() {
 	sceneUI = new THREE.Scene();
 	sceneUI.background = 0xffffff;
 	cameraUI = initCamUI();
-	drawRotateTriangle(axisOrigin.x, axisOrigin.y-axisHei-20);
+	drawRotateTriangle(axisOrigin.x, axisOrigin.y - axisHei - 20);
 	drawLine();
 
 
@@ -306,8 +746,9 @@ function resizeUI() {
 //line
 function drawLine() {
 	let axis = new THREE.Group();
-	axis.position.set(axisOrigin.x,axisOrigin.y, 0)
+	axis.position.set(axisOrigin.x, axisOrigin.y, 0)
 	axis.scale.set(1, -1, 1);
+	axis.name = "axis"
 	sceneUI.add(axis);
 	let material = new THREE.LineBasicMaterial({
 		color: 0x0000ff
@@ -328,6 +769,7 @@ function drawLine() {
 }
 function drawRotateTriangle(x, y) {
 	let [root, triangle] = drawBasicTriangle();
+	root.name = "rotating Triangle"
 	sceneUI.add(root)
 
 
@@ -394,6 +836,7 @@ function loop() {
 }
 function update(delta) {
 	// stats.update();
+	Events.update();
 	controls.update();
 	TWEEN.update();
 	testIntersect();
@@ -405,30 +848,6 @@ function render() {
 	renderer.clearDepth();
 	renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
 	renderer.render(sceneUI, cameraUI);
-}
-function testIntersect() {
-	if (selectedObject) {
-
-		selectedObject.material.color.set('#ffffff');
-		selectedObject = null;
-
-	}
-	if (!mouseEvent) return;
-	var intersects = getIntersects(mouseEvent.clientX, mouseEvent.clientY);
-	if (intersects.length > 0) {
-		var res = intersects.filter(function (res) {
-			return res && res.object;
-		})[0];
-
-		if (res && res.object) {
-
-			selectedObject = res.object;
-			selectedObject.material.color.set('#f00');
-
-		}
-
-	}
-
 }
 
 function initControl3D() {

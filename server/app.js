@@ -135,6 +135,11 @@ let systemRoutine = {
         let result = find3File(`.${path + file}`);
         res.end(result);
     },
+    "loadHtml": function (req, res) {
+        let file = req.parsedPath.slice(req.parsedPath.indexOf("loadHtml") + "loadHtml".length);
+        let fileFullName = `.${file}.html`;
+        readHtmlFile(fileFullName, res);
+    },
     "readHtml": function (req, res) {
         let path = req.parsedUrl.query.data;
         let file = req.parsedPath.slice(req.parsedPath.indexOf("readHtml") + "readHtml".length);
@@ -428,7 +433,7 @@ let systemRoutine = {
 };
 let subRoutine = {
     "": function (req, res) {
-        readHtmlFile("./client/index.html", res);
+        // readHtmlFile("./client/index.html", res);
         // readHtmlFile("./iframes/begin/main.html", res);
         // readHtmlFile("./iframes/draw2D/main.html", res);
         // readHtmlFile("./iframes/robotarm/main.html", res);
@@ -438,7 +443,7 @@ let subRoutine = {
         // readHtmlFile("./iframes/line/animateLine.html", res);
         // readHtmlFile("./iframes/projectCameraToScreen/main.html", res);
 
-        // readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
+        readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
         // readHtmlFile("./iframes/projectScreenToCamera/main.html", res);
 
     },

@@ -1,3 +1,61 @@
+var selectedObject = null;
+let mouseEvent;
+function BallControl() {
+	document.body.addEventListener('mousemove', onMousemove, false);
+	document.body.addEventListener('mousedown', onMousedown, false);
+	document.body.addEventListener('mouseup', onMouseup, false);
+
+	let buttonHei = 50;
+	function onMousemove(event) {
+		event.preventDefault();
+
+		let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
+		if (!inBallArea)
+			mouseEvent = null;
+		else
+			mouseEvent = event;
+		testIntersect();
+	}
+	function onMousedown(event) {
+
+		if (showStatus === "showBall" && atBegin) {
+			let inBallArea = testMouseInArea(event, 0, buttonHei, Width, Height);
+			if (!inBallArea) {
+				controls.enabled = false;
+				return;
+			} else {
+				controls.enabled = true;
+				event.preventDefault();
+				removeRotation();
+				if (selectedObject) {
+
+				}
+			}
+		}
+	}
+	function onMouseup(event) {
+		if (showStatus === "showBall" && atBegin) {
+			let inBallArea = testMouseInArea(event, 0, buttonHei, Width, Height);
+			if (inBallArea) {
+				restartRotation();
+				controls.enabled = false;
+			}
+		}
+	}
+}
+let Axis = {}
+Axis.x = new THREE.Vector3(1, 0, 0);
+Axis.y = new THREE.Vector3(0, 1, 0);
+Axis.z = new THREE.Vector3(0, 0, 1);
+oMat = new THREE.Matrix4();
+quaternion = new THREE.Quaternion();
+function rotate(axis, angle) {
+	let radian = angle * Math.PI / 180;
+	quaternion.setFromAxisAngle(axis, radian);
+	oMat.makeRotationFromQuaternion(quaternion);
+	this.applyMatrix(oMat);
+}
+
 let imgs = [
 	"AlfieAllen",
 	"ChrisPratt",
@@ -164,6 +222,12 @@ let section_education = [
 	["PhD", 200, 300]
 ];
 
+//param
+let Width = 600, Height = 600;
+let photoWid = 200, photohei = 250;//inBall
+let photoRatio = 250 / 200
+let axisWid = 500, axisHei = 300;
+let axisOrigin = new THREE.Vector3(80, 500);
 let showStatus = "showBall";
 //button
 let bubbleBut = document.getElementsByClassName("bubble")[0];
@@ -172,10 +236,21 @@ let ballBut = document.getElementsByClassName("ball")[0];
 bubbleBut.addEventListener("click", clickBubbleButton);
 barBut.addEventListener("click", clickBarButton);
 ballBut.addEventListener("click", clickBallButton);
+
 let content = document.getElementsByClassName("content")[0];
+content.style.left = `${axisOrigin.x}px`;
+content.style.top = `${axisOrigin.y - 390}px`;
+let atBegin = true;
+
+function disableBallMove() {
+	controls.enabled = false;
+	removeRotation();
+}
 function clickBubbleButton() {
+
 	// console.log("analyze!");
-	clearBallVars();
+	// clearBallVars();
+	disableBallMove();
 	if (showStatus != "showBubble") {
 		if (showStatus === "showBar") {
 			flyAllFromBarToBubble();
@@ -183,76 +258,88 @@ function clickBubbleButton() {
 		else if (showStatus === "showBall") {
 			flyAllFromBallToBubble();
 		}
+
 		loadHtml(content, "/iframes/svg2/bubbleAxis");
 		showStatus = "showBubble";
-
+		atBegin = false;
 	}
 }
 let sortSalary = topSalary();
-let barWid = 500;
+let barWid = 400;
+let barAniEvt;
+
 function clickBarButton() {
+	disableBallMove()
 	if (showStatus != "showBar") {
 		if (showStatus === "showBall") {
 			flyAllFromBallToBar();
 		} else if (showStatus === "showBubble") {
 			flyAllFromBubbleToBar();
 		}
+		atBegin = false;
+		barAniEvt = Events.add({ condition: { htmlOk: false, flyOk: false }, fun: animateBar });
+
 		loadHtml(content, "/iframes/svg2/top10Salary", function () {
-			let firstBar = content.getElementsByClassName("horizontalBar")[0];
-			firstBar.index = sortSalary[0][0];
-			y = 77;
-			x = 33;
-			firstBar.style.top = y + "px";
-			firstBar.style.left = x + "px";
-			animateElementCss(firstBar, "width", 0, barWid, 1.5, "ease-in-out", barTransitionEnd);
-			// firstBar.style.width = "0px";
-			// firstBar.offsetWidth;
-			// firstBar.style.transition = 'width 1.5s ease-in-out ';
-			// firstBar.style.width = `${barWid}px`;
-			// firstBar.addEventListener("transitionend", barTransitionEnd, false);
-
-			for (let i = 1; i < 10; i++) {
-				let newBar = firstBar.cloneNode(true);
-				newBar.index = sortSalary[i][0];
-				content.appendChild(newBar);
-				y += bubbleHei;
-				newBar.style.top = y + "px";
-				let wid = sortSalary[i][1] / sortSalary[0][1] * barWid;
-
-				animateElementCss(newBar, "width", 0, wid, 1.5, "ease-in-out", barTransitionEnd);
-				// newBar.style.width = "0px";
-				// newBar.offsetWidth;
-				// newBar.style.transition = 'width 1.5s ease-in-out ';
-				// newBar.style.width = `${wid}px`;
-				// newBar.addEventListener("transitionend", barTransitionEnd, false);
-			}
+			initBar();
+			Events.setOk(barAniEvt, "htmlOk");
 		});
+
 		showStatus = "showBar";
 	}
 }
+function initBar() {
+	let firstBar = content.getElementsByClassName("horizontalBar")[0];
+	firstBar.index = sortSalary[0][0];
+	y = 77;
+	x = 33;
+	firstBar.style.top = y + "px";
+	firstBar.style.left = x + "px";
+	firstBar.style.width = "0px";
+	applyChange(firstBar);
+	for (let i = 1; i < 10; i++) {
+		let newBar = firstBar.cloneNode(true);
+		newBar.index = sortSalary[i][0];
+		content.appendChild(newBar);
+		y += bubbleHei;
+		newBar.style.top = y + "px";
+		newBar.style.width = "0px";
+		applyChange(firstBar);
+	}
+}
+function animateBar() {
+	let allBar = content.getElementsByClassName("horizontalBar");
+	for (let i = 0; i < allBar.length; i++) {
+		let bar = allBar[i];
+		let wid = sortSalary[i][1] / sortSalary[0][1] * barWid;
+		animateElementCss(bar, "width", wid, 1, "ease-in-out", barTransitionEnd);
 
+	}
+}
 function barTransitionEnd(event) {
 	let bar = event.currentTarget;
 	let text = bar.getElementsByClassName("SalaryText")[0];
 	text.innerHTML = `$ ${personsInfo[bar.index].salary}`;
 
 }
-function animateElementCss(element, whichStyle, from, to, duration, ease, endFun) {
-	element.style[whichStyle] = `${from}px`;
+function applyChange(element) {
+	element.offsetWidth;//or // getComputedStyle(element).opacity;
+}
+function animateElementCss(element, whichStyle, to, duration, ease, endFun) {
 	element.offsetWidth;//or // getComputedStyle(element).opacity;
 	element.style.transition = `${whichStyle} ${duration}s ${ease} `;
 	element.style[whichStyle] = `${to}px`;
 	element.addEventListener("transitionend", endFun, false);
 }
 let name, experience, education, salary;
-function clearBallVars() {
-	name = null;
-	experience = null;
-	education = null;
-	salary = null;
-}
+// function clearBallVars() {
+// 	name = null;
+// 	experience = null;
+// 	education = null;
+// 	salary = null;
+// }
 function clickBallButton() {
 	if (showStatus != "showBall") {
+		showStatus = "showBall";
 		flyAllToBall();
 		loadHtml(content, "/iframes/svg2/detailInfo", function () {
 			name = content.getElementsByClassName("name")[0];
@@ -260,7 +347,7 @@ function clickBallButton() {
 			education = content.getElementsByClassName("education")[0];
 			salary = content.getElementsByClassName("salary")[0];
 		});
-		showStatus = "showBall";
+
 	}
 }
 
@@ -276,26 +363,29 @@ function getEducationSection(degree) {
 }
 
 function flyAllFromBubbleToBar() {
-	toBar();
+	toBar(toBarEnd);
 
 }
-function toBar() {
+function toBarEnd() {
+	Events.setOk(barAniEvt, "flyOk");
+}
+function toBar(endFun) {
 	let visibleGroup = [];
 	let x = axisOrigin.x + bubbleWid / 2 + 10;
 	let y = axisOrigin.y - 300;
 	for (let i = 0; i < 10; i++) {
 		let index = sortSalary[i][0];
-		let uiphoto = UIPhotoGroup[index];
-		moveToChart(uiphoto, x, y);
+		let uiphoto = UIPhotoGroup.children[index];
+		moveToChart(uiphoto, x, y, endFun);
 		y += bubbleHei;
 		visibleGroup.push(index);
 	}
 
-	for (let i = 0; i < UIPhotoGroup.length; i++) {
-		UIPhotoGroup[i].visible = false;
+	for (let i = 0; i < UIPhotoGroup.children.length; i++) {
+		UIPhotoGroup.children[i].visible = false;
 		for (let j = 0; j < visibleGroup.length; j++) {
 			if (i == visibleGroup[j]) {
-				UIPhotoGroup[i].visible = true;
+				UIPhotoGroup.children[i].visible = true;
 				break;
 			}
 		}
@@ -304,22 +394,17 @@ function toBar() {
 
 }
 function flyAllFromBallToBar() {
-	for (let i = 0; i < personsInfo.length; i++) {
-		let photo = photoGroup.children[i];
-		let uiphoto = generatePictureInUICamera(photo);
-		uiphoto.index = photo.index;
-	}
-	toBar();
+	showUIphoto();
+	toBar(toBarEnd);
 	photoGroup.visible = false;
-	photoGroup.tweenX.stop();
-	photoGroup.tweenY.stop();
+	removeRotation();
 }
 function flyAllFromBarToBubble() {
 	toBubble();
 }
 function toBubble() {
-	for (let i = 0; i < UIPhotoGroup.length; i++) {
-		let uiphoto = UIPhotoGroup[i]
+	for (let i = 0; i < UIPhotoGroup.children.length; i++) {
+		let uiphoto = UIPhotoGroup.children[i];
 		uiphoto.visible = true;
 		let year = personsInfo[uiphoto.index].workingExp;
 		let degree = personsInfo[uiphoto.index].education;
@@ -334,22 +419,17 @@ function toBubble() {
 	}
 }
 function flyAllFromBallToBubble() {
-	for (let i = 0; i < photoGroup.children.length; i++) {
-		let photo = photoGroup.children[i];
-		let uiphoto = generatePictureInUICamera(photo);
-		uiphoto.index = photo.index;
-	}
+	showUIphoto();
 	toBubble();
 	photoGroup.visible = false;
-	photoGroup.tweenX.stop();
-	photoGroup.tweenY.stop();
-	//active button
+	removeRotation();
 
 }
 
 function flyAllToBall() {
-	for (let i = 0; i < UIPhotoGroup.length; i++) {
-		let uiphoto = UIPhotoGroup[i];
+	let finishCount = 0;
+	for (let i = 0; i < UIPhotoGroup.children.length; i++) {
+		let uiphoto = UIPhotoGroup.children[i];
 
 		let param = {
 			x: uiphoto.position.x,
@@ -373,38 +453,31 @@ function flyAllToBall() {
 				render();
 			})
 			.onComplete(function (obj) {
-				for (let i = 0; i < UIPhotoGroup.length; i++) {
-					sceneUI.remove(UIPhotoGroup[i]);
+				if (showStatus != "showBall") return;
+				finishCount++;
+				if (finishCount == UIPhotoGroup.children.length) {
+					showBall();
 				}
-				UIPhotoGroup.length = 0;
-				photoGroup.visible = true;
-				photoGroup.tweenX.start();
-				photoGroup.tweenY.start();
+
+
+
 			})
 			.start();
 	}
 }
-//param
-let Width = 600, Height = 600;
-let photoWid = 200, photohei = 250;//inBall
-let photoRatio = 250 / 200
-let axisWid = 500, axisHei = 300;
-let axisOrigin = new THREE.Vector3(700, 500);
-let detailOrigin = new THREE.Vector3(300, 500);
+function showBall() {
+	UIPhotoGroup.visible = false;
+	photoGroup.visible = true;
+	restartRotation();
+	atBegin = true;
+}
 
 //mouse
-var selectedObject = null;
-let mouseDown = false;
-let mouseEvent;
+
 function onDocumentMouseMove(event) {
+	// 	if (mouseOnButton) return;
 	//if mouse out of border, mouseEvent=null
-	let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
-	if (!inBallArea)
-		mouseEvent = null;
-	else
-		mouseEvent = event;
-	event.preventDefault();
-	testIntersect();
+
 
 
 }
@@ -441,6 +514,7 @@ function testIntersect() {
 
 function testMouseInArea(event, beginX, beginY, endX, endY) {
 	let x = event.clientX, y = event.clientY;
+	// console.log(x,y);
 	if (x < beginX || x > endX || y < beginY || y > endY)
 		return false;
 	return true;
@@ -460,67 +534,48 @@ function getIntersects(x, y) {
 
 }
 
-function onDocumentMouseDown() {
-	if (showStatus === "showBall") {
-		let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
-		if (!inBallArea) {
-			controls.enabled = false;
-			return;
-		} else {
-			controls.enabled = true;
-			event.preventDefault();
-			photoGroup.tweenX.stop();
-			photoGroup.tweenY.stop();
 
-			if (selectedObject) {
 
-			}
+let UIPhotoGroup;
+function initAllUIPhotos() {
+	UIPhotoGroup = new THREE.Group();
+	sceneUI.add(UIPhotoGroup);
+	for (let i = 0; i < photoGroup.children.length; i++) {
+		let photo = photoGroup.children[i];
+		let uiphoto = createPhotoMesh(photo.name);
+		UIPhotoGroup.add(uiphoto);
+		uiphoto.index = photo.index;
+		uiphoto.name = photo.name;
+		photo.uiphoto = uiphoto;
+	}
+	UIPhotoGroup.visible = false;
+}
+
+function showUIphoto() {
+	if (atBegin == true) {
+		UIPhotoGroup.visible = true;
+		for (let i = 0; i < photoGroup.children.length; i++) {// 
+			let photo = photoGroup.children[i];
+			let [proj, scalex,depth] = toScreenPosition(photo, camera);
+			scaley = scalex * photoRatio;
+			let uiphoto = photo.uiphoto;
+			uiphoto.position.set(proj.x, proj.y, depth);
+			uiphoto.scale.set(scalex, -scaley, 1);
+			uiphoto.originScaleX = scalex;
+			uiphoto.originScaleY = -scaley;
+
+			uiphoto.originPosX = proj.x;
+			uiphoto.originPosY = proj.y;
 		}
 	}
 
 
-	// if (selectedObject) {
-	// 	console.log(selectedObject.name);
-	// 	let uiphoto = generatePictureInUICamera(selectedObject);
-	// 	let randX = Math.random() * axisWid;
-	// 	let randY = Math.random() * axisHei;
-	// 	moveToChart(uiphoto, randX, randY);
-	// }
-}
-function onDocumentMouseUp() {
-	if (showStatus === "showBall") {
-		let inBallArea = testMouseInArea(event, 0, 0, Width, Height);
-		if (!inBallArea) {
-			return;
-		}
-		else {
-			photoGroup.tweenX.start();
-			photoGroup.tweenY.start();
-		}
-	}
 
-
-}
-let UIPhotoGroup = [];
-function generatePictureInUICamera(obj) {
-	let [proj, scalex] = toScreenPosition(obj, camera);
-	scaley = scalex * photoRatio;
-	let uiphoto = createPhotoMesh(obj.name);
-	uiphoto.name = obj.name;
-	uiphoto.position.set(proj.x, proj.y, 0);
-	uiphoto.scale.set(scalex, -scaley, 1);
-	uiphoto.originScaleX = scalex;
-	uiphoto.originScaleY = -scaley;
-	uiphoto.originPosX = proj.x;
-	uiphoto.originPosY = proj.y;
-	sceneUI.add(uiphoto);
-	UIPhotoGroup.push(uiphoto);
-	return uiphoto;
 
 
 }
 let bubbleWid = 20, bubbleHei = 30;
-function moveToChart(obj, finalx, finaly) {
+function moveToChart(obj, finalx, finaly, fun) {
 	let param = {
 		x: obj.position.x,
 		y: obj.position.y,
@@ -530,6 +585,7 @@ function moveToChart(obj, finalx, finaly) {
 	}
 	let tween = new TWEEN.Tween(param)
 		.to({ x: finalx, y: finaly, sx: bubbleWid, sy: -bubbleHei }, 500)
+		.easing(TWEEN.Easing.Quadratic.In)
 		.onUpdate(function (p) {
 			obj.position.x = p.x;
 			obj.position.y = p.y;
@@ -537,65 +593,95 @@ function moveToChart(obj, finalx, finaly) {
 			obj.scale.y = p.sy;
 			render();
 		})
+		.onComplete(function () {
+			if (fun)
+				fun();
+		})
+
 		.start();
 }
 var proj = new THREE.Vector3();
 let dimensionX = new THREE.Vector3();
+let size = new THREE.Vector3(photoWid, 0, 0);
+let offset = new THREE.Vector3(1, 1, 0);
 function toScreenPosition(obj, camera) {
-	// TODO: need to update this when resize window
-	// var widthHalf = 0.5 * renderer.context.canvas.width;
-	// var heightHalf = 0.5 * renderer.context.canvas.height;
+	dimensionX.set(size.x, size.y, size.z);
+	dimensionX.applyQuaternion(camera.quaternion);
 
 	obj.updateMatrixWorld();
 	proj.setFromMatrixPosition(obj.matrixWorld);
-	dimensionX.set(proj.x + photoWid, proj.y, proj.z);
+
+	dimensionX.add(proj);
+
 	proj.project(camera);
+	let depth = (1-proj.z)*10000;
+	// console.log(depth);
 	dimensionX.project(camera);
 
-	dimensionX.x = (0.5 + dimensionX.x / 2) * Width;
-	dimensionX.y = (0.5 - dimensionX.y / 2) * Height;
-	// vector.x = (vector.x * widthHalf) + widthHalf;
-	// vector.y = - (vector.y * heightHalf) + heightHalf;
-	// 	vector.x=(vector.x + 1) / 2 * window.innerWidth;
-	// 	vector.y=-(vector.y - 1) / 2 * window.innerHeight;
-	proj.x = (0.5 + proj.x / 2) * Width;
-	proj.y = (0.5 - proj.y / 2) * Height;
+	convertTo01(dimensionX);
+	convertTo01(proj)
 	dimensionX.sub(proj);
 
-	return [proj, dimensionX.x];
+	return [proj, Math.abs(dimensionX.x),depth];
 
 }
-
+function convertTo01(vector) {
+	vector.x = (vector.x + 1) * Width / 2;
+	vector.y = - (vector.y - 1) * Height / 2;
+	vector.z = 0;
+	return vector;
+}
 //scene
 
 var camera, scene, renderer, stats, controls;
 let cameraUI, sceneUI;
 let textures = {};
 var photoGroup;
-
+function restartRotation() {
+	photoGroup.tweenX.start();
+	photoGroup.tweenY.start();
+}
+function addRotation() {
+	photoGroup.tweenX = new TWEEN.Tween(photoGroup.rotation)
+		.to({ x: 360 }, 500000)
+		.repeat(Infinity)
+		.onUpdate(function () {
+			render();
+		})
+		.start();
+	photoGroup.tweenY = new TWEEN.Tween(photoGroup.rotation)
+		.to({ y: 360 }, 1000000)
+		.repeat(Infinity)
+		.onUpdate(function () {
+			render();
+		})
+		.start();
+}
+function removeRotation() {
+	photoGroup.tweenX.stop();
+	photoGroup.tweenY.stop();
+}
 init();
 
 let lastTime = Date.now();
 loop();
 
 function init() {
-	// container = document.getElementById('scene');
-	// Width = container.clientWidth;
-	// Height = container.clientHeight;
+
 	//scene
 	camera = initCam3d();
 	scene = new THREE.Scene();
 	scene.background = 0x000000;
-	controls = initControl3D();
-	document.body.addEventListener('mousemove', onDocumentMouseMove, false);
-	document.body.addEventListener('mousedown', onDocumentMouseDown, false);
-	document.body.addEventListener('mouseup', onDocumentMouseUp, false);
+
+	// document.body.addEventListener('mousemove', onDocumentMouseMove, false);
+	// document.body.addEventListener('mousedown', onDocumentMouseDown, false);
+	// document.body.addEventListener('mouseup', onDocumentMouseUp, false);
 
 	//photos
 	photoGroup = new THREE.Group();
 	scene.add(photoGroup);
-
-
+	controls = initControl3D();
+	BallControl();
 	function loadAllTextures(name) {
 		for (let i = 0; i < imgs.length; i++) {
 			let texture = new THREE.TextureLoader().load(`/iframes/draw2D/headshot/${imgs[i]}.jpg`);
@@ -627,7 +713,7 @@ function init() {
 	}
 
 	let points = evenOnSphere(500, 4, 5);
-	for (var i = 0; i < imgs.length; i++) {
+	for (var i = 0; i < imgs.length; i++) {//
 		let plane = createPhotoSprite(imgs[i]);
 		plane.name = imgs[i];
 		plane.position.copy(points[i]);
@@ -639,23 +725,9 @@ function init() {
 
 
 	}
-	// photoGroup.rotation.x += 0.005;
-	// photoGroup.rotation.y -= 0.01;
+	addRotation();
 
-	photoGroup.tweenX = new TWEEN.Tween(photoGroup.rotation)
-		.to({ x: 360 }, 500000)
-		.repeat(Infinity)
-		.onUpdate(function () {
-			render();
-		})
-		.start();
-	photoGroup.tweenY = new TWEEN.Tween(photoGroup.rotation)
-		.to({ y: 360 }, 1000000)
-		.repeat(Infinity)
-		.onUpdate(function () {
-			render();
-		})
-		.start();
+
 
 	// LIGHTS
 
@@ -671,7 +743,8 @@ function init() {
 	sceneUI.background = 0xffffff;
 	cameraUI = initCamUI();
 	drawRotateTriangle(axisOrigin.x, axisOrigin.y - axisHei - 20);
-	drawLine();
+	initAllUIPhotos();
+	// drawLine();
 
 
 	//sys
@@ -719,7 +792,7 @@ function initCam3d() {
 function initCamUI() {
 	let camera = new THREE.OrthographicCamera(0, window.innerWidth, 0, window.innerHeight, 1, 1000);
 	// let camera = new THREE.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 1, 100);
-	camera.position.z = 50;
+	camera.position.z = 200;
 	return camera;
 }
 //resize
@@ -850,6 +923,7 @@ function render() {
 	renderer.render(sceneUI, cameraUI);
 }
 
+
 function initControl3D() {
 	let controls = new THREE.TrackballControls(camera);
 	controls.rotateSpeed = 3.0;
@@ -864,4 +938,3 @@ function initControl3D() {
 	controls.addEventListener('change', render);
 	return controls;
 }
-

@@ -444,6 +444,10 @@ let subRoutine = {
         // readHtmlFile("./iframes/projectCameraToScreen/main.html", res);
 
         readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
+        // readHtmlFile("./iframes/rotateObj/main.html", res);
+        // readHtmlFile("./iframes/rotateCamera/main.html", res);
+
+        
         // readHtmlFile("./iframes/projectScreenToCamera/main.html", res);
 
     },

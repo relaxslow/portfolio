@@ -9,7 +9,7 @@ body {
 .button{
     background-color: rgb(0, 141, 47);
     color: #ffffff;
-    width: 173px;
+    width: 200px;
     height: 50px;
     border: none;
 }
@@ -20,8 +20,8 @@ body {
 .control{
     display:flex;
     position: absolute;
-    top: 62px;
-    left: 700px;
+    top: 0px;
+    left: 0px;
 }
 .content{
     position: absolute;
@@ -43,7 +43,7 @@ body {
     position:absolute;
     /* top: 81px; */
     /* left: 33px; */
-    background-color: #674c70;
+    background-color: #79707d;
     width: 103px;
     height: 27px;
     color: #c3b0b0;
@@ -54,10 +54,18 @@ body {
     align-items: center;
 }
 .SalaryText{
-    color: #ffbf7d;
+    color: #e3dad1;
     margin: 0 10px;
 }
 .chartTitle{
-    font-family: fantasy;
-    font-size: xx-large;
+    
+font-family: fantasy;
+    
+font-size: xx-large;
+    
+position: absolute;
+    
+top: 18px;
+    
+left: 8px;
 }

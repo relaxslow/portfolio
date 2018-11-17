@@ -1,9 +1,37 @@
+let UIBeginX = -300, UIBeginY = -300;
+let tipPanel = document.getElementById("tip");
+function updateTip(x, y) {
+	moveTipPanel(x, y);
+	changeInfo();
+
+}
+function changeInfo() {
+	let name = tipPanel.getElementsByClassName("name")[0];
+	let experience = tipPanel.getElementsByClassName("experience")[0];
+	let education = tipPanel.getElementsByClassName("education")[0];
+	let salary = tipPanel.getElementsByClassName("salary")[0];
+	name.innerHTML = selectedObject.name;
+	experience.innerHTML = personsInfo[selectedObject.index].workingExp;
+	education.innerHTML = personsInfo[selectedObject.index].education;
+	salary.innerHTML = personsInfo[selectedObject.index].salary;
+}
+function showTip() {
+	tipPanel.style.visibility = "visible";
+}
+function hideTip() {
+	tipPanel.style.visibility = "hidden";
+}
+function moveTipPanel(x, y) {
+	tipPanel.style.left = `${x}px`;
+	tipPanel.style.top = `${y}px`;
+}
 var selectedObject = null;
 let mouseEvent;
+let mousedown;
 function BallControl() {
-	document.body.addEventListener('mousemove', onMousemove, false);
-	document.body.addEventListener('mousedown', onMousedown, false);
-	document.body.addEventListener('mouseup', onMouseup, false);
+	scene3dDiv.addEventListener('mousemove', onMousemove, false);
+	scene3dDiv.addEventListener('mousedown', onMousedown, false);
+	scene3dDiv.addEventListener('mouseup', onMouseup, false);
 
 	let buttonHei = 50;
 	function onMousemove(event) {
@@ -15,9 +43,15 @@ function BallControl() {
 		else
 			mouseEvent = event;
 		testIntersect();
+		if (selectedObject) {
+			showTip();
+			updateTip(event.clientX, event.clientY);
+		} else {
+			hideTip();
+		}
 	}
 	function onMousedown(event) {
-
+		mousedown = true;
 		if (showStatus === "showBall" && atBegin) {
 			let inBallArea = testMouseInArea(event, 0, buttonHei, Width, Height);
 			if (!inBallArea) {
@@ -27,13 +61,15 @@ function BallControl() {
 				controls.enabled = true;
 				event.preventDefault();
 				removeRotation();
-				if (selectedObject) {
-
-				}
+				// 				if (selectedObject) {
+				// 					showTip();
+				// 					updateTip(event.clientX, event.clientY);
+				// 				}
 			}
 		}
 	}
 	function onMouseup(event) {
+		mousedown = false;
 		if (showStatus === "showBall" && atBegin) {
 			let inBallArea = testMouseInArea(event, 0, buttonHei, Width, Height);
 			if (inBallArea) {
@@ -223,7 +259,10 @@ let section_education = [
 ];
 
 //param
-let Width = 600, Height = 600;
+let scene3dDiv = document.getElementById("scene3d");
+let viewBeginX = 50, viewBeginY = 100;
+let Width = 500, Height = 500;
+let WidthAll = 600, HeightAll = 600;
 let photoWid = 200, photohei = 250;//inBall
 let photoRatio = 250 / 200
 let axisWid = 500, axisHei = 300;
@@ -253,6 +292,7 @@ function clickBubbleButton() {
 	disableBallMove();
 	if (showStatus != "showBubble") {
 		if (showStatus === "showBar") {
+			Events.remove(barAniEvt);
 			flyAllFromBarToBubble();
 		}
 		else if (showStatus === "showBall") {
@@ -266,7 +306,7 @@ function clickBubbleButton() {
 }
 let sortSalary = topSalary();
 let barWid = 400;
-let barAniEvt;
+let barAniEvt = { condition: { htmlOk: false, flyOk: false }, fun: animateBar };
 
 function clickBarButton() {
 	disableBallMove()
@@ -277,11 +317,11 @@ function clickBarButton() {
 			flyAllFromBubbleToBar();
 		}
 		atBegin = false;
-		barAniEvt = Events.add({ condition: { htmlOk: false, flyOk: false }, fun: animateBar });
+		Events.add(barAniEvt);
 
 		loadHtml(content, "/iframes/svg2/top10Salary", function () {
 			initBar();
-			Events.setOk(barAniEvt, "htmlOk");
+			Events.setConditionOk(barAniEvt, "htmlOk");
 		});
 
 		showStatus = "showBar";
@@ -330,28 +370,15 @@ function animateElementCss(element, whichStyle, to, duration, ease, endFun) {
 	element.style[whichStyle] = `${to}px`;
 	element.addEventListener("transitionend", endFun, false);
 }
-let name, experience, education, salary;
-// function clearBallVars() {
-// 	name = null;
-// 	experience = null;
-// 	education = null;
-// 	salary = null;
-// }
+
+
 function clickBallButton() {
 	if (showStatus != "showBall") {
 		showStatus = "showBall";
 		flyAllToBall();
-		loadHtml(content, "/iframes/svg2/detailInfo", function () {
-			name = content.getElementsByClassName("name")[0];
-			experience = content.getElementsByClassName("experience")[0];
-			education = content.getElementsByClassName("education")[0];
-			salary = content.getElementsByClassName("salary")[0];
-		});
-
+		loadHtml(content, "/iframes/svg2/ball");
 	}
 }
-
-
 
 function getEducationSection(degree) {
 	for (let i = 0; i < section_education.length; i++) {
@@ -367,7 +394,7 @@ function flyAllFromBubbleToBar() {
 
 }
 function toBarEnd() {
-	Events.setOk(barAniEvt, "flyOk");
+	Events.setConditionOk(barAniEvt, "flyOk");
 }
 function toBar(endFun) {
 	let visibleGroup = [];
@@ -481,17 +508,7 @@ function onDocumentMouseMove(event) {
 
 
 }
-function displaySelectPhotoInfo() {
-	if (!selectedObject) return;
-	if (name) {
-		name.innerHTML = selectedObject.name;
-		experience.innerHTML = personsInfo[selectedObject.index].workingExp;
-		education.innerHTML = personsInfo[selectedObject.index].education;
-		salary.innerHTML = personsInfo[selectedObject.index].salary;
 
-	}
-
-}
 function testIntersect() {
 	if (showStatus !== "showBall") return;
 	if (!mouseEvent) return;
@@ -509,7 +526,9 @@ function testIntersect() {
 			selectedObject.material.color.set('#f00');
 		}
 	}
-	displaySelectPhotoInfo();
+	if (selectedObject)
+		changeInfo();
+	// displaySelectPhotoInfo();
 }
 
 function testMouseInArea(event, beginX, beginY, endX, endY) {
@@ -524,8 +543,8 @@ var mouseVector = new THREE.Vector3();
 
 function getIntersects(x, y) {
 	//todo
-	x = (x / Width) * 2 - 1;
-	y = - (y / Height) * 2 + 1;
+	x = ((x - viewBeginX) / Width) * 2 - 1;
+	y = - ((y - viewBeginY) / Height) * 2 + 1;
 
 	mouseVector.set(x, y, 0.5);
 	raycaster.setFromCamera(mouseVector, camera);
@@ -556,7 +575,7 @@ function showUIphoto() {
 		UIPhotoGroup.visible = true;
 		for (let i = 0; i < photoGroup.children.length; i++) {// 
 			let photo = photoGroup.children[i];
-			let [proj, scalex,depth] = toScreenPosition(photo, camera);
+			let [proj, scalex, depth] = toScreenPosition(photo, camera);
 			scaley = scalex * photoRatio;
 			let uiphoto = photo.uiphoto;
 			uiphoto.position.set(proj.x, proj.y, depth);
@@ -594,6 +613,7 @@ function moveToChart(obj, finalx, finaly, fun) {
 			render();
 		})
 		.onComplete(function () {
+			tween.stop();
 			if (fun)
 				fun();
 		})
@@ -614,15 +634,16 @@ function toScreenPosition(obj, camera) {
 	dimensionX.add(proj);
 
 	proj.project(camera);
-	let depth = (1-proj.z)*10000;
+	let depth = (1 - proj.z) * 10000;
 	// console.log(depth);
 	dimensionX.project(camera);
 
 	convertTo01(dimensionX);
 	convertTo01(proj)
 	dimensionX.sub(proj);
-
-	return [proj, Math.abs(dimensionX.x),depth];
+	proj.x += viewBeginX;
+	proj.y += viewBeginY;
+	return [proj, Math.abs(dimensionX.x), depth];
 
 }
 function convertTo01(vector) {
@@ -672,10 +693,6 @@ function init() {
 	camera = initCam3d();
 	scene = new THREE.Scene();
 	scene.background = 0x000000;
-
-	// document.body.addEventListener('mousemove', onDocumentMouseMove, false);
-	// document.body.addEventListener('mousedown', onDocumentMouseDown, false);
-	// document.body.addEventListener('mouseup', onDocumentMouseUp, false);
 
 	//photos
 	photoGroup = new THREE.Group();
@@ -727,8 +744,6 @@ function init() {
 	}
 	addRotation();
 
-
-
 	// LIGHTS
 
 	var ambient = new THREE.AmbientLight(0x80ffff);
@@ -744,13 +759,15 @@ function init() {
 	cameraUI = initCamUI();
 	drawRotateTriangle(axisOrigin.x, axisOrigin.y - axisHei - 20);
 	initAllUIPhotos();
-	// drawLine();
+	loadHtml(content, "/iframes/svg2/ball")
 
+	loadHtml(tipPanel, "/iframes/svg2/detailInfo");
+	tipPanel.style.visibility = "hidden";
 
 	//sys
 	renderer = new THREE.WebGLRenderer({ alpha: true });
 	renderer.setClearColor(0xffffff, 0);
-	document.body.appendChild(renderer.domElement);
+	scene3dDiv.appendChild(renderer.domElement);
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setPixelRatio(window.devicePixelRatio);
@@ -791,6 +808,7 @@ function initCam3d() {
 
 function initCamUI() {
 	let camera = new THREE.OrthographicCamera(0, window.innerWidth, 0, window.innerHeight, 1, 1000);
+	// let camera = new THREE.OrthographicCamera(UIBeginX, window.innerWidth - UIBeginX, UIBeginY, window.innerHeight - UIBeginY, 1, 1000);
 	// let camera = new THREE.OrthographicCamera(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 1, 100);
 	camera.position.z = 200;
 	return camera;
@@ -916,7 +934,7 @@ function update(delta) {
 }
 function render() {
 	renderer.clear()
-	renderer.setViewport(0, 0, Width, Height);
+	renderer.setViewport(viewBeginX, viewBeginY, Width, Height);
 	renderer.render(scene, camera);
 	renderer.clearDepth();
 	renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);

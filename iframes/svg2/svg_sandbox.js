@@ -262,7 +262,7 @@ let section_education = [
 let scene3dDiv = document.getElementById("scene3d");
 let viewBeginX = 50, viewBeginY = 100;
 let Width = 500, Height = 500;
-let WidthAll = 600, HeightAll = 600;
+let AreaWid = 600, AreaHei = 600;
 let photoWid = 200, photohei = 250;//inBall
 let photoRatio = 250 / 200
 let axisWid = 500, axisHei = 300;
@@ -769,7 +769,7 @@ function init() {
 	renderer.setClearColor(0xffffff, 0);
 	scene3dDiv.appendChild(renderer.domElement);
 
-	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setSize(AreaWid, AreaHei);
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.autoClear = false;
 

@@ -433,7 +433,7 @@ let systemRoutine = {
 };
 let subRoutine = {
     "": function (req, res) {
-        // readHtmlFile("./client/index.html", res);
+        readHtmlFile("./client/index.html", res);
         // readHtmlFile("./iframes/begin/main.html", res);
         // readHtmlFile("./iframes/draw2D/main.html", res);
         // readHtmlFile("./iframes/robotarm/main.html", res);
@@ -443,7 +443,7 @@ let subRoutine = {
         // readHtmlFile("./iframes/line/animateLine.html", res);
         // readHtmlFile("./iframes/projectCameraToScreen/main.html", res);
 
-        readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
+        // readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
         // readHtmlFile("./iframes/viewInView/main.html", res);
         // readHtmlFile("./iframes/rotateObj/main.html", res);
         // readHtmlFile("./iframes/rotateCamera/main.html", res);

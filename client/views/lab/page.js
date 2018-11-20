@@ -16,23 +16,23 @@ xs.init = function (module) {
                 {
                     text: "svg",
                     submenu: [
-                        { path: "/content/svg/createSVG", text: "create SVG" },
-                        { path: "/content/svg/animation", text: "animate Gradient" },
-                        { path: "/content/svg/simplePieChart", text: "simple Pie Chart" },
-                        { path: "/content/svg/realPieChart", text: "real Pie Chart" },
-                        { path: "/content/svg/animatedLine", text: "animated line" },
-                        { path: "/content/svg/plotDot", text: "plot dot", },
+                        { path: "/content/svg/createSVG", text: "Create SVG" },
+                        { path: "/content/svg/animation", text: "Animate Gradient" },
+                        { path: "/content/svg/simplePieChart", text: "Simple Pie Chart" },
+                        { path: "/content/svg/realPieChart", text: "Real Pie Chart" },
+                        { path: "/content/svg/animatedLine", text: "Animated line" },
+                        { path: "/content/svg/plotDot", text: "Plot dot", },
                     ]
                 },
                 {
                     initOpen: true,
                     text: "webgl",
                     submenu: [
-                        { path: "/content/webgl/threeJsTest", text: "threeJs-start" },
-                        { path: "/content/webgl/draw2d", text: "draw2D",initActive: true  },
-                        { path: "/content/webgl/loadModel", text: "threeJs-loadGLTF", },
-                        { path: "/content/webgl/robotArm", text: "robotArm", },
-                       
+                        { path: "/content/webgl/threeJsTest", text: "ThreeJs-start" },
+                        { path: "/content/webgl/draw2d", text: "Visualization", initActive: true },
+                        { path: "/content/webgl/loadModel", text: "ThreeJs-loadGLTF", },
+                        { path: "/content/webgl/robotArm", text: "RobotArm", },
+
 
                     ]
                 },

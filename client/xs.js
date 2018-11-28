@@ -66,7 +66,7 @@ xs.clearTask = function () {
 };
 xs.Task = { name: "System Task" };
 xs.Task.queue = [];
-xs.Task.root=null;
+xs.Task.root = null;
 xs.Task.next = function () {
     if (this.queue.length > 0) {
         let task = this.queue.shift();
@@ -132,7 +132,11 @@ xs.Div = function Div(option, param) {
     this.animationIDs = [];
 
 };
-
+xs.Div.prototype.loadSVG = function (name) {
+    this.sendRequest("/loadSVG", function (svg) {
+        this.innerHTML = svg;
+    })
+}
 xs.Div.prototype.addClass = function divAddClass(name) {
     this.name = name;
     this.div.classList.add(name);
@@ -184,7 +188,7 @@ xs.Div.prototype.loadJs = function divLoadJs(name) {
     xs.loadJs.call(this, this.currentFolder + name + "/page", loadJsOk);
 
     function loadJsOk() {
-        if(this.isDeath)return;
+        if (this.isDeath) return;
         xs.control.waitingLoad--;
 
         xs.Debug.log(taskName);
@@ -228,10 +232,10 @@ xs.Div.prototype.loadCss = function divLoadCss(name) {
     }
     return this;
     function loadCssOk(css) {
-        if(this.isDeath)return;
+        if (this.isDeath) return;
         xs.control.waitingLoad--;
         this.css.push(name);
-      
+
         css.name = name;
         xs.cssInfo[name].push(this);
         xs.cssRef[name] = css;
@@ -273,13 +277,13 @@ xs.Div.prototype.load = function divLoad(name, folder, data) {
     function loadModuleOk(parent) {
         parent.runA([xs.init, parent, null, data]);
         xs.init = null;
-        xs.Task.root=null;
+        xs.Task.root = null;
     }
 };
 
 
 xs.Div.prototype.clear = function divClear() {
-     xs.Task.root=this;
+    xs.Task.root = this;
     this.operating = null;
     xs.clearTask.call(xs.Task);
     xs.clearTask.call(xs.AnimationTask);
@@ -292,13 +296,13 @@ xs.Div.prototype.clear = function divClear() {
     xs.Debug.log("clear " + this.name);
 
     function clean(div) {
-        if(div.tagName == 'IFRAME')
-            div.isDeath=true;
+        if (div.tagName == 'IFRAME')
+            div.isDeath = true;
         let wrapper = div.wrapper;
         if (wrapper != null) {
             removeCss(wrapper);
-            if(wrapper!=xs.Task.root)
-                wrapper.isDeath=true;
+            if (wrapper != xs.Task.root)
+                wrapper.isDeath = true;
             clearTimer.call(wrapper);
         }
 
@@ -399,15 +403,15 @@ xs.Div.prototype.buildFrame = function buildThreeJsCanvas(wid, hei, name, data) 
     this.div.appendChild(iframe);
 
     function iframeLoadOk(evt) {
-        if(this.isDeath)
-        return;
+        if (this.isDeath)
+            return;
         xs.control.waitingLoad--;
 
         let frame = evt.currentTarget;
         frame.contentWindow.addEventListener("click", focus);
         if (frame.contentWindow.start)
             frame.contentWindow.start(data);
-       
+
         this.operating = null;
         xs.Task.next();
     }

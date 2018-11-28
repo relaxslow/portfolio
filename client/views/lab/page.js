@@ -16,12 +16,12 @@ xs.init = function (module) {
                 {
                     text: "svg",
                     submenu: [
-                        { path: "/content/svg/createSVG", text: "Create SVG" },
+                        // { path: "/content/svg/createSVG", text: "Create SVG" },
                         { path: "/content/svg/animation", text: "Animate Gradient" },
                         { path: "/content/svg/simplePieChart", text: "Simple Pie Chart" },
                         { path: "/content/svg/realPieChart", text: "Real Pie Chart" },
                         { path: "/content/svg/animatedLine", text: "Animated line" },
-                        { path: "/content/svg/plotDot", text: "Plot dot", },
+                        // { path: "/content/svg/plotDot", text: "Plot dot", },
                     ]
                 },
                 {

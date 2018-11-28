@@ -117,6 +117,19 @@ function readHtmlFile(fileFullName, res) {
 
 
 }
+function readSVG(fileFullName, res) {
+    let result;
+    fs.readFile(fileFullName, function (err, data) {
+        if (err) {
+            result = ["err", err];
+        } else {
+            result = ["ok", data];
+        }
+        sendResult("image/svg+xml", result, res);
+    });
+
+}
+
 function sendResult(type, result, res) {
     if (result[0] === "err") {
         res.statusCode = 500;
@@ -140,6 +153,12 @@ let systemRoutine = {
         let fileFullName = `.${file}.html`;
         readHtmlFile(fileFullName, res);
     },
+    "loadSVG": function (req, res) {
+        let file = req.parsedPath.slice(req.parsedPath.indexOf("loadSVG") + "loadSVG".length);
+        let fileFullName = `.${file}.svg`;
+        readSVG(fileFullName, res);
+    },
+
     "readHtml": function (req, res) {
         let path = req.parsedUrl.query.data;
         let file = req.parsedPath.slice(req.parsedPath.indexOf("readHtml") + "readHtml".length);
@@ -433,23 +452,45 @@ let systemRoutine = {
 };
 let subRoutine = {
     "": function (req, res) {
-        readHtmlFile("./client/index.html", res);
+        // readHtmlFile("./client/index.html", res);
         // readHtmlFile("./iframes/begin/main.html", res);
         // readHtmlFile("./iframes/draw2D/main.html", res);
-        // readHtmlFile("./iframes/robotarm/main.html", res);
+
         // readHtmlFile("./iframes/transparent/main.html", res);
         // readHtmlFile("./iframes/transparentBackground/transparent.html", res);
+
+
+
+        //vanilla js
+        readHtmlFile("./iframes/calendar/main.html", res);
+
+
+
+        //three.js
+        // readHtmlFile("./iframes/robotarm/main.html", res);
         // readHtmlFile("./iframes/loadGLTF/main.html", res);
         // readHtmlFile("./iframes/line/animateLine.html", res);
         // readHtmlFile("./iframes/projectCameraToScreen/main.html", res);
-
+        // readHtmlFile("./iframes/projectScreenToCamera/main.html", res);
         // readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
         // readHtmlFile("./iframes/viewInView/main.html", res);
         // readHtmlFile("./iframes/rotateObj/main.html", res);
         // readHtmlFile("./iframes/rotateCamera/main.html", res);
+        //canvas
+        // readHtmlFile("./iframes/canvasTest/draw/main.html", res);
 
-        
-        // readHtmlFile("./iframes/projectScreenToCamera/main.html", res);
+        //webgl
+        // basic
+        // readHtmlFile("./iframes/webgl/f01_simple/main.html", res);
+        // readHtmlFile("./iframes/webgl/f02_rectangle/main.html", res);
+        // readHtmlFile("./iframes/webgl/f03_multiRectangle/main.html", res);
+        // readHtmlFile("./iframes/webgl/f04_displayImage/main.html", res);
+        // readHtmlFile("./iframes/webgl/draw/main.html", res);
+
+
+        // readHtmlFile("./iframes/canvasTest/draw/main.html", res);
+
+
 
     },
     "getMainMenu": function (req, res) {

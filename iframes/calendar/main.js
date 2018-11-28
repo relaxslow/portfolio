@@ -77,9 +77,9 @@ function clickTimeitem(evt) {
 }
 function showTimePullRight(time) {
     if (selectTime == time) return;
-   
+
     timePullRight.classList.remove("end");
-    
+
     let rect = time.getBoundingClientRect();
     document.body.appendChild(timePullRight);
     timePullRight.style.left = `${rect.left}px`;
@@ -91,8 +91,11 @@ function showTimePullRight(time) {
     selectTime = time;
 }
 function closeTimePullRight() {
-    timePullRight.parentNode.removeChild(timePullRight);
-    selectTime = null;
+    if (timePullRight.parentNode) {
+        timePullRight.parentNode.removeChild(timePullRight);
+        selectTime = null;
+
+    }
 }
 for (let i = 0; i < days.length; i++) {
     let day = days[i];
@@ -109,6 +112,7 @@ let selectDay;
 function clickDay(evt) {
     evt.stopPropagation();
     let day = evt.currentTarget;
+    closeTimePullRight();
     if (day.classList.contains("avaliable")) {
         selectDay = day;
         day.appendChild(daySelector);
@@ -125,8 +129,10 @@ function showTimePullDown(day) {
     timePullDown.style.top = `${rect.top + 30}px`;
 }
 function closeTimePullDown() {
-    timePullDown.parentNode.removeChild(timePullDown);
-    selectDay = null;
+    if (timePullDown.parentNode) {
+        timePullDown.parentNode.removeChild(timePullDown);
+        selectDay = null;
+    }
 }
 function mouseOverItem(evt) {
     let day = evt.currentTarget;

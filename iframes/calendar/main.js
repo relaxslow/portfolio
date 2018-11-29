@@ -201,7 +201,8 @@ function cloneSVG(svg) {
 }
 
 function resizeStep() {
-    stepWid = (window.innerWidth / stepNum);
+    let container=document.getElementsByClassName("progress")[0];
+    stepWid = (container.clientWidth / stepNum-arrowWid);
     total = (stepWid + arrowWid).toFixed(3);
     let steps = document.querySelectorAll(".svgArrow");
     for (let i = 0; i < steps.length; i++) {

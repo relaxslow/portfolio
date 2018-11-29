@@ -88,7 +88,7 @@ let selectTime;
 function clickTimeitem(evt) {
     evt.stopPropagation();
     let time = evt.currentTarget;
-    // showTimePullRight(time);
+    showTimePullRight(time);
 
 }
 function showTimePullRight(time) {

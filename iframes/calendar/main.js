@@ -201,8 +201,8 @@ function cloneSVG(svg) {
 }
 
 function resizeStep() {
-    let container=document.getElementsByClassName("progress")[0];
-    stepWid = (container.clientWidth / stepNum-arrowWid);
+    let container = document.getElementsByClassName("progress")[0];
+    stepWid = (container.clientWidth / stepNum - arrowWid);
     total = (stepWid + arrowWid).toFixed(3);
     let steps = document.querySelectorAll(".svgArrow");
     for (let i = 0; i < steps.length; i++) {
@@ -235,11 +235,11 @@ function resizeStep() {
         text.setAttribute('y', `${y}`);
 
     }
-  
+
     setCurrentStep(0);
 }
 
-function setCurrentStep(num){
-    currentStep.style.width=`${stepWid}px`;
-    currentStep.style.left=`${num*stepWid}px`;
+function setCurrentStep(num) {
+    currentStep.style.width = `${stepWid}px`;
+    currentStep.style.left = `${num * stepWid}px`;
 }

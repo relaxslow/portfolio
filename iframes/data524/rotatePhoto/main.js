@@ -1,10 +1,22 @@
-let UIBeginX = -300, UIBeginY = -300;
+//button
+let bubbleBut = document.querySelector(".control .bubble");
+let barBut = document.querySelector(".control .bar");
+let ballBut = document.querySelector(".control .ball");
+
+
+bubbleBut.addEventListener("click", clickBubbleButton);
+barBut.addEventListener("click", clickBarButton);
+ballBut.addEventListener("click", clickBallButton);
+
+//tip
 let tipPanel = document.getElementById("tip");
 function updateTip(x, y) {
 	moveTipPanel(x, y);
 	changeInfo();
 
 }
+
+//info
 function changeInfo() {
 	let name = tipPanel.getElementsByClassName("name")[0];
 	let experience = tipPanel.getElementsByClassName("experience")[0];
@@ -260,21 +272,15 @@ let section_education = [
 
 //param
 let scene3dDiv = document.getElementById("scene3d");
-let viewBeginX = 50, viewBeginY = 100;
+let viewBeginX = 50, viewBeginY = 0;
 let Width = 500, Height = 500;
 let AreaWid = 600, AreaHei = 600;
 let photoWid = 200, photohei = 250;//inBall
 let photoRatio = 250 / 200
 let axisWid = 500, axisHei = 300;
-let axisOrigin = new THREE.Vector3(80, 500);
+let axisOrigin = new THREE.Vector3(80, 400);
 let showStatus = "showBall";
-//button
-let bubbleBut = document.getElementsByClassName("bubble")[0];
-let barBut = document.getElementsByClassName("bar")[0];
-let ballBut = document.getElementsByClassName("ball")[0];
-bubbleBut.addEventListener("click", clickBubbleButton);
-barBut.addEventListener("click", clickBarButton);
-ballBut.addEventListener("click", clickBallButton);
+
 
 let content = document.getElementsByClassName("content")[0];
 content.style.left = `${axisOrigin.x}px`;
@@ -299,7 +305,7 @@ function clickBubbleButton() {
 			flyAllFromBallToBubble();
 		}
 
-		loadHtml(content, "/iframes/svg2/bubbleAxis");
+		loadHtml(content, "/iframes/data524/rotatePhoto/bubbleAxis");
 		showStatus = "showBubble";
 		atBegin = false;
 	}
@@ -319,7 +325,7 @@ function clickBarButton() {
 		atBegin = false;
 		Events.add(barAniEvt);
 
-		loadHtml(content, "/iframes/svg2/top10Salary", function () {
+		loadHtml(content, "/iframes/data524/rotatePhoto/top10Salary", function () {
 			initBar();
 			Events.setConditionOk(barAniEvt, "htmlOk");
 		});
@@ -376,7 +382,7 @@ function clickBallButton() {
 	if (showStatus != "showBall") {
 		showStatus = "showBall";
 		flyAllToBall();
-		loadHtml(content, "/iframes/svg2/ball");
+		loadHtml(content, "/iframes/data524/rotatePhoto/ball");
 	}
 }
 
@@ -759,9 +765,9 @@ function init() {
 	cameraUI = initCamUI();
 	drawRotateTriangle(axisOrigin.x, axisOrigin.y - axisHei - 20);
 	initAllUIPhotos();
-	loadHtml(content, "/iframes/svg2/ball")
+	loadHtml(content, "/iframes/data524/rotatePhoto/ball")
 
-	loadHtml(tipPanel, "/iframes/svg2/detailInfo");
+	loadHtml(tipPanel, "/iframes/data524/rotatePhoto/detailInfo");
 	tipPanel.style.visibility = "hidden";
 
 	//sys

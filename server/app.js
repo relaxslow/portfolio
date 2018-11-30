@@ -462,10 +462,11 @@ let subRoutine = {
 
 
         //Ezza js
-        readHtmlFile("./iframes/ezza/index.html", res);
+        // readHtmlFile("./iframes/ezza/index.html", res);
 
 
-
+        //DATA524 
+        readHtmlFile("./iframes/data524/index.html", res);
 
         //three.js
         // readHtmlFile("./iframes/robotarm/main.html", res);
@@ -473,7 +474,7 @@ let subRoutine = {
         // readHtmlFile("./iframes/line/animateLine.html", res);
         // readHtmlFile("./iframes/projectCameraToScreen/main.html", res);
         // readHtmlFile("./iframes/projectScreenToCamera/main.html", res);
-        // readHtmlFile("./iframes/svg2/svg_sandbox.html", res);
+
         // readHtmlFile("./iframes/viewInView/main.html", res);
         // readHtmlFile("./iframes/rotateObj/main.html", res);
         // readHtmlFile("./iframes/rotateCamera/main.html", res);

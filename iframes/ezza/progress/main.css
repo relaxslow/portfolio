@@ -1,0 +1,47 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+iframe {
+    width: 100%;
+}
+body{
+    overflow: hidden;
+}
+.progress {
+    position: relative;
+    width: 100%;
+    height: 30px;
+}
+
+.svgArrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.svgArrow path {
+    fill: rgb(255, 255, 255);
+    stroke: rgb(166, 166, 166);
+    stroke-width: 1;
+    stroke-linejoin: miter;
+    stroke-linecap: square;
+    stroke-miterlimit: 3;
+}
+
+.svgArrow text {
+    fill: rgb(0, 0, 0);
+}
+
+.currentStep {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 30px;
+    z-index: 5000;
+    border-bottom-style: solid;
+    border-bottom-color: #12a884;
+    border-bottom-width: 1.2px;
+}

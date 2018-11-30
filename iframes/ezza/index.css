@@ -1,0 +1,13 @@
+* {
+    margin: 0;
+}
+
+iframe {
+    display: block;
+    width: 100%;
+    /* height: 100%; */
+}
+.calendar{
+    width: 100%;
+    height: calc( 100vh - 174px );
+}

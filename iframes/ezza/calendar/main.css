@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
-    font-size: 0.9em;
+    font-size: 12px;
+    margin: 0;
 }
 
 ul {
@@ -59,7 +60,7 @@ body {
 
 .days .avaliable {
     font-weight: 600;
-    font-size: 1.3em;
+    font-size: 1em;
     color: black;
 }
 
@@ -78,7 +79,7 @@ body {
     vertical-align: middle;
     line-height: 30px;
     position: relative;
-    font-size: 12px;
+    font-size: 1em;
     color: #636363;
     cursor: pointer;
     z-index: 1;
@@ -112,7 +113,7 @@ body {
 }
 
 .content {
-    padding: 30px 5%;
+    padding: 30px 3%;
     vertical-align: middle;
     display: flex;
     flex-direction: column;
@@ -172,12 +173,13 @@ body {
     display: flex;
     flex-direction: column;
     left: calc(100% - 15px);
-    top: 8px;
+    top: 7px;
 }
 
 .current .arrows p {
     margin: 0;
     line-height: 0.8;
+    font-size: 0.7em;
 }
 
 .current:hover {
@@ -202,7 +204,7 @@ button:focus {
     line-height: 30px;
     background-color: white;
     border: none;
-    font-size: 1.5em;
+    font-size: 1.2em;
 }
 
 .optionItem:hover {
@@ -313,39 +315,4 @@ button:focus {
     color: white;
 }
 
-.progress {
-    position: relative;
-    width: 100%;
-    height: 30px;
-}
 
-.svgArrow {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.svgArrow path {
-    fill: rgb(255, 255, 255);
-    stroke: rgb(166, 166, 166);
-    stroke-width: 1;
-    stroke-linejoin: miter;
-    stroke-linecap: square;
-    stroke-miterlimit: 3;
-}
-
-.svgArrow text {
-    fill: rgb(0, 0, 0);
-}
-
-.currentStep {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 30px;
-    z-index: 5000;
-    border-bottom-style: solid;
-    border-bottom-color: #12a884;
-    border-bottom-width: 1.2px;
-}

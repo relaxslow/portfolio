@@ -1,0 +1,11 @@
+.info {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    text-align: left;
+    line-height: 50px;
+    padding: 0 20px;
+}
+.appointment-type-name {
+    font-weight: 600;
+}

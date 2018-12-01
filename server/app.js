@@ -462,11 +462,11 @@ let subRoutine = {
 
 
         //Ezza js
-        // readHtmlFile("./iframes/ezza/index.html", res);
+        readHtmlFile("./iframes/ezza/index.html", res);
 
 
         //DATA524 
-        readHtmlFile("./iframes/data524/index.html", res);
+        // readHtmlFile("./iframes/data524/index.html", res);
 
         //three.js
         // readHtmlFile("./iframes/robotarm/main.html", res);

@@ -50,10 +50,12 @@ function showReport() {
 }
 function hideReport(){
     reportFrame.style.visiblity="hidden";
+    reportFrame.style.transition="";
     reportFrame.removeEventListener("transitionend", hideReport);
 }
 function hideBall(){
     ballframe.style.visiblity="hidden";
+    ballframe.style.transition="";
     ballframe.removeEventListener("transitionend", hideBall);
 }
 function showBall() {

@@ -245,7 +245,7 @@ function topSalary() {
 			}
 		}
 		if (!done)
-			result.push([i, s]);
+			result.push([i, s]);//index, salary
 	}
 	return result;
 }
@@ -281,11 +281,23 @@ let axisWid = 500, axisHei = 300;
 let axisOrigin = new THREE.Vector3(80, 400);
 let showStatus = "showBall";
 
-
+//content
 let content = document.getElementsByClassName("content")[0];
 content.style.left = `${axisOrigin.x}px`;
 content.style.top = `${axisOrigin.y - 390}px`;
 let atBegin = true;
+let contentBall = document.querySelector(".content .ball");
+let contentBubble = document.querySelector(".content .bubble");
+let contentBar = document.querySelector(".content .bar");
+contentBall.style.visibility = "visible";
+contentBubble.style.visibility = "hidden";
+contentBar.style.visibility = "hidden";
+
+let bubbleWid = 20, bubbleHei = 30;
+let barWid = 400;
+let sortSalary = topSalary();
+
+initBar();
 
 function disableBallMove() {
 	controls.enabled = false;
@@ -298,40 +310,54 @@ function clickBubbleButton() {
 	disableBallMove();
 	if (showStatus != "showBubble") {
 		if (showStatus === "showBar") {
-			Events.remove(barAniEvt);
+			// Events.remove(barAniEvt);
 			flyAllFromBarToBubble();
 		}
 		else if (showStatus === "showBall") {
 			flyAllFromBallToBubble();
 		}
+		showAxis();
 
-		loadHtml(content, "/iframes/data524/rotatePhoto/bubbleAxis");
 		showStatus = "showBubble";
 		atBegin = false;
 	}
 }
-let sortSalary = topSalary();
-let barWid = 400;
-let barAniEvt = { condition: { htmlOk: false, flyOk: false }, fun: animateBar };
+function showAxis() {
+	contentBall.style.visibility = "hidden";
+	contentBubble.style.visibility = "visible";
+	contentBar.style.visibility = "hidden";
+	// loadHtml(content, "/iframes/data524/rotatePhoto/bubbleAxis");
+}
+
+
+// let barAniEvt = { condition: { htmlOk: false, flyOk: false }, fun: animateBar };
 
 function clickBarButton() {
 	disableBallMove()
 	if (showStatus != "showBar") {
 		if (showStatus === "showBall") {
+			contentBall.style.visibility = "hidden";
 			flyAllFromBallToBar();
 		} else if (showStatus === "showBubble") {
+			contentBubble.style.visibility = "hidden";
 			flyAllFromBubbleToBar();
 		}
 		atBegin = false;
-		Events.add(barAniEvt);
+		// Events.add(barAniEvt);
 
-		loadHtml(content, "/iframes/data524/rotatePhoto/top10Salary", function () {
-			initBar();
-			Events.setConditionOk(barAniEvt, "htmlOk");
-		});
+
+
 
 		showStatus = "showBar";
 	}
+}
+function showBar() {
+	contentBar.style.visibility = "visible";
+	animateBar();
+	// loadHtml(content, "/iframes/data524/rotatePhoto/top10Salary", function () {
+	// 	initBar();
+	// 	Events.setConditionOk(barAniEvt, "htmlOk");
+	// });
 }
 function initBar() {
 	let firstBar = content.getElementsByClassName("horizontalBar")[0];
@@ -341,15 +367,16 @@ function initBar() {
 	firstBar.style.top = y + "px";
 	firstBar.style.left = x + "px";
 	firstBar.style.width = "0px";
-	applyChange(firstBar);
+	//build all other bars
 	for (let i = 1; i < 10; i++) {
 		let newBar = firstBar.cloneNode(true);
 		newBar.index = sortSalary[i][0];
-		content.appendChild(newBar);
+		firstBar.parentNode.appendChild(newBar);
 		y += bubbleHei;
 		newBar.style.top = y + "px";
 		newBar.style.width = "0px";
-		applyChange(firstBar);
+
+
 	}
 }
 function animateBar() {
@@ -357,7 +384,20 @@ function animateBar() {
 	for (let i = 0; i < allBar.length; i++) {
 		let bar = allBar[i];
 		let wid = sortSalary[i][1] / sortSalary[0][1] * barWid;
-		animateElementCss(bar, "width", wid, 1, "ease-in-out", barTransitionEnd);
+		bar.style.width = "0px";
+		let text = bar.getElementsByClassName("SalaryText")[0];
+		text.innerHTML = "";
+		bar.offsetWidth;
+
+		bar.style.transition = `width 1s ease-in-out`;//transition must after offsetWidth trigger
+		bar.addEventListener("transitionend", barTransitionEnd, false);
+		bar.style.width = `${wid}px`;
+
+
+		// //or // getComputedStyle(element).opacity;
+
+
+
 
 	}
 }
@@ -365,25 +405,26 @@ function barTransitionEnd(event) {
 	let bar = event.currentTarget;
 	let text = bar.getElementsByClassName("SalaryText")[0];
 	text.innerHTML = `$ ${personsInfo[bar.index].salary}`;
+	bar.style.transition = "";
+	bar.removeEventListener("transitionend", barTransitionEnd);
+}
 
-}
-function applyChange(element) {
-	element.offsetWidth;//or // getComputedStyle(element).opacity;
-}
-function animateElementCss(element, whichStyle, to, duration, ease, endFun) {
-	element.offsetWidth;//or // getComputedStyle(element).opacity;
-	element.style.transition = `${whichStyle} ${duration}s ${ease} `;
-	element.style[whichStyle] = `${to}px`;
-	element.addEventListener("transitionend", endFun, false);
-}
 
 
 function clickBallButton() {
 	if (showStatus != "showBall") {
 		showStatus = "showBall";
 		flyAllToBall();
-		loadHtml(content, "/iframes/data524/rotatePhoto/ball");
+		showBallContent();
+
+		// loadHtml(content, "/iframes/data524/rotatePhoto/ball");
+
 	}
+}
+function showBallContent() {
+	contentBall.style.visibility = "visible";
+	contentBubble.style.visibility = "hidden";
+	contentBar.style.visibility = "hidden";
 }
 
 function getEducationSection(degree) {
@@ -400,7 +441,8 @@ function flyAllFromBubbleToBar() {
 
 }
 function toBarEnd() {
-	Events.setConditionOk(barAniEvt, "flyOk");
+	showBar();
+	// Events.setConditionOk(barAniEvt, "flyOk");
 }
 function toBar(endFun) {
 	let visibleGroup = [];
@@ -599,7 +641,7 @@ function showUIphoto() {
 
 
 }
-let bubbleWid = 20, bubbleHei = 30;
+
 function moveToChart(obj, finalx, finaly, fun) {
 	let param = {
 		x: obj.position.x,
@@ -765,7 +807,7 @@ function init() {
 	cameraUI = initCamUI();
 	drawRotateTriangle(axisOrigin.x, axisOrigin.y - axisHei - 20);
 	initAllUIPhotos();
-	loadHtml(content, "/iframes/data524/rotatePhoto/ball")
+	// loadHtml(content, "/iframes/data524/rotatePhoto/ball")
 
 	loadHtml(tipPanel, "/iframes/data524/rotatePhoto/detailInfo");
 	tipPanel.style.visibility = "hidden";

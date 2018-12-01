@@ -34,6 +34,25 @@ body {
     width: 600px;
 }
 
+.content .ball {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+}
+
+.content .bubble {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.content .bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 #chart {
     position: absolute;
     top: 82px;
@@ -66,6 +85,7 @@ body {
     position: absolute;
     top: 18px;
     left: 8px;
+    width: 600px;
 }
 
 #tip {
@@ -80,10 +100,9 @@ body {
 
 #scene3d {
     width: 600px;
-    height:600px;
+    height: 600px;
     position: absolute;
     top: 0px;
     left: 0px;
     /* overflow: hidden; */
 }
-

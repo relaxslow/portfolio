@@ -12,7 +12,7 @@ body {
 .show .report {
     position: absolute;
     top: 0;
-    transition: left 0.5s;
+    left:0
 }
 
 .show .rotatePhoto {
@@ -20,20 +20,10 @@ body {
     height: 100%;
     position: absolute;
     top: 0;
-    transition: left 0.5s;
+    left:-933px;
 }
 
-.pos0 {
-    left: -933px;
-}
 
-.pos1 {
-    left: 0;
-}
-
-.pos2 {
-    left: 933px;
-}
 
 .button {
     background-color: rgb(0, 141, 47);

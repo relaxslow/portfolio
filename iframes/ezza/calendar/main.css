@@ -2,6 +2,7 @@
     box-sizing: border-box;
     font-size: 12px;
     margin: 0;
+    /* line-height: 22px; */
 }
 
 ul {
@@ -128,9 +129,22 @@ body {
     padding: 0 20px;
 }
 
-[type="checkbox"] {
+.removal-option {}
+
+.removal-option .title {
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+.removal-option p {
+    vertical-align: middle;
+    margin: 0 0 5px 0;
+}
+
+[type="radio"] {
     vertical-align: middle;
     line-height: 30px;
+    /* margin: 0 0 100px 0; */
 }
 
 .appointment-type-name {
@@ -275,19 +289,31 @@ button:focus {
 }
 
 .timePullDown .option {
-    line-height: 30px;
+    line-height: 14px;
     border: none;
     background-color: white;
-    margin: 5px 10px;
-    font-size: 1.3em;
+    padding: 5px 10px;
+    font-size: 1.2em;
     border-radius: 20px;
     position: relative;
 }
 
-.timePullDown .option:hover {
+.timeHighLight {
+    text-align: center;
+    vertical-align: middle;
+    pointer-events: none;
     border-radius: 20px;
     background-color: #12a884;
     color: white;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 125px;
+    height: 24px;
+    z-index: 5000;
+    cursor: pointer;
+    line-height: 24px;
+    font-size: 1.2em;
 }
 
 .timePullRight {

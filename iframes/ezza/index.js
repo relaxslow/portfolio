@@ -1,12 +1,28 @@
-function setStep(num){
-    let step=document.getElementsByClassName("step")[0];
+function setStep(num) {
+    let step = document.getElementsByClassName("step")[0];
     step.contentWindow.setCurrentStep(2);
 }
 
+function gotoSummary() {
+    let content = document.querySelector(".content");
+    let parent = content.parentNode;
+    parent.removeChild(content);
+    parent.appendChild(createIframe("/iframes/ezza/summary/main.html","content"));
+}
 
+function createIframe(name, classname) {
+    let iframe = document.createElement("iframe");
+    iframe.src = name;
+    if (classname)
+        iframe.classList.add(classname);
+    iframe.frameBorder = 0;
+    iframe.onload = iframeLoadOk;
+    return iframe;
 
-
-
+}
+function iframeLoadOk(evt) {
+    let frame = evt.currentTarget;
+}
 
 
 

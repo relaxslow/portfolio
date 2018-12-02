@@ -1,3 +1,94 @@
+
+//timeList
+let hourStep = 1, minuteStep = 15;
+let begin = { hour: 7, minute: 0 };
+let end = { hour: 20, minute: 15 };
+let allTimes = [];
+function generateAllTime() {
+
+    for (let h = begin.hour; h < end.hour; h += hourStep) {
+        let t = "";
+        let afternoon = false;
+        if (h > 12) {
+            t += (h - 12);
+            afternoon = true;
+        }
+        else
+            t += h;
+        t += ":"
+        for (let m = 0; m < 60; m += minuteStep) {
+            let tm = ""
+            if (m < 10)
+                tm += "0";
+            tm += m;
+            if (afternoon)
+                tm += " PM";
+            else
+                tm += " AM";
+            allTimes.push(t + tm);
+        }
+
+    }
+
+
+    //PM
+}
+generateAllTime();
+let timeList = document.querySelector(".timePullDown");
+let fistTimeElement = document.querySelector(".timePullDown .option");
+initTimeElement(fistTimeElement, allTimes[0]);
+function initTimeElement(element, text) {
+    element.innerHTML = text;
+    element.text = text;
+    element.addEventListener("click", clickTime, false);
+    element.addEventListener("mouseover", mouseOverTime, false);
+    element.addEventListener("mouseout", mouseOutTime, false);
+
+}
+let timeHighLight = document.querySelector(".timeHighLight");
+timeHighLight.style.visibility = "hidden";
+for (let i = 1; i < allTimes.length; i++) {
+    let time = fistTimeElement.cloneNode(true);
+    initTimeElement(time, allTimes[i]);
+    timeList.appendChild(time);
+
+}
+function clickTime(evt) {
+    window.parent.gotoSummary()
+}
+function mouseOverTime(evt) {
+    let time = evt.currentTarget;
+
+    let rect = time.getBoundingClientRect(time);
+    timeHighLight.style.top = `${rect.top + window.scrollY}px`;
+    timeHighLight.style.left = `${rect.left+13}px`;
+    timeHighLight.style.visibility = "visible";
+    timeHighLight.textContent = time.text;
+    // day.classList.add("active");
+
+}
+function mouseOutTime(evt) {
+    // timeHighLight.style.visibility = "hidden";
+}
+
+//removal
+let removalOptions = document.querySelectorAll(".removal-option input");
+let removalOptionsData = [
+    "no",
+    "yes"
+];
+for (let i = 0; i < removalOptions.length; i++) {
+    let option = removalOptions[i];
+    option.addEventListener("click", clickRemovalOptions, false);
+    option.data = removalOptionsData[i];
+}
+function clickRemovalOptions(evt) {
+    evt.stopPropagation();
+    let option = evt.currentTarget;
+    console.log(option.data);
+
+}
+
 //option Menu
 let optionMenu = document.getElementsByClassName("options")[0];
 optionMenu.style.visibility = "hidden";

@@ -7,7 +7,7 @@ iframe {
     width: 100%;
     /* height: 100%; */
 }
-.calendar{
+.content{
     width: 100%;
     height: calc( 100vh - 174px );
 }

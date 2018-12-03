@@ -12,6 +12,8 @@ function clickOutsideMenu(evt) {
         type.close();
     if (month.status === "open")
         month.close();
+    if (year.status === "open")
+        year.close();
 
 }
 
@@ -51,10 +53,11 @@ function clickWhySecurity() {
 
 }
 
-//type
+//pulldown Menus
 let type = getPullDown(".type");
 let month = getPullDown(".month");
 let year = getPullDown(".year")
+let currentOpen = null;
 
 function getPullDown(sel) {
     let p = {}
@@ -72,18 +75,32 @@ function getPullDown(sel) {
 
         p.group.removeChild(p.menu);
         p.status = "close";
+        currentOpen = null;
 
     }
     function openMenu() {
 
         p.group.appendChild(p.menu);
         p.status = "open";
+        currentOpen = p;
 
     }
     function clickBut(evt) {
         evt.stopPropagation();
-        if (p.status === "open") p.close();
-        else p.open();
+        if (currentOpen == null) {
+            p.open();
+        }
+        else {
+            if (currentOpen == p) {
+                p.close();
+            } else if (currentOpen != p) {
+                currentOpen.close();
+                p.open();
+            }
+        }
+
+        // if (p.status === "open") p.close();
+        // else p.open();
 
     }
     for (let i = 0; i < p.items.length; i++) {
@@ -105,6 +122,6 @@ function getPullDown(sel) {
 let submit = document.querySelector(".submit");
 submit.addEventListener("click", clickSubmit, false);
 function clickSubmit(evt) {
-    if(validate())
-    console.log("submit");
+    if (validate())
+        console.log("submit");
 }

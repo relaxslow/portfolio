@@ -1,0 +1,67 @@
+.info {
+    margin-left: 5px;
+}
+
+.lock {
+    width: 10px;
+    height: 10px;
+    /* fill: black; */
+}
+
+.lock path {
+    fill: black;
+}
+
+.creditCard-info {
+    margin: 20px 0;
+    max-width: 800px;
+}
+
+.creditCard-info p {
+    margin-top: 3px;
+}
+
+.creditCard-info .zipCode {
+    width: 45%;
+}
+
+.submitBox {
+    display: flex;
+    align-items: baseline;
+}
+
+.submit {
+    width: 106px;
+    padding-right: 24px;
+}
+
+.submitBox .back {
+    margin-left: 10px;
+}
+.explain{
+    cursor: pointer;
+    width: unset;
+}
+.explainDetail {
+    display: flex;
+    background-color: #e6e6e6;
+    padding: 20px;
+    margin: 10px 5px;
+}
+
+.explainImg {
+    width: 20%;
+}
+
+.explainText {
+    width: 80%;
+    margin: 0 50px 0 50px;
+}
+
+.explainText p {
+    margin: 0 0 10px 0;
+}
+
+.explainText .back {
+    background-color: #e6e6e6;
+}

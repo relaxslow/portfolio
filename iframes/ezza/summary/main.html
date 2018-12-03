@@ -2,18 +2,21 @@
 <html>
 
 <head>
+    <link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
+    <link rel="stylesheet" href="/iframes/ezza/style.css">
     <link rel="stylesheet" href="/iframes/ezza/summary/main.css">
+
 </head>
 
 <body>
     <div class="content">
         <div class="info">
-            <span class="appointment-type-name">Boss (No Chip) Manicure</span>,<span class="option">Yes Gel Removal
+            <span class="appointment-type-name l5">Boss (No Chip) Manicure</span>,<span class="option">Yes Gel Removal
                 $10.00</span>
             on <span class="date">December 19, 2018 at 9:15am</span><br>
 
-            <button class="change">
-                <svg class="back" style="isolation:isolate" viewBox="0 0 10 10" width="6" height="6">
+            <button class="back">
+                <svg viewBox="0 0 10 10" width="6" height="6">
                     <path d=" M 4 0 L 1 5 L 4 10 L 5 9 L 3 5 L 5 1 L 4 0 Z " fill="rgb(0,0,0)" />
                     <path d=" M 8 0 L 5 5 L 8 10 L 9 9 L 7 5 L 9 1 L 8 0 Z " fill="rgb(0,0,0)" />
                 </svg>
@@ -23,25 +26,39 @@
         <br>
         <br>
         <div class="your-info">
-            <div class="normalBox name">
-                <p>name <span class="necessary">*</span></p>
-                <div class="group">
-                    <input class="first" type="text" value="first">
-                    <input class="last" type="text" , value="last">
+            <div class="group">
+                <div class="normalBox p30">
+                    <p class="title">Name <span class="necessary">*</span></p>
+                    <input class="firstName border" type="text"value="first">
                 </div>
-
+                <div class="normalBox p70">
+                    <p class="title" style="visibility:hidden;">last </p>
+                    <input class="lastName border" type="text"value="last">
+                </div>
             </div>
+            <br>
             <div class="normalBox phone">
-                <p>Phone <span class="necessary">*</span></p>
-                <input class="phone" type="text">
+                <p class="title">Phone <span class="necessary">*</span></p>
+                <input class="phone border" type="text">
             </div>
+            <br>
             <div class="normalBox email">
-                <p>Email <span class="necessary">*</span></p>
-                <input class="email" type="text">
+                <p class="title">Email <span class="necessary">*</span></p>
+                <input class="email border" type="text">
             </div>
 
         </div>
-        <button class="pay">Reserve without Paying</button>
+
+        <button class="submit">
+            <span>Reserve without Paying</span>
+            <svg class="forward" viewBox="0 0 10 10" width="10" height="10">
+                <path d=" M 6 0 L 9 5 L 6 10 L 5 9 L 7 5 L 5 1 L 6 0 Z " fill="rgb(1,1,1)" />
+                <path d=" M 2 0 L 5 5 L 2 10 L 1 9 L 3 5 L 1 1 L 2 0 Z " fill="rgb(1,1,1)" />
+            </svg>
+        </button>
+
+        <script src="/iframes/ezza/summary/main.js"></script>
+        <script src="/iframes/ezza/submitCheck.js"></script>
     </div>
 
 

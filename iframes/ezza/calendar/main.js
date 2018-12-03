@@ -54,7 +54,7 @@ for (let i = 1; i < allTimes.length; i++) {
 
 }
 function clickTime(evt) {
-    window.parent.gotoSummary()
+    window.parent.appointmentStepGoto(1);
 }
 function mouseOverTime(evt) {
     let time = evt.currentTarget;
@@ -68,7 +68,7 @@ function mouseOverTime(evt) {
 
 }
 function mouseOutTime(evt) {
-    // timeHighLight.style.visibility = "hidden";
+    timeHighLight.style.visibility = "hidden";
 }
 
 //removal

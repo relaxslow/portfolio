@@ -1,15 +1,26 @@
+//functions
 function setStep(num) {
     let step = document.getElementsByClassName("step")[0];
-    step.contentWindow.setCurrentStep(2);
+    step.contentWindow.setCurrentStep(num);
 }
-
-function gotoSummary() {
+let steps = [
+    "calendar",
+    "summary",
+    "payment"
+]
+function appointmentStepGoto(index) {
+    setStep(index);
     let content = document.querySelector(".content");
     let parent = content.parentNode;
     parent.removeChild(content);
-    parent.appendChild(createIframe("/iframes/ezza/summary/main.html","content"));
+    parent.appendChild(createIframe(`/iframes/ezza/${steps[index]}/main.html`, "content"));
 }
 
+
+
+
+
+//-------------------------------
 function createIframe(name, classname) {
     let iframe = document.createElement("iframe");
     iframe.src = name;

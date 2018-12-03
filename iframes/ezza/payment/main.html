@@ -5,6 +5,7 @@
     <link href="https://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet">
     <link rel="stylesheet" href="/iframes/ezza/style.css">
     <link rel="stylesheet" href="/iframes/ezza/payment/main.css">
+    <script src="/iframes/ezza/common/pullDownMenu.js"></script>
 
 
 </head>
@@ -21,7 +22,7 @@
                     <p class="title">First Name</p>
                     <input class="firstName border" type="text">
                 </div>
-                <div class="normalBox p70">
+                <div class="normalBox p70 l3">
                     <p class="title">Last Name</p>
                     <input class="lastName border" type="text">
                 </div>
@@ -43,7 +44,7 @@
 
 
                 </div>
-                <div class="normalBox p30">
+                <div class="normalBox p30 l3">
                     <p class="title">CVV2</p>
                     <input class="cvv2 border" type="text">
 
@@ -95,7 +96,13 @@
             <div class="normalBox p45">
                 <p class="title">Type</p>
                 <div class="type pullDown">
-                    <button class="border">Visa</button>
+                    <button class="border"><span>Visa</span> 
+                        <div class="arrows">
+                            <svg class="down" viewBox="0 0 10 10">
+                                <path d=" M 0 0 L 10 0 L 5 10 L 0 0 Z " fill="rgb(0,0,0)"></path>
+                            </svg>
+                        </div>
+                    </button>
                     <div class="options">
                         <button class="optionItem select">Visa</button>
                         <button class="optionItem">Mastercard</button>
@@ -109,7 +116,13 @@
                 <div class="normalBox">
                     <p class="title">Expiration Month</p>
                     <div class="month pullDown">
-                        <button class="border">1-January</button>
+                        <button class="border"><span>1-January</span> 
+                            <div class="arrows">
+                                <svg class="down" viewBox="0 0 10 10">
+                                    <path d=" M 0 0 L 10 0 L 5 10 L 0 0 Z " fill="rgb(0,0,0)"></path>
+                                </svg>
+                            </div>
+                        </button>
                         <div class="options">
                             <button class="optionItem">1-January</button>
                             <button class="optionItem">2-February</button>
@@ -129,7 +142,13 @@
                 <div class="normalBox">
                     <p class="title">Expiration Year</p>
                     <div class="year pullDown">
-                        <button class="border">2019</button>
+                        <button class="border"><span>2019</span> 
+                            <div class="arrows">
+                                <svg class="down" viewBox="0 0 10 10">
+                                    <path d=" M 0 0 L 10 0 L 5 10 L 0 0 Z " fill="rgb(0,0,0)"></path>
+                                </svg>
+                            </div>
+                        </button>
                         <div class="options">
                             <button class="optionItem">2019</button>
                             <button class="optionItem">2020</button>

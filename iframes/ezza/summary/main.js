@@ -6,12 +6,12 @@ function clickChange() {
 
 let pay = document.querySelector(".submit");
 pay.addEventListener("click", clickPay, false);
-pay.addEventListener("mouseover", mouseOverPay, false);
+// pay.addEventListener("mouseover", mouseOverPay, false);
 
 function clickPay(evt) {
     if (validate())
         window.parent.appointmentStepGoto(2);
 }
-function mouseOverPay(evt) {
+// function mouseOverPay(evt) {
 
-}
+// }

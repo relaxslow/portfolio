@@ -25,6 +25,7 @@ function buildStep() {
     }
     window.addEventListener("resize", resizeStep, false);
     currentStep = document.getElementsByClassName("currentStep")[0];
+
     setCurrentStep(0);
 }
 function cloneSVG(svg) {
@@ -52,7 +53,10 @@ function resizeStep() {
     let paths = document.querySelectorAll("path");
     for (let i = 0; i < paths.length; i++) {
         let path = paths[i];
-        path.setAttribute("d", `M 0 0 L ${stepWid} 0 l ${arrowWid} ${stepHei / 2} l -${arrowWid} ${stepHei / 2} l -${stepWid} 0 l 0 0 Z `);
+        if (i > 0 && i == paths.length - 1)
+            path.setAttribute("d", `M 0 0 L ${stepWid + arrowWid} 0 l ${arrowWid} ${stepHei / 2} l -${arrowWid} ${stepHei / 2} l -${stepWid + arrowWid} 0 l 0 0 Z `);
+        else
+            path.setAttribute("d", `M 0 0 L ${stepWid} 0 l ${arrowWid} ${stepHei / 2} l -${arrowWid} ${stepHei / 2} l -${stepWid} 0 l 0 0 Z `);
     }
 
 
@@ -72,8 +76,12 @@ function resizeStep() {
     setCurrentStep(0);
 }
 
- function setCurrentStep(num) {
-    currentStep.style.width = `${stepWid}px`;
+function setCurrentStep(num) {
+    if (num == stepNum - 1)
+        currentStep.style.width = `${stepWid + arrowWid}px`;
+    else
+        currentStep.style.width = `${stepWid}px`;
+
     currentStep.style.left = `${num * stepWid}px`;
 }
 

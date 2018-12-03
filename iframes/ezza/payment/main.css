@@ -38,10 +38,12 @@
 .submitBox .back {
     margin-left: 10px;
 }
-.explain{
+
+.explain {
     cursor: pointer;
     width: unset;
 }
+
 .explainDetail {
     display: flex;
     background-color: #e6e6e6;

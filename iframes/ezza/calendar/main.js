@@ -6,7 +6,7 @@ let end = { hour: 20, minute: 15 };
 let allTimes = [];
 function generateAllTime() {
 
-    for (let h = begin.hour; h < end.hour; h += hourStep) {
+    for (let h = begin.hour; h < end.hour + 1; h += hourStep) {
         let t = "";
         let afternoon = false;
         if (h > 12) {
@@ -17,6 +17,7 @@ function generateAllTime() {
             t += h;
         t += ":"
         for (let m = 0; m < 60; m += minuteStep) {
+
             let tm = ""
             if (m < 10)
                 tm += "0";
@@ -26,7 +27,10 @@ function generateAllTime() {
             else
                 tm += " AM";
             allTimes.push(t + tm);
+            if (h == end.hour && m == end.minute)
+                return;
         }
+
 
     }
 
@@ -61,7 +65,7 @@ function mouseOverTime(evt) {
 
     let rect = time.getBoundingClientRect(time);
     timeHighLight.style.top = `${rect.top + window.scrollY}px`;
-    timeHighLight.style.left = `${rect.left+13}px`;
+    timeHighLight.style.left = `${rect.left + 13}px`;
     timeHighLight.style.visibility = "visible";
     timeHighLight.textContent = time.text;
     // day.classList.add("active");
@@ -90,82 +94,74 @@ function clickRemovalOptions(evt) {
 }
 
 //option Menu
-let optionMenu = document.getElementsByClassName("options")[0];
-optionMenu.style.visibility = "hidden";
-let current = document.getElementsByClassName("current")[0];
-current.addEventListener("click", clickOptionMenu, false);//click month year 
-optionMenuOpen = false;
-function clickOptionMenu(evt) {
-    evt.stopPropagation();
-    if (optionMenuOpen) {
-        optionMenu.style.visibility = "hidden";
-        optionMenuOpen = false;
-    } else {
-        optionMenu.style.visibility = "visible";
-        optionMenuOpen = true;
-    }
+let year = getPullDown(".year");
 
-}
-let optionItems = document.getElementsByClassName("optionItem");
-for (let i = 0; i < optionItems.length; i++) {
-    let option = optionItems[i];
-    option.index = i;
-    option.addEventListener("click", clickOptionItem, false);
-
-}
-function clickOptionItem(evt) {
-    let optionItem = evt.currentTarget;
-    current.textContent = optionItem.textContent;
-    console.log("click option" + evt.currentTarget.index);
-}
-
+//prev next
 let prev = document.getElementsByClassName("prev")[0];
 let next = document.getElementsByClassName("next")[0];
 prev.addEventListener("click", clickPrev, false);
 next.addEventListener("click", clickNext, false);
 function clickPrev(evt) {
-    console.log("click Prev");
-    //attachDatatoDays
+    // console.log("click Prev");
+
+    let currentNum = year.select.index;
+    if (currentNum > 0)
+        year.setValue(--currentNum);
 
 }
 function clickNext(evt) {
-    console.log("click Next");
-    //attachDatatoDays
+    // console.log("click Next");
+    let currentNum = year.select.index;
+    if (currentNum < year.items.length-1)
+        year.setValue(++currentNum);
+
 }
 //close panel when click outside
 document.addEventListener("click", clickOutsideMenu, false)//click outside the menu
 function clickOutsideMenu(evt) {
     let element = evt.currentTarget;
-    if (optionMenuOpen) {
-        optionMenu.style.visibility = "hidden";
-        optionMenuOpen = false;
-    }
+    if (year.status === "open")
+        year.close();
+
     if (selectDay) {
-        daySelector.parentNode.removeChild(daySelector);
-        closeTimePullDown();
-        if (selectTime) {
-            closeTimePullRight();
-        }
+        timePullDown.close();
+        // if (selectTime) {
+        //     closeTimePullRight();
+        // }
 
     }
 }
 
 //days
 let days = document.querySelectorAll(".days li");
-let dayData = {
-    text: 0,
-    available: false
-}
-let timeData = {
-    hour: 2,
-    minutes: 15,
-    am: "am",
-}
+
 let dayHighlight = document.querySelectorAll(".dayHighlight")[0];
 let daySelector = document.querySelectorAll(".dayHighlight")[1];
 let timePullRight = document.getElementsByClassName("timePullRight")[0];
 let timePullDown = document.getElementsByClassName("timePullDown")[0];
+timePullDown.close = function closeTimePullDownMenu() {
+    timePullDown.parentNode.removeChild(timePullDown);
+    selectDay.removeChild(daySelector);
+    currentOpen = null;
+    selectDay = null;
+}
+timePullDown.open = function openTimePullDownMenu() {
 
+    document.body.appendChild(timePullDown);
+    timePullDown.moveToDay(selectDay);
+    currentOpen = timePullDown;
+}
+timePullDown.moveToDay = function moveToDay(day) {
+    let rect = day.getBoundingClientRect();
+    timePullDown.style.left = `${rect.left + window.scrollX}px`;
+    timePullDown.style.top = `${rect.top + window.scrollY + 30}px`;
+}
+function closeTimePullDown() {
+    if (timePullDown.parentNode) {
+        timePullDown.parentNode.removeChild(timePullDown);
+
+    }
+}
 let timeItems = document.querySelectorAll(".timePullDown .option");
 for (let i = 0; i < timeItems.length; i++) {
     const timeItem = timeItems[i];
@@ -222,23 +218,28 @@ function clickDay(evt) {
         selectDay = day;
         day.appendChild(daySelector);
         daySelector.innerHTML = day.text;
-        showTimePullDown(day)
+        showTimePullDown(day);
 
     }
 
 }
 function showTimePullDown(day) {
-    let rect = day.getBoundingClientRect();
-    document.body.appendChild(timePullDown);
-    timePullDown.style.left = `${rect.left}px`;
-    timePullDown.style.top = `${rect.top + 30}px`;
-}
-function closeTimePullDown() {
-    if (timePullDown.parentNode) {
-        timePullDown.parentNode.removeChild(timePullDown);
-        selectDay = null;
+    if (currentOpen == null) {
+        timePullDown.open();
     }
+    else {
+        if (currentOpen == timePullDown) {
+            timePullDown.moveToDay(day);
+        } else {
+            currentOpen.close();
+            timePullDown.open();
+        }
+
+    }
+
+
 }
+
 function mouseOverItem(evt) {
     let day = evt.currentTarget;
     if (day.classList.contains("avaliable")) {

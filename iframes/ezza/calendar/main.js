@@ -105,8 +105,10 @@ function clickPrev(evt) {
     // console.log("click Prev");
 
     let currentNum = year.select.index;
-    if (currentNum > 0)
+    if (currentNum > 0){
         year.setValue(--currentNum);
+       
+    }
 
 }
 function clickNext(evt) {

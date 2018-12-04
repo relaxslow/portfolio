@@ -14,10 +14,10 @@ function getPullDown(sel) {
     p.open = openMenu;
     p.setValue = setValue;
     function setValue(num) {
-        
+
         p.button.querySelector("span").innerHTML = p.items[num].innerHTML;
         p.select.classList.remove("select");
-        p.select=p.items[num];
+        p.select = p.items[num];
         p.select.classList.add("select");
     }
     function closeMenu() {
@@ -50,7 +50,7 @@ function getPullDown(sel) {
     for (let i = 0; i < p.items.length; i++) {
         const item = p.items[i];
         item.addEventListener("click", clickItem, false);
-        item.index=i;
+        item.index = i;
     }
     function clickItem(evt) {
         let item = evt.currentTarget;

@@ -16,6 +16,7 @@ let textData = [
     "Gel Removal and Calendar",
     "Payment and Confirmation"
 ]
+let current = 0;
 buildStep();
 resizeStep();
 function buildStep() {
@@ -26,7 +27,7 @@ function buildStep() {
     window.addEventListener("resize", resizeStep, false);
     currentStep = document.getElementsByClassName("currentStep")[0];
 
-    setCurrentStep(0);
+    setCurrentStep(current);
 }
 function cloneSVG(svg) {
     let newSvg = svg.cloneNode(true);
@@ -73,7 +74,7 @@ function resizeStep() {
 
     }
 
-    setCurrentStep(0);
+    setCurrentStep(current);
 }
 
 function setCurrentStep(num) {
@@ -83,5 +84,6 @@ function setCurrentStep(num) {
         currentStep.style.width = `${stepWid}px`;
 
     currentStep.style.left = `${num * stepWid}px`;
+    current = num;
 }
 

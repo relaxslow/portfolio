@@ -56,7 +56,7 @@ function clickWhySecurity() {
 //pulldown Menus
 let type = getPullDown(".type");
 let month = getPullDown(".month");
-let year = getPullDown(".year")
+let year = getPullDown(".year");
 
 
 //submit

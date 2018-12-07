@@ -1,0 +1,16 @@
+body {
+    /* background-color: aquamarine; */
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.menuItem {
+    width: 100%;
+    height: 50px;
+    border: none;
+    background-color: #b02f2f;
+    color: white;
+}

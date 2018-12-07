@@ -1,0 +1,12 @@
+.content{
+    display: flex;
+    flex-direction: row;
+    padding-top: 70px;
+    overflow: hidden;
+    width: 100%;
+}
+.sideMenu{
+width: 150px;
+}
+.workShow{
+}

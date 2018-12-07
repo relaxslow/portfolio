@@ -1,7 +1,13 @@
 
-.content{
-    
+
+.content {
+    display: flex;
+    margin: 20px 5%;
+    position: relative;
 }
+
+
+
 .personPic {
     flex-shrink: 0;
     border-style: solid;
@@ -13,24 +19,18 @@
     background-position: 0px 0px;
     width: 140px;
     height: 140px;
-    /* position: absolute; */
-    /* float: left; */
+    margin-bottom: 10px;
 }
 
 .personPic img {
     border: 1px solid rgb(207, 46, 46);
-    /* background-image: url("/assets/img/baby.jpg"); */
     height: 140px;
     width: 140px;
     clip: rect(0px, 128px, 60px, 0px);
-    /* position: absolute; */
 }
 
-.descreptionText {
+.descreptionText ,.contact{
     float: left;
-    margin: 0px 50px;
-    width: 60%;
+    margin: 10px 10px;
+    width: 100%;
 }
-/* .contact{
-    white-space: nowrap;
-} */

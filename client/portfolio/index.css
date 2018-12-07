@@ -1,0 +1,15 @@
+
+body
+{
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.head{
+    height: 70px;
+    position: fixed;
+}
+
+.foot{
+    height: 251px;
+    background-color: #e0e0e0;
+}

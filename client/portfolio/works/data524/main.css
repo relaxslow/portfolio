@@ -3,11 +3,12 @@ body {
     margin: 0px;
     overflow: hidden;
     position: relative;
+    height: 600px;
 }
 
 .threejs button {
     z-index: 3000;
-    background-color: rgb(238, 238, 238);
+    background-color: rgb(204, 204, 204);
     color: #121212;
     width: 65px;
     height: 33px;
@@ -32,6 +33,7 @@ body {
     top: 110px;
     left: 700px;
     width: 600px;
+  
 }
 
 .content .ball {

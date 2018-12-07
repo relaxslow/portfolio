@@ -459,10 +459,15 @@ let subRoutine = {
         // readHtmlFile("./iframes/transparent/main.html", res);
         // readHtmlFile("./iframes/transparentBackground/transparent.html", res);
 
+        //portfolio
+        readHtmlFile("./client/portfolio/index.html", res);
 
+        //LeetCode
+        // readHtmlFile("./client/leetCode/main.html", res);
+        //
 
         //Ezza js
-        readHtmlFile("./iframes/ezza/index.html", res);
+        // readHtmlFile("./iframes/ezza/index.html", res);
 
 
         //DATA524 

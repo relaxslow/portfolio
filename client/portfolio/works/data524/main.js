@@ -335,17 +335,19 @@ function showAxis() {
 function clickBarButton() {
 	disableBallMove()
 	if (showStatus != "showBar") {
+
 		if (showStatus === "showBall") {
-			contentBall.style.visibility = "hidden";
+		
 			flyAllFromBallToBar();
 		} else if (showStatus === "showBubble") {
-			contentBubble.style.visibility = "hidden";
+
+
 			flyAllFromBubbleToBar();
 		}
 		atBegin = false;
 		// Events.add(barAniEvt);
 
-
+		showBar();
 
 
 		showStatus = "showBar";
@@ -353,7 +355,10 @@ function clickBarButton() {
 }
 function showBar() {
 	contentBar.style.visibility = "visible";
-	animateBar();
+		contentBall.style.visibility = "hidden";
+					contentBubble.style.visibility = "hidden";
+					resetBar();
+
 	// loadHtml(content, "/iframes/data524/rotatePhoto/top10Salary", function () {
 	// 	initBar();
 	// 	Events.setConditionOk(barAniEvt, "htmlOk");
@@ -379,15 +384,27 @@ function initBar() {
 
 	}
 }
+function resetBar(){
+	let allBar = content.getElementsByClassName("horizontalBar");
+	for (let i = 0; i < allBar.length; i++) {
+		let bar = allBar[i];
+// 		let wid = sortSalary[i][1] / sortSalary[0][1] * barWid;
+		bar.style.width = "0px";
+			bar.style.transition ="";
+		let text = bar.getElementsByClassName("SalaryText")[0];
+		text.innerHTML = "";
+		bar.offsetWidth;
+	}
+}
 function animateBar() {
 	let allBar = content.getElementsByClassName("horizontalBar");
 	for (let i = 0; i < allBar.length; i++) {
 		let bar = allBar[i];
 		let wid = sortSalary[i][1] / sortSalary[0][1] * barWid;
-		bar.style.width = "0px";
-		let text = bar.getElementsByClassName("SalaryText")[0];
-		text.innerHTML = "";
-		bar.offsetWidth;
+// 		bar.style.width = "0px";
+// 		let text = bar.getElementsByClassName("SalaryText")[0];
+// 		text.innerHTML = "";
+		
 
 		bar.style.transition = `width 1s ease-in-out`;//transition must after offsetWidth trigger
 		bar.addEventListener("transitionend", barTransitionEnd, false);
@@ -441,7 +458,7 @@ function flyAllFromBubbleToBar() {
 
 }
 function toBarEnd() {
-	showBar();
+		animateBar();
 	// Events.setConditionOk(barAniEvt, "flyOk");
 }
 function toBar(endFun) {

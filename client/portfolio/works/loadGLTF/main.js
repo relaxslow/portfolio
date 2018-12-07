@@ -1,4 +1,4 @@
-let content=document.querySelector(".content");
+let content = document.querySelector(".content");
 let model, loader = new THREE.GLTFLoader();
 function init3d() {
     let color = '#111111',
@@ -74,8 +74,8 @@ function initSys() {
 
 function initCamera2d() {
     let camera = new THREE.OrthographicCamera();
-    let halfwid = window.innerWidth / 2;
-    let halfHei = window.innerHeight / 2
+    let halfwid = content.clientWidth / 2;
+    let halfHei = content.clientHeight / 2
     camera = new THREE.OrthographicCamera(-halfwid, halfwid, halfHei, -halfHei, 1, 1000);
     camera.name = "camera2d";
     camera.position.z = 300;
@@ -83,21 +83,21 @@ function initCamera2d() {
     return camera;
 }
 function initCamera3d() {
-    let camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(3.8, 3.8, 3.8);
+    let camera = new THREE.PerspectiveCamera(45, content.clientWidth / content.clientHeight, 0.1, 1000);
+    camera.position.set(2.3, 1, 2.3);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     camera.resize = resize3d;
     return camera
 }
 function initCameraUI() {
-    let camera = new THREE.OrthographicCamera(0, window.innerWidth, 0, window.innerHeight, 1, 1000);
+    let camera = new THREE.OrthographicCamera(0, content.clientWidth, 0, content.clientHeight, 1, 1000);
     camera.position.z = 2;
     camera.resize = resizeUI;
     return camera
 }
 function resize2d() {
-    let halfwid = window.innerWidth / 2;
-    let halfHei = window.innerHeight / 2;
+    let halfwid = content.clientWidth / 2;
+    let halfHei = content.clientHeight / 2;
     this.left = -halfwid;
     this.right = halfwid;
     this.top = halfHei;
@@ -105,12 +105,12 @@ function resize2d() {
     this.updateProjectionMatrix();
 }
 function resize3d() {
-    this.aspect = window.innerWidth / window.innerHeight;
+    this.aspect = content.clientWidth / content.clientHeight;
     this.updateProjectionMatrix();
 }
 function resizeUI() {
-    this.right = window.innerWidth;
-    this.bottom = window.innerHeight;
+    this.right = content.clientWidth;
+    this.bottom = content.clientHeight;
     this.updateProjectionMatrix();
 }
 function cleanScene() {
@@ -129,14 +129,14 @@ function cleanMeshes(obj) {
 function onWindowResize() {
     camera.resize();
     cameraUI.resize();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(content.clientWidth, content.clientHeight);
     renderScene();
 }
 function initRenderer() {
     let renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setClearColor(0xffffff, 0);
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(content.clientWidth, content.clientHeight);
     renderer.autoClear = false;
     return renderer;
 }
@@ -157,7 +157,7 @@ function initControls() {
     controls.noPan = false;
     controls.staticMoving = false;
     controls.dynamicDampingFactor = 0.2;
-    controls.target.set(0, 1.5, 0);
+    controls.target.set(0, 0, 0);
     controls.update();
     controls.addEventListener('change', renderScene);
 }

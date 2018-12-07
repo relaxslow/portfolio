@@ -450,6 +450,7 @@ let systemRoutine = {
 
 
 };
+//routine
 let subRoutine = {
     "": function (req, res) {
         // readHtmlFile("./client/index.html", res);
@@ -461,6 +462,8 @@ let subRoutine = {
 
         //portfolio
         readHtmlFile("./client/portfolio/index.html", res);
+        // readHtmlFile("./client/portfolio/works/animatedLine/main.html", res);
+
 
         //LeetCode
         // readHtmlFile("./client/leetCode/main.html", res);

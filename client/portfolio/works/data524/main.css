@@ -13,6 +13,8 @@ body {
     width: 65px;
     height: 33px;
     border: none;
+    font-size: 0.8em;
+    font-family: cursive;
 }
 
 .threejs button:hover {
@@ -24,8 +26,8 @@ body {
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 36px;
-    left: 0px;
+    top: 70px;
+    left: 580px;
 }
 
 .content {
@@ -82,8 +84,8 @@ body {
 }
 
 .chartTitle {
-    font-family: fantasy;
-    font-size: xx-large;
+    font-family: 'Slackey';
+    font-size: 1.5em;
     position: absolute;
     top: 18px;
     left: 8px;
@@ -93,7 +95,7 @@ body {
 #tip {
     background: rgba(0, 0, 0, 0.5);
     color: white;
-    width: 200px;
+    width: 234px;
     position: absolute;
     top: 100px;
     left: 100px;

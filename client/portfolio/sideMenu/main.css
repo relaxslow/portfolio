@@ -13,4 +13,12 @@ body {
     border: none;
     background-color: #b02f2f;
     color: white;
+    font-family: 'Roboto Condensed';
+}
+.menuItem:hover,.select{
+    background-color:white;
+    color:black;
+}
+.menuItem:focus{
+    outline: none;
 }

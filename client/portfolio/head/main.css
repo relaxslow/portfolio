@@ -1,15 +1,20 @@
 body{
     background-color: #4e4e4e;
+    font-family:monospace;
     /* vertical-align: middle; */
     /* line-height: 70px; */
 }
 .logo{
-    width: 200px;
-    height: 50px;
+    width: 202px;
+    /* height: 50px; */
     cursor: pointer;
     position: absolute;
-    top: 7px;
+    top: 15px;
     left: 10px;
+}
+.logo svg text{
+    font-family: 'Slackey';
+    font-size:61px;
 }
 .menu{
     display: flex;
@@ -32,4 +37,14 @@ body{
 .select{
     background-color: rgb(255, 255, 255);
     color: black; 
+}
+.underConstruction{
+    width: 141px;
+    height: 50px;
+    position: absolute;
+    left: 218px;
+    top: 18px;
+}
+.underConstruction svg{
+    
 }

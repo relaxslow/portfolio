@@ -8,3 +8,6 @@ Make the second SVG just a <use> element that points to the first. You can scale
 # how to deepcopy svg using javascript 
 
 JSON.parse(JSON.stringify(obj))
+
+# draw effect
+vector-effect="non-scaling-stroke" lead wrong result when using getTotalLength();

@@ -94,3 +94,5 @@ function origin(path, sec, ease) {
     path.style.transition = `fill ${sec}s ${ease} `;
     path.style.fill = path.color;
 }
+
+

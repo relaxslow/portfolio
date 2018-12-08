@@ -27,6 +27,7 @@ function resize(evt) {
     else {
         content.style.height = (contentHei) + "px";
     }
+    foot.style.height = (footHei) + "px";
 }
 
 function resizeIframe(iFrame) {

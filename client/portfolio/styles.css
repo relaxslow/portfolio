@@ -19,11 +19,11 @@ p{
     line-height: 22px;
 }
 
-a{
+a,u{
     color:#90138c;
     font-family:  'Press Start 2P', cursive;
     font-size: 0.7em;
-    /* text-decoration: underline solid; */
+    text-decoration: underline solid;
 }
 
 body

@@ -1,9 +1,13 @@
 
-
+body{
+}
 .content {
     display: flex;
-    margin: 20px 5%;
-    position: relative;
+    padding: 20px 5%;
+    justify-content: space-between;
+    /* position: relative; */
+    /* align-items: center; */
+    /* max-width: 1200px; */
 }
 
 
@@ -20,6 +24,7 @@
     width: 140px;
     height: 140px;
     margin-bottom: 10px;
+    /* margin: 10px; */
 }
 
 .personPic img {
@@ -29,8 +34,12 @@
     clip: rect(0px, 128px, 60px, 0px);
 }
 
-.descreptionText ,.contact{
-    float: left;
+.descreptionText{
+    /* float: left; */
     margin: 10px 10px;
-    width: 100%;
+    width: 40%;
+}
+.contact{
+    margin 10px 10px
+    width:10%;
 }

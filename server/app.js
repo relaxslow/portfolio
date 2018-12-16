@@ -450,7 +450,7 @@ let systemRoutine = {
 
 
 };
-//routine
+//!!!
 let subRoutine = {
     "": function (req, res) {
         // readHtmlFile("./client/index.html", res);
@@ -461,7 +461,7 @@ let subRoutine = {
         // readHtmlFile("./iframes/transparentBackground/transparent.html", res);
 
         //portfolio
-        readHtmlFile("./client/portfolio/index.html", res);
+        // readHtmlFile("./client/portfolio/index.html", res);
         // readHtmlFile("./client/portfolio/works/animatedLine/main.html", res);
 
 
@@ -495,6 +495,32 @@ let subRoutine = {
         // readHtmlFile("./iframes/webgl/f02_rectangle/main.html", res);
         // readHtmlFile("./iframes/webgl/f03_multiRectangle/main.html", res);
         // readHtmlFile("./iframes/webgl/f04_displayImage/main.html", res);
+        // readHtmlFile("./iframes/webgl/f05_translateVetexPos/main.html", res);
+        // readHtmlFile("./iframes/webgl/f06_translateVetexPosInShader/main.html", res);
+        // readHtmlFile("./iframes/webgl/f07_rotationUseShader/main.html", res);
+        // readHtmlFile("./iframes/webgl/f08_transform2DUseMatrix/main.html", res);
+        // readHtmlFile("./iframes/webgl/f09_Orthographic3D/main.html", res);
+        // readHtmlFile("./iframes/webgl/f10_Perspect/main.html", res);
+        // readHtmlFile("./iframes/webgl/f11_Camera/main.html", res);
+        // readHtmlFile("./iframes/webgl/f12_Animation/main.html", res);
+
+
+        //threeExample
+        // readHtmlFile("./threejsExample/SVGCanvas/main.html", res);
+        // readHtmlFile("./threejsExample/SVGMesh/main.html", res);
+
+        // readHtmlFile("./threejsExample/drawSVG/main.html", res);
+        // readHtmlFile("./threejsExample/rawshader/main.html", res);
+        // readHtmlFile("./threejsExample/f01-triangle/main.html", res);
+        // readHtmlFile("./threejsExample/f03-text/main.html", res);
+        // readHtmlFile("./threejsExample/f03-textCanvas/main.html", res);
+        // readHtmlFile("./threejsExample/f03-textTexture/main.html", res);
+        // readHtmlFile("./threejsExample/f03-textGlyph/main.html", res);
+        // readHtmlFile("./threejsExample/f03-textCss/main.html", res);
+        // readHtmlFile("./threejsExample/f04-renderToTexture/main.html", res);
+        readHtmlFile("./threejsExample/f05-css3D/main.html", res);
+
+
         // readHtmlFile("./iframes/webgl/draw/main.html", res);
 
 

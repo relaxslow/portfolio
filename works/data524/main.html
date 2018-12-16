@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>three.js + svg</title>
+	<link href="https://fonts.googleapis.com/css?family=Cairo|Gamja+Flower|Play|Press+Start+2P|Rationale|Roboto+Condensed|Slackey"
+	 rel="stylesheet">
+	<link rel="stylesheet" href="/works/styles.css">
+	<link rel="stylesheet" href="/works/data524/main.css">
+
+	<script src="/lib/three.js"></script>
+	<script src="/lib/stats.min.js"></script>
+	<script src="/lib/TrackballControls.js"></script>
+	<script src="/lib/tween.js"> </script>
+	<script src="/lib/xsload.js"></script>
+
+</head>
+
+<body class="threejs">
+	<div class="control">
+		<button class=" ball">Ball</button>
+		<button class=" bubble">Bubble</button>
+		<button class=" bar">Bar</button>
+	</div>
+	<div class="content">
+		<div class="ball">
+			<div class="chartTitle">OverView</div>
+		</div>
+		<div class="bubble">
+			<div class="chartTitle">Education and Working Experience</div>
+			<svg id="chart" viewBox="0 0 610 369" width="610" height="369">
+
+				<path d=" M 86.098 8 L 86.098 308 L 586.098 308" fill="none" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke="rgb(0,0,0)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.098" y1="308" x2="86.098" y2="315" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="186.098" y1="308" x2="186.098" y2="315" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="286.098" y1="308" x2="286.098" y2="315" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="386.098" y1="308" x2="386.098" y2="315" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="486.098" y1="308" x2="486.098" y2="315" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="586.098" y1="308" x2="586.098" y2="315" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.393" y1="8" x2="80.393" y2="8" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.098" y1="108" x2="80.393" y2="108" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.098" y1="208" x2="80.393" y2="208" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.098" y1="308" x2="80.393" y2="308" vector-effect="non-scaling-stroke" stroke-width="1" stroke="rgb(0,0,0)"
+				 stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<g transform="matrix(1,0,0,1,172.623,315)"><text transform="matrix(1,0,0,1,11.068,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">1</text></g>
+				<g transform="matrix(1,0,0,1,269.361,315)"><text transform="matrix(1,0,0,1,11.068,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">3</text></g>
+				<g transform="matrix(1,0,0,1,371.098,315)"><text transform="matrix(1,0,0,1,11.068,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">5</text></g>
+				<g transform="matrix(1,0,0,1,472.836,315)"><text transform="matrix(1,0,0,1,7.924,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">10</text></g>
+				<g transform="matrix(1,0,0,1,574.574,315)"><text transform="matrix(1,0,0,1,4.779,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">15+</text></g>
+				<g transform="matrix(1,0,0,1,34.967,261)"><text transform="matrix(1,0,0,1,0,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">Bachelor</text></g>
+				<g transform="matrix(1,0,0,1,34.967,153.886)"><text transform="matrix(1,0,0,1,7.585,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">Master</text></g>
+				<g transform="matrix(1,0,0,1,34.967,54)"><text transform="matrix(1,0,0,1,22.033,13.267)" style="font-family:'Open Sans';font-weight:400;font-size:11px;font-style:normal;fill:#000000;stroke:none;">PhD</text></g>
+				<g transform="matrix(0,-1,1,0,8,225.386)"><text transform="matrix(1,0,0,1,0,14.964)" style="font-family:'Open Sans';font-weight:400;font-size:14px;font-style:normal;fill:#000000;stroke:none;">education
+					</text></g>
+				<g transform="matrix(1,0,0,1,241.188,337)"><text transform="matrix(1,0,0,1,0,14.964)" style="font-family:'Open Sans';font-weight:400;font-size:14px;font-style:normal;fill:#000000;stroke:none;">Working
+						Experience ( year )</text></g>
+				<path d=" M 86.393 8 L 586.098 8 L 586.098 308" fill="none" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.098" y1="108" x2="586.098" y2="108" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="86.393" y1="208" x2="586.098" y2="208" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="186.098" y1="308" x2="186.098" y2="8" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="286.098" y1="308" x2="286.098" y2="8" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="386.098" y1="308" x2="386.098" y2="8" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+				<line x1="486.098" y1="308" x2="486.098" y2="8" vector-effect="non-scaling-stroke" stroke-width="1"
+				 stroke-dasharray="2,2" stroke="rgb(187,187,187)" stroke-linejoin="miter" stroke-linecap="square" stroke-miterlimit="3" />
+
+			</svg>
+		</div>
+		<div class="bar">
+			<div class="chartTitle">Top 10 Salary</div>
+			<div class="horizontalBar">
+				<p class="SalaryText"></p>
+			</div>
+		</div>
+	</div>
+	<div id="scene3d">
+		<div id="tip"></div>
+	</div>
+
+	<script src="/works/data524/main.js"></script>
+</body>
+
+
+</html>

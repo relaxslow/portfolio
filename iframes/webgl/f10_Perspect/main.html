@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>rotation using shader</title>
+    <link rel="stylesheet" href="/iframes/webgl/f10_Perspect/main.css">
+    <script src="/iframes/webgl/f10_Perspect/util.js"></script>
+
+</head>
+
+<body>
+    <div class="scene">
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+            <input type="range" min="-200" max="200" value="150" class="slider" id="x">
+            <input type="range" min="-200" max="200" value="100" class="slider" id="y">
+            <input type="range" min="-1000" max="1" value="-360" class="slider" id="z">
+            <p> </p>
+            <input type="range" min="0" max="360" value="190" class="slider" id="angleX">
+            <input type="range" min="0" max="360" value="40" class="slider" id="angleY">
+            <input type="range" min="0" max="360" value="30" class="slider" id="angleZ">
+            <p> </p>
+            <input type="range" min="0" max="3.0" value="1" step="0.1" class="slider" id="scaleX">
+            <input type="range" min="0" max="3.0" value="1" step="0.1" class="slider" id="scaleY">
+            <input type="range" min="0" max="3.0" value="1" step="0.1" class="slider" id="scaleY">
+            <p></p>
+            <input type="range" min="1" max="179" value="60" step="1" class="slider"id="fieldOfView">
+        </div>
+    </div>
+
+
+    <script src="/iframes/webgl/f10_Perspect/main.js"></script>
+</body>
+
+</html>

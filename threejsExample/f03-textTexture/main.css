@@ -1,0 +1,31 @@
+body {
+    color: #ca5c5c;
+    font-family: Monospace;
+    font-size: 13px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #ffffff;
+    margin: 0px;
+    overflow: hidden;
+}
+
+
+#container {
+    width: 400px;
+    height: 400px;
+    background-color: #777777;
+    border: solid 1px black;
+    position: relative;
+}
+
+.text{
+    /* position: absolute; */
+    width: 256;
+    height: 128;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+.scene{
+    /* background-color: #dc7474; */
+}

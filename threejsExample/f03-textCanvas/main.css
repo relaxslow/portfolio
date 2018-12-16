@@ -1,0 +1,28 @@
+body {
+    color: #ffffff;
+    font-family: Monospace;
+    font-size: 13px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #ffffff;
+    margin: 0px;
+    overflow: hidden;
+}
+
+
+#container {
+    width: 400px;
+    height: 400px;
+    background-color: white;
+    border: solid 1px black;
+    position: relative;
+}
+
+.text{
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}

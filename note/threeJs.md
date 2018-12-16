@@ -1,4 +1,8 @@
-## lookat version
+## format glsl files
+install Clang-format  for vs code;
+install  Clang-format use : npm install -g clang-format; 
+install glsl-canvas for test and debug;
+##  version
     console.log( THREE.REVISION );
 
 ## control target
@@ -19,7 +23,7 @@
     texture.minFilter = THREE.NearestFilter;
     texture.magFilter = THREE.NearestFilter; 
     texture.needsUpdate = true; 
-##Vector3.project()
+## Vector3.project()
 vector.project( camera );
 This only converts a vector to normalized device space. You still have to map the vector to 2D screen space. Something like:
 
@@ -29,3 +33,12 @@ vector.z = 0;
 width and height represent the dimensions of the canvas (renderer.domElement).
 
 After the call of Vecto3.project(), the components of vector are in the range of [ - 1, + 1 ] (assuming the vector originally was inside the view frustum). The mentioned calculation will then convert this range to [ 0, 1 ] and then multiply the values with the respective dimensions (width or height). The y-coordinate is handled in a special way because in screen space the origin of the coordinate system is top left (and not bottom left).
+
+if render single frame, add following , if whole function in animation loop, no need
+//    camera.updateMatrixWorld();
+
+## svg 
+can't wrap svg  to mesh, it convert svg to bitmap and map to mesh  
+svgloader -- convert svg to mesh
+svg must have inline attribute fill to success read its color
+

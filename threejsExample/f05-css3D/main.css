@@ -9,7 +9,6 @@ body {
     overflow: hidden;
 }
 
-
 #container {
     width: 400px;
     height: 400px;
@@ -18,7 +17,7 @@ body {
     position: relative;
 }
 
-.text{
+.text {
     /* position: absolute; */
     width: 256;
     height: 128;
@@ -26,6 +25,12 @@ body {
     top: 0;
     pointer-events: none;
 }
-.scene{
+
+.scene {
     /* background-color: #dc7474; */
+}
+
+
+.select{
+    background-color: aliceblue;
 }

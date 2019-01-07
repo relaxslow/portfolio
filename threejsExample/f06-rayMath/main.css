@@ -1,0 +1,11 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+.container {
+    width: 640px;
+    height: 480px;
+    position: relative;
+    overflow: hidden;
+    border: solid 1px blue;
+}

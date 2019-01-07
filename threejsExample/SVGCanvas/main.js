@@ -1,3 +1,4 @@
+//svg->canvas->texture
 var mesh;
 var scene = new THREE.Scene();
 

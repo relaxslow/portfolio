@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>gameScene</title>
+    <link rel="stylesheet" href="/works/lastbattle/scene/game.css">
+    <script src="/lib/three.js"></script>
+    <script src="/lib/WebGL.js"></script>
+    <script src="/lib/TrackballControls.js"></script>
+    <script src="/lib/GLTFLoader.js"></script>
+    <script src="/lib/three-clone-gltf.js"></script>
+    <script src="/lib/Tween.js"></script>
+    
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js"></script> -->
+</head>
+
+<body>
+    <div class="container">
+        <div class="soundVolumn">
+            <input type="range" min="0" max="100" value="100" class="slider">
+        </div>
+        <div class="scoreBox">SCORE: <span class="score">999999</span></div>
+        <canvas class="scene"></canvas>
+        <div class="test">
+            <button class="cam3d">camera3d</button>
+            <button class="cam2d">camera2d</button>
+            <button class="reset">reset</button>
+            <button class="wire">wire</button>
+            <button class="play">play</button>
+            <div class="camCord">camCord</div>
+        </div>
+    </div>
+
+    <script src="/works/lastbattle/scene/game.js"></script>
+</body>
+
+</html>

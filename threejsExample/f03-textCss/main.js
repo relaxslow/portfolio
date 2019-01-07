@@ -57,6 +57,7 @@ function onWindowResize() {
 function initText() {
 
   var text = document.createElement('div');
+  
   text.className = 'label';
   text.textContent = 'Earth';
   text.style.marginTop = '-1em';

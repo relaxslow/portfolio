@@ -36,9 +36,25 @@ After the call of Vecto3.project(), the components of vector are in the range of
 
 if render single frame, add following , if whole function in animation loop, no need
 //    camera.updateMatrixWorld();
-
+//convert screen to 3D
 ## svg 
 can't wrap svg  to mesh, it convert svg to bitmap and map to mesh  
 svgloader -- convert svg to mesh
 svg must have inline attribute fill to success read its color
 
+
+##raycast
+# bullet hit
+Unfortunately, I don’t understand what you are doing in your code so let me provide you a general guide for implementing a robust bullet collision detection.
+
+The line of fire is usually represented as a ray.
+In each simulation step, the origin of the ray is the previous position of the bullet.
+You now perform an intersection test with the obstacles in your game environment.
+If there is an intersection, computed the (squared) euclidian distance between the origin of the ray and the intersection point. Let’s call this distance d1.
+Now compute the “new” position of the bullet for this simulation step and the (squared) euclidian distance between the new position and the previous one. Let’s call this distance d2.
+If d1 <= d2, you have a hit.
+A working example of this code is presented in the following demo of Yuka 1, a library of developing game AI. The API is similar to three.js, so it should be no problem use the code as a template.
+
+# import gltf
+ material alpha can't export in current version
+ can't import single channel of rotation 

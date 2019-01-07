@@ -1,3 +1,4 @@
+//svg->svgloader->mesh
 var renderer, scene, camera;
 init();
 animate();

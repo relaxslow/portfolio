@@ -1,0 +1,195 @@
+{
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5121,
+            "count" : 6,
+            "max" : [
+                5
+            ],
+            "min" : [
+                0
+            ],
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 6,
+            "max" : [
+                0.0011077448725700378,
+                0.007722525857388973,
+                0.0
+            ],
+            "min" : [
+                -0.0010936334729194641,
+                -0.0003192732110619545,
+                0.0
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5121,
+            "count" : 6,
+            "max" : [
+                3
+            ],
+            "min" : [
+                0
+            ],
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5126,
+            "count" : 4,
+            "max" : [
+                0.0033020665869116783,
+                0.0019751801155507565,
+                0.0
+            ],
+            "min" : [
+                -0.003443182446062565,
+                -0.00197517778724432,
+                0.0
+            ],
+            "type" : "VEC3"
+        }
+    ],
+    "asset" : {
+        "generator" : "Khronos Blender glTF 2.0 exporter",
+        "version" : "2.0"
+    },
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 6,
+            "byteOffset" : 0,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 72,
+            "byteOffset" : 8,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 6,
+            "byteOffset" : 80,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 48,
+            "byteOffset" : 88,
+            "target" : 34962
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 136,
+            "uri" : "machineGun.bin"
+        }
+    ],
+    "extensionsUsed" : [
+        "KHR_materials_unlit"
+    ],
+    "materials" : [
+        {
+            "extensions" : {
+                "KHR_materials_unlit" : {}
+            },
+            "name" : "metal",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.46285519003868103,
+                    0.688920259475708,
+                    1.0,
+                    1.0
+                ],
+                "metallicFactor" : 0.0,
+                "roughnessFactor" : 0.9
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Curve",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 1
+                    },
+                    "indices" : 0,
+                    "material" : 0
+                }
+            ]
+        },
+        {
+            "name" : "Curve.005",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 3
+                    },
+                    "indices" : 2,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 1,
+            "name" : "gunbase",
+            "rotation" : [
+                5.960464477539063e-08,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale" : [
+                2633.601318359375,
+                2633.601318359375,
+                2633.601318359375
+            ],
+            "translation" : [
+                0.12970221042633057,
+                36.80243682861328,
+                0.06548649817705154
+            ]
+        },
+        {
+            "mesh" : 0,
+            "name" : "weapon_machineGun",
+            "rotation" : [
+                5.960464477539063e-08,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scale" : [
+                2633.601318359375,
+                2633.601318359375,
+                2633.601318359375
+            ],
+            "translation" : [
+                -0.037538766860961914,
+                36.6029167175293,
+                -1.1675647497177124
+            ]
+        }
+    ],
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0,
+                1
+            ]
+        }
+    ]
+}

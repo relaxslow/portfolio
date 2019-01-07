@@ -518,7 +518,14 @@ let subRoutine = {
         // readHtmlFile("./threejsExample/f03-textGlyph/main.html", res);
         // readHtmlFile("./threejsExample/f03-textCss/main.html", res);
         // readHtmlFile("./threejsExample/f04-renderToTexture/main.html", res);
-        readHtmlFile("./threejsExample/f05-css3D/main.html", res);
+        // readHtmlFile("./threejsExample/f05-css3D/main.html", res);
+        // readHtmlFile("./threejsExample/f06-ray/main.html", res);
+        // readHtmlFile("./threejsExample/f06-rayMath/main.html", res);
+        // readHtmlFile("./threejsExample/f07-collideTest/main.html", res);
+
+
+        //lastBattle
+        readHtmlFile("./works/lastBattle/main.html", res);
 
 
         // readHtmlFile("./iframes/webgl/draw/main.html", res);

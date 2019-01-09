@@ -672,7 +672,7 @@ function Helicopter() {
         let areaWid = 100;
         let areaHei = 300;
         let max = 10;
-        let scale=0.4;
+        let scale = 0.4;
         Helicopter.update = function (delta) {
             if (source == null) return;
             if (Helicopter.getLiving().length >= max) return;
@@ -683,7 +683,7 @@ function Helicopter() {
                 let randomSide = Math.round(Math.random());//1/right or 0/left
                 let beginPoint = areaTopLeft[randomSide];
                 let leftOrRight = beginPoint[2]
-                helicopter.scene.scale.set(scale* leftOrRight, scale, 1);
+                helicopter.scene.scale.set(scale * leftOrRight, scale, 1);
                 helicopter.scene.rotation.set(0, 0, -0.3 * leftOrRight);
                 let x = beginPoint[0] + randomRange(0, areaWid);
                 let y = beginPoint[1] - randomRange(0, areaHei);
@@ -896,19 +896,27 @@ function Gun() {
             duration: 2000,
             size: 1.2,
             sound: "MachineGun.mp3",
-            cool:7,
-            coolrest:2,
+            cool: 7,
+            coolrest: 2,
+            reset: function () {
+                coolCount = cool;
+                count = 0;
+            }
 
         },
         {
             name: "cannon",
-            shotInterval: 0.5,
+            shotInterval: 1,
             range: 600,
             duration: 2000,
             size: 2,
             sound: "cannon.mp3",
-            cool:1,
-            coolrest:2,
+            cool: 1,
+            coolrest: 1,
+            reset:function(){
+                coolCount = cool;
+                count = 0;
+            }
         }
     ];
     function getWeaponParam(searchName) {
@@ -919,7 +927,18 @@ function Gun() {
         }
         return null;
     }
-    
+    function getNextWeaponName(current) {
+        for (let i = 0; i < weaponParams.length; i++) {
+            let name = weaponParams[i].name;
+            if (name === current) {
+                let nextIndex = i + 1;
+                if (nextIndex == weaponParams.length)
+                    nextIndex = 0;
+                return weaponParams[nextIndex].name;
+            }
+        }
+        return null;
+    }
     let gunTower;
     let folder = "/assets/lastBattle/";
     loader.load(folder + "guntower.gltf", loadOk);
@@ -939,7 +958,7 @@ function Gun() {
             placeInBase(weapons[name]);
             gunTower.remove(weapons[name]);
         }
-    
+
 
         rise("machineGun");
         new BulletsMaker();
@@ -957,16 +976,25 @@ function Gun() {
 
     function packUp(name) {
         needUpdate.remove(Gun);
-        let weapon = weapon[name];
+        let weapon = weapons[name];
         let tween = new TWEEN.Tween(weapon.position)
             .to({ y: packUpPos.y }, 1000)
             .start()
             .onComplete(function (obj) {
                 gunTower.remove(weapon);
+                if (action.fun && action.param) {
+                    action.fun(action.param)
+                }
             })
+        let action = {};
+        action.then = function (fun, param) {
+            action.fun = fun;
+            action.param = param;
+        }
+        return action;
     }
     function rise(name) {
-
+        currentWeapon = name;
         let weapon = weapons[name];
         gunTower.add(weapon);
         let tween = new TWEEN.Tween(weapon.position)
@@ -986,9 +1014,12 @@ function Gun() {
         range = param.range;
         duration = param.duration;
         sound = sounds[param.sound];
-        cool=param.cool;
-        coolrest=param.coolrest;
-        size=param.size;
+        cool = param.cool;
+        coolCount=cool;
+        coolRest = param.coolrest;
+        coolRestCount=coolRest;
+        size = param.size;
+        resetWeapon = param.reset;
 
         gun = weapons[name].control;
         gunNormalPos.copy(gun.position);
@@ -1000,7 +1031,7 @@ function Gun() {
         needUpdate.push(Gun);
         Gun.update = updateGunControl;
     }
- 
+
 
 
     let maxAngle = THREE.Math.degToRad(100);
@@ -1025,12 +1056,14 @@ function Gun() {
     let sound;//current
     let sounds = {};
 
+    let resetWeapon;
+
     let pressA = false;
     let pressD = false;
     let pressJ = false;
     let pressR = false;
     for (let i = 0; i < weaponParams.length; i++) {
-        let name=weaponParams[i].sound;
+        let name = weaponParams[i].sound;
         SoundEffect.add(name, function (sound) {
             sound.setLoop(false);
             sound.setMaxVolume(0.2);
@@ -1042,7 +1075,7 @@ function Gun() {
     function fire() {
         let bullet = BulletsMaker.create();
         if (bullet == null) return;
-        bullet.scale.set(size,size,1)
+        bullet.scale.set(size, size, 1)
         //bullet init position
         direction.set(0, cannonLen, 0);
         direction.applyQuaternion(gun.quaternion)
@@ -1090,14 +1123,18 @@ function Gun() {
 
     let currentWeapon = "machineGun"
     function switchWeapon() {
-
+        let nextWeapon = getNextWeaponName(currentWeapon);
+        packUp(currentWeapon)
+            .then(rise, nextWeapon)
     }
     // let keys = {};
     // keys.a = false;
     // keys.d = false;
     // keys.j = false;
     // keys.r = false;
+    let accumulator=0;
     function updateGunControl(deltaTime) {
+        accumulator+=deltaTime;
         let delta = deltaTime * speed;
         if (pressA) {
             total += delta;
@@ -1111,25 +1148,41 @@ function Gun() {
         }
         gun.rotation.z = total;
         if (pressJ) {
-            if (count == 0) {
-                if (coolCount) {
+//             if (count == 0) {
+//                  fire();
+// //                 if (coolCount) {
+// //                     fire();
+// //                     coolCount--;
+// //                 }
+// //                 else {
+// //                     coolRestCount--;
+                    
+// //                     if (coolRestCount == 0) {
+// //                         coolCount = cool;
+// //                         coolRestCount = coolRest;
+// //                     }
+// //                 }
+
+//             }
+            count=accumulator;
+            if (count >= shotInterval) {
+                if(coolCount){
                     fire();
                     coolCount--;
                 }
-                else {
+                else{
                     coolRestCount--;
-                    if (coolRestCount == 0) {
-                        coolCount = cool;
-                        coolRestCount = coolRest;
+                    if(coolRestCount==0){
+                        coolCount=cool;
+                        coolRestCount=coolRest;
                     }
                 }
-
-            }
-            count += deltaTime;
-            if (count >= shotInterval) {
                 count = 0;
+             accumulator=0;
             }
+           
         }
+         console.log("coolrest:"+coolRestCount+","+"coolCount:"+coolCount+","+"count:"+count.toFixed(2)+","+"accum:"+accumulator.toFixed(2));
         if (pressR) {
             switchWeapon();
         }
@@ -1144,9 +1197,10 @@ function Gun() {
                 break;
             case "j":
                 pressJ = false;
-                coolCount = cool;
-                count = 0;
+                if (resetWeapon) resetWeapon();
                 break;
+            case "r":
+                pressR = false;
         }
     }
     function onKeyDown(evt) {

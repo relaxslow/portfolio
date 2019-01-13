@@ -5,10 +5,50 @@
     <title>scene</title>
     <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
     <link rel="stylesheet" href="/works/styles.css">
-    <link rel="stylesheet" href="/works/lastbattle/scene/begin.css">
+    <!-- <link rel="stylesheet" href="/works/lastbattle/scene/begin.css"> -->
     <script src="/lib/three.js"></script>
     <script src="/lib/WebGL.js"></script>
     <script src="/lib/OrbitControls.js"></script>
+    <style>
+        body {
+            background: #a5a5a5;
+            text-align: center;
+        }
+
+        .title {
+
+            margin: 157px 0 0 0;
+
+            font-size: 43px;
+
+            font-weight: 600;
+
+            font-family: 'Orbitron', sans-serif;
+
+            color: #ffffff;
+        }
+
+        .title {}
+
+        .menu {
+            margin: 39px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu button {
+            width: 115px;
+            height: 28px;
+            background: #ff6565;
+            border: solid 1px #ffffff;
+            /* border-style: solid; */
+            /* text-decoration: none; */
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 
 <body>
@@ -16,7 +56,13 @@
     <div class="menu">
         <button class="start">START</button>
     </div>
-    <script src="/works/lastbattle/scene/begin.js"></script>
+    <script>
+        let start = document.querySelector(".start");
+        start.addEventListener("click", beginGame);
+        function beginGame(evt) {
+            window.parent.loadGameScene();
+        }
+    </script>
 </body>
 
 </html>

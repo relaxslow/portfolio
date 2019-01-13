@@ -56,5 +56,12 @@ If d1 <= d2, you have a hit.
 A working example of this code is presented in the following demo of Yuka 1, a library of developing game AI. The API is similar to three.js, so it should be no problem use the code as a template.
 
 # import gltf
+- overview
+action 1<->1 clip
+- material
  material alpha can't export in current version
- can't import single channel of rotation 
+- actions
+- NLA tracks
+- bones
+### caution
+all the tracks must close

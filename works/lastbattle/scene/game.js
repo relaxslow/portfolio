@@ -1,5 +1,3 @@
-
-
 let container;
 let scene, camera, renderer;
 let camera2D, camera3D;
@@ -10,10 +8,11 @@ let control3D, control2D;
 let loader;
 let clock;
 //object groups
-let group_bLines;//boundingBox line
+let group_bLines; //boundingBox line
 // update groups
 let needUpdate;
 let collideUpdate;
+
 function UpdateGroup() {
     let group = [];
     this.get = function () {
@@ -33,9 +32,26 @@ function UpdateGroup() {
         removeElemtFromArray.call(group, elem);
     };
 }
+
 function removeElemtFromArray(elem) {
     this.splice(this.indexOf(elem), 1);
 }
+function RenderList() {
+    let renderList = [];
+    RenderList.render = function () {
+        for (let i = 0; i < renderList.length; i++) {
+            let render = renderList[i];
+            render();
+        }
+    }
+    RenderList.push = function (renderfun) {
+        renderList.push(renderfun);
+    }
+    RenderList.remove = function (renderfun) {
+        renderList.splice(renderList.indexOf(elem), 1);
+    }
+}
+
 function main() {
     init();
     animate();
@@ -46,7 +62,7 @@ function init() {
     container = document.querySelector(".container");
     var frustumSize = 500;
     var aspect = container.clientWidth / container.clientHeight;
-    camera2D = new THREE.OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 1, 1000);
+    camera2D = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 1, 1000);
     camera2D.position.set(0, 240, 200);
     listener = new THREE.AudioListener();
     camera2D.add(listener);
@@ -91,20 +107,25 @@ function init() {
     // create an AudioListener and add it to the camera
     new SoundEffect();
 
-    inittest();
+
     initMesh();
 
     new Collide();
 
+    new RenderList();
+    RenderList.push(render);
 
-
+    // inittest();
+    subscribeTestReady();
 
 }
+
 function onWindowResize() {
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(container.clientWidth, container.clientHeight);
 }
+
 function animate() {
     requestAnimationFrame(animate);
     var delta = clock.getDelta();
@@ -114,13 +135,16 @@ function animate() {
     collideUpdate.update(delta);
 
     control3D.update();
-    render();
-    renderTest();
+
+    RenderList.render();
+
 }
+
 function render() {
     renderer.render(scene, camera);
 
 }
+
 function SoundEffect() {
     let soundBuffers = {};
     SoundEffect.getBuffers = function () {
@@ -138,7 +162,7 @@ function SoundEffect() {
         }
         allSound.push(sound);
         audioLoader.load(folder + name, function (buffer) {
-            soundBuffers[name] = buffer;//?
+            soundBuffers[name] = buffer; //?
             sound.setBuffer(buffer);
             sound.name = name;
             fun(sound);
@@ -188,6 +212,7 @@ function SoundEffect() {
 
 
 }
+
 function initLight() {
     var light = new THREE.AmbientLight(0x111111); // soft white light
     scene.add(light);
@@ -222,16 +247,19 @@ function Control2D(camera2d) {
 
     }
 }
+
 function onContextMenu(evt) {
     event.preventDefault();
     event.stopPropagation();
 }
+
 function onMouseWheel(event) {
     if (!control2D.enabled) return;
     control2D.camera.zoom += 0.001 * event.wheelDeltaY;
     //     console.log(control2D.camera.zoom);
     control2D.camera.updateProjectionMatrix();
 }
+
 function mouseMove(event) {
     if (!control2D.enabled) return;
 
@@ -246,6 +274,7 @@ function mouseMove(event) {
         control2D.lastVec.set(event.clientX, event.clientY);
     }
 }
+
 function mouseDown(event) {
     if (!control2D.enabled) return;
     //     event.preventDefault();
@@ -253,6 +282,7 @@ function mouseDown(event) {
     control2D.button = event.button;
     control2D.lastVec.set(event.clientX, event.clientY);
 }
+
 function mouseUp(event) {
     if (!control2D.enabled) return;
     //     event.preventDefault();
@@ -294,10 +324,16 @@ function Effect() {
             sound: "spark.mp3",
             volume: 0.1,
             scale: 0.5
-
+        },
+        {
+            name: "groundExplode",
+            sound: "groundExplode.mp3",
+            volume: 0.3,
+            scale: 1
         }
     ]
     let id = 0;
+
     function loadOk(gltf) {
         for (let i = 0; i < effects.length; i++) {
             let name = effects[i].name;
@@ -340,8 +376,7 @@ function Effect() {
         let effect;
         if (pool[type].length > 0) {
             effect = pool[type].pop();
-        }
-        else {
+        } else {
             effect = cloneGltf(source);
             effect.sound = source.sound;
             effect.mixer = new THREE.AnimationMixer(effect.scene);
@@ -355,6 +390,7 @@ function Effect() {
                 needUpdate.remove(effect.mixer);
                 effect.mixer.removeEventListener('finished', finish);
             }
+
             function finish(evt) {
                 effect.reclaim();
             }
@@ -363,7 +399,7 @@ function Effect() {
                 effect.mixer.name = "mixer_" + effect.scene.name;
                 effect.name = "root_" + effect.scene.name;
                 effect.mixer.addEventListener('finished', finish);
-               
+
                 needUpdate.push(effect.mixer);
                 scene.add(effect.scene);
 
@@ -383,25 +419,30 @@ function Effect() {
 
 
 }
+
 function loopOnceStopAtLastFrame(action) {
     action.setLoop(THREE.LoopOnce);
     action.clampWhenFinished = true;
 }
+
 function loopOnce(action) {
     action.setLoop(THREE.LoopOnce);
     action.clampWhenFinished = false;
 }
+
 function setLoopOnce() {
     for (let key in this.actions) {
         let action = this.actions[key];
         loopOnce(action);
     }
 }
+
 function putInWireGroup(child) {
     if (child instanceof THREE.Mesh) {
         wireGroup.push(child);
     }
 }
+
 function canDisplayWire() {
     this.scene.traverse(function (child) {
         putInWireGroup(child);
@@ -416,11 +457,13 @@ function initAction() {
         this.actions[clip.name] = action;
     }
 }
+
 function resetAndPlay(name) {
     let action = this.actions[name];
     // action.reset();
     action.play();
 }
+
 function resetAllAndPlay() {
     for (let key in this.actions) {
         let action = this.actions[key];
@@ -428,6 +471,7 @@ function resetAllAndPlay() {
         action.play();
     }
 }
+
 function damage(value, intersetPoint) {
     this.hp -= value;
     Effect.create("spark").place(intersetPoint);
@@ -435,6 +479,10 @@ function damage(value, intersetPoint) {
         explode.call(this);
 }
 
+function groundExplode() {
+    Effect.create("groundExplode").place(this.scene.position);
+    this.reclaim();
+}
 function explode() {
     Effect.create("explode").place(this.scene.position);
     this.reclaim();
@@ -444,6 +492,7 @@ function SatelliteMaker() {
     let type = "satellite";
     let source;
     loader.load('/assets/lastBattle/satellite.gltf', loadSatOk);
+
     function loadSatOk(src) {
         source = src;
     }
@@ -466,8 +515,7 @@ function SatelliteMaker() {
         let sat;
         if (pool.length > 0) {
             sat = pool.pop();
-        }
-        else {
+        } else {
             num++;
             if (num > maxNum) {
                 num = maxNum;
@@ -567,6 +615,7 @@ function SatelliteMaker() {
         if (sat)
             sat.place(200, 200);
     }
+
     function beginLaunch() {
         let count = 0;
         needUpdate.push(SatelliteMaker);
@@ -607,7 +656,7 @@ function BBox(points) {
         geometry.vertices.push(p1);
     }
 
-    geometry.vertices.push(new THREE.Vector3(points[0][0], points[0][1], 0));//close the line
+    geometry.vertices.push(new THREE.Vector3(points[0][0], points[0][1], 0)); //close the line
 
     let bLine = new THREE.Line(geometry, material);
     bLine.renderOrder = 1;
@@ -627,7 +676,7 @@ function BBox(points) {
         bLine.name += "-" + obj.name;
     }
     this.update = function () {
-        this.host.updateMatrixWorld();//host must has matrix
+        this.host.updateMatrixWorld(); //host must has matrix
         bLine.matrix.copy(this.host.matrixWorld);
 
     }
@@ -635,13 +684,16 @@ function BBox(points) {
         return segments;
     }
 }
+
 function randomRange(min, max) {
     return min + Math.random() * (max - min);
 }
+
 function Helicopter() {
     let type = "helicopter";
     loader.load('/assets/lastBattle/helicopter.gltf', loadok);
     let source;
+
     function loadok(src) {
         source = src;
     }
@@ -660,8 +712,7 @@ function Helicopter() {
         let helicopter;
         if (pool.length > 0) {
             helicopter = pool.pop();
-        }
-        else {
+        } else {
             helicopter = cloneGltf(source);
             helicopter.mixer = new THREE.AnimationMixer(helicopter.scene);
             initAction.call(helicopter);
@@ -730,12 +781,16 @@ function Helicopter() {
     // loadAndRun(test);
     // loadAndRun(oneLToR);
     randomOnBothSize();
+
     function randomOnBothSize() {
         needUpdate.push(Helicopter);
         let minInterval = 1;
         let maxInterval = 3;
         let randomNext = randomRange(minInterval, maxInterval);
-        let areaTopLeft = [[-500, 400, 1], [400, 400, -1]];//x,y,direction
+        let areaTopLeft = [
+            [-500, 400, 1],
+            [400, 400, -1]
+        ]; //x,y,direction
         let areaWid = 100;
         let areaHei = 300;
         let max = 10;
@@ -747,7 +802,7 @@ function Helicopter() {
             if (randomNext <= 0) {
                 randomNext = randomRange(minInterval, maxInterval);
                 let helicopter = Helicopter.create();
-                let randomSide = Math.round(Math.random());//1/right or 0/left
+                let randomSide = Math.round(Math.random()); //1/right or 0/left
                 let beginPoint = areaTopLeft[randomSide];
                 let leftOrRight = beginPoint[2]
                 helicopter.scene.scale.set(scale * leftOrRight, scale, 1);
@@ -783,6 +838,7 @@ function Helicopter() {
 
         }
     }
+
     function oneLToR() {
         let helicopter = Helicopter.create();
         helicopter.scene.scale.set(0.5, 0.5, 0.5);
@@ -809,6 +865,7 @@ function Helicopter() {
 
 
     }
+
     function test() {
         let helicopter = Helicopter.create();
         helicopter.scene.scale.set(0.5, 0.5, 0.5);
@@ -818,9 +875,10 @@ function Helicopter() {
 
 
 }
+
 function runAfterLoadOk(fun) {
     let host = this;
-    if (this.getSrc() == null) {//this is source
+    if (this.getSrc() == null) { //this is source
         let loadSrc = {};
         needUpdate.push(loadSrc);
         loadSrc.update = function () {
@@ -832,14 +890,16 @@ function runAfterLoadOk(fun) {
 
     }
 }
+
 function WalkingBomb() {
-    let folder = "/assets/lastBattle/"
-    let type = "walkingBomb"
+    let folder = "/assets/lastBattle/";
+    let type = "walkingBomb";
     loader.load(folder + type + ".gltf", loadOk);
     let source;
     WalkingBomb.getSrc = function () {
         return source;
     }
+
     function loadOk(src) {
         source = src;
 
@@ -858,8 +918,7 @@ function WalkingBomb() {
         let walkingBomb;
         if (pool.length > 0) {
             walkingBomb = pool.pop();
-        }
-        else {
+        } else {
             walkingBomb = cloneGltf(source);
             walkingBomb.mixer = new THREE.AnimationMixer(walkingBomb.scene);
             initAction.call(walkingBomb);
@@ -912,20 +971,27 @@ function WalkingBomb() {
             walkingBomb.closeParachute = function bombCloseParachute() {
                 fadeToAction.call(walkingBomb, "parachuteClose", 0.5);
                 fadeToAction.call(walkingBomb, "standUp", 0.5);
+                setTimeout(function () {
+                    let duration = Math.abs(walkingBomb.scene.position.x) / walkSpeed * 1000;
+                    fadeToAction.call(walkingBomb, "walking", 0.5);
+                    walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
+                        .to({ x: 0 }, duration)
+                        .start()
+                        .onUpdate(function () {
+                            if (walkingBomb.scene.position.distanceToSquared(Gun.getPosition()) <= 30 * 30)
+                                groundExplode.call(walkingBomb);
+
+                        })
+                        .onComplete(function () {
+
+                            // walkingBomb.closeParachute();
+                        })
+                }, 1000)
                 // resetAndPlay.call(walkingBomb, "standUp");
 
                 // resetAndPlay.call(walkingBomb, "walking");
-                // let duration = Math.abs(walkingBomb.scene.position.x) / walkSpeed * 1000;
-                // walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
-                //     .to({ x: 0 }, duration)
-                //     .start()
-                //     .onUpdate(function () {
-                //         walkingBomb.bBox.update();
-                //     })
-                //     .onComplete(function () {
-                //         walkingBomb.bBox.update();
-                //         // walkingBomb.closeParachute();
-                //     })
+
+
             };
             walkingBomb.placexy = function (x, y) {
                 walkingBomb.scene.name = type + id++;
@@ -968,6 +1034,7 @@ function WalkingBomb() {
     let freefallSpeed = 200;
     let parachuteOnSpeed = 30;
     let walkSpeed = 30;
+
     function drop(x, y) {
         let duration = y / freefallSpeed * 1000;
         let openY = 50 + Math.random() * (y - 50);
@@ -983,19 +1050,17 @@ function WalkingBomb() {
             })
         fadeToAction.call(walkingBomb, "normal", 0.2);
     }
+
     function test() {
         // let walkingBomb = WalkingBomb.create();
         // walkingBomb.placexy(200, 200);
-
-
-
         // resetAllAndPlay();
-
         drop(200, 300);
 
     }
     runAfterLoadOk.call(WalkingBomb, test);
 }
+
 function fadeToAction(name, duration) {
     this.previousAction = this.activeAction;
     this.activeAction = this.actions[name];
@@ -1010,6 +1075,7 @@ function fadeToAction(name, duration) {
         .fadeIn(duration)
         .play();
 }
+
 function BulletsMaker() {
     //pool
     let num = 0;
@@ -1029,8 +1095,7 @@ function BulletsMaker() {
         let bullet;
         if (pool.length > 0) {
             bullet = pool.pop();
-        }
-        else {
+        } else {
             num++;
             if (num > maxNum)
                 return null;
@@ -1100,6 +1165,7 @@ function BulletsMaker() {
     }
 
 }
+
 function Border(left, right, top, bottom) {
     let bottomLeft = new THREE.Vector3(left, bottom, 0);
     let topLeft = new THREE.Vector3(left, top, 0);
@@ -1125,43 +1191,40 @@ function Border(left, right, top, bottom) {
     scene.add(line);
 }
 
-
 function Gun() {
-
     let weapons = {};
     let gun;
-    let weaponParams = [
-        {
-            name: "machineGun",
-            shotInterval: 0.1,
-            range: 400,
-            duration: 2000,
-            size: 1.2,
-            sound: "MachineGun.mp3",
-            volume: 0.05,
-            cool: 7,
-            coolrest: 2,
-            damage: {
-                "helicopter": 1,
-            }
-
-        },
-        {
-            name: "cannon",
-            shotInterval: 1,
-            range: 600,
-            duration: 2000,
-            size: 2,
-            sound: "cannon.mp3",
-            volume: 0.2,
-            cool: -1,
-            coolrest: 1,
-            damage: {
-                "helicopter": 3,
-                "satellite": 10,
-            }
-
+    let weaponParams = [{
+        name: "machineGun",
+        shotInterval: 0.1,
+        range: 400,
+        duration: 1500,
+        size: 1.2,
+        sound: "MachineGun.mp3",
+        volume: 0.05,
+        cool: 7,
+        coolrest: 2,
+        damage: {
+            "helicopter": 1,
         }
+
+    },
+    {
+        name: "cannon",
+        shotInterval: 1,
+        range: 600,
+        duration: 2000,
+        size: 2,
+        sound: "cannon.mp3",
+        volume: 0.2,
+        cool: -1,
+        coolrest: 1,
+        damage: {
+            "helicopter": 3,
+            "satellite": 10,
+        }
+
+    }
     ];
     Gun.getDamageValue = function getCurrentWeaponDamage(name) {
         for (let i = 0; i < weaponParams.length; i++) {
@@ -1173,6 +1236,7 @@ function Gun() {
         }
         return null;
     }
+
     function getWeaponParam(searchName) {
         for (let i = 0; i < weaponParams.length; i++) {
             let name = weaponParams[i].name;
@@ -1181,6 +1245,7 @@ function Gun() {
         }
         return null;
     }
+
     function getNextWeaponName(current) {
         for (let i = 0; i < weaponParams.length; i++) {
             let name = weaponParams[i].name;
@@ -1194,8 +1259,12 @@ function Gun() {
         return null;
     }
     let gunTower;
+    Gun.getPosition = function () {
+        return gunTower.position;
+    }
     let folder = "/assets/lastBattle/";
     loader.load(folder + "guntower.gltf", loadOk);
+
     function loadOk(gt) {
         canDisplayWire.call(gt);
         gunTower = gt.scene;
@@ -1218,7 +1287,7 @@ function Gun() {
         new BulletsMaker();
 
     }
-    let packUpPos = new THREE.Vector3(0, -18, 0);//local pos
+    let packUpPos = new THREE.Vector3(0, -18, 0); //local pos
 
     function placeInBase(weapon) {
         weapon.normalPos = new THREE.Vector3().copy(weapon.position);
@@ -1248,6 +1317,7 @@ function Gun() {
         }
         return action;
     }
+
     function rise(name) {
         currentWeapon = name;
         let weapon = weapons[name];
@@ -1262,8 +1332,8 @@ function Gun() {
             })
     }
 
-    let gunNormalPos = new THREE.Vector3();//for recoil pos
-    let gunNormalPosWorld = new THREE.Vector3();//for recoil pos
+    let gunNormalPos = new THREE.Vector3(); //for recoil pos
+    let gunNormalPosWorld = new THREE.Vector3(); //for recoil pos
     function initWeapon(name) {
         let param = getWeaponParam(name);
         shotInterval = param.shotInterval;
@@ -1281,7 +1351,7 @@ function Gun() {
         gunNormalPos.copy(gun.position);
         gunNormalPosWorld.copy(gunNormalPos);
         gun.parent.localToWorld(gunNormalPosWorld);
-        gun.origin = new THREE.Vector3();//for calculate bullet pos
+        gun.origin = new THREE.Vector3(); //for calculate bullet pos
         gun.origin.setFromMatrixPosition(gun.matrixWorld);
         gun.origin.z = 0;
         needUpdate.push(Gun);
@@ -1292,20 +1362,21 @@ function Gun() {
 
 
     let maxAngle = THREE.Math.degToRad(100);
-    let speed = THREE.Math.degToRad(200);//per second
+    let speed = THREE.Math.degToRad(150); //per second
 
     let total = 0;
 
     let cannonLen = 13;
 
     let count = 0;
-    let shotInterval = 0.1;//const
-    let range = 600;//const
-    let duration = 2000;//const
-    let cool = 5;//const
+    let shotInterval = 0.1; //const
+    let range = 600; //const
+    let duration = 2000; //const
+    let cool = 5; //const
     let coolRest = 2; //const
     let coolCount = cool;
     let coolRestCount = coolRest;
+
     function resetCool() {
         coolCount = cool;
         count = 0;
@@ -1314,7 +1385,7 @@ function Gun() {
 
     let direction = new THREE.Vector3();
 
-    let sound;//current
+    let sound; //current
     let sounds = {};
 
 
@@ -1337,17 +1408,17 @@ function Gun() {
     function fire() {
         let bullet = BulletsMaker.create();
         if (bullet == null) return;
-        bullet.scale.set(size, size, 1)
+        bullet.scale.set(size, size, 1);
         //bullet init position
         direction.set(0, cannonLen, 0);
-        direction.applyQuaternion(gun.quaternion)
+        direction.applyQuaternion(gun.quaternion);
         direction.add(gun.origin);
         bullet.position.copy(direction);
         updateLastPosition.call(bullet);
         // bullet.resetTrack();
         //bullet target
         direction.set(0, range, 0);
-        direction.applyQuaternion(gun.quaternion)
+        direction.applyQuaternion(gun.quaternion);
         direction.add(gun.origin);
 
         scene.add(bullet);
@@ -1384,6 +1455,7 @@ function Gun() {
     }
 
     let currentWeapon = "machineGun"
+
     function switchWeapon() {
         let nextWeapon = getNextWeaponName(currentWeapon);
         packUp(currentWeapon)
@@ -1395,6 +1467,7 @@ function Gun() {
     // keys.j = false;
     // keys.r = false;
     let accumulator = 0;
+
     function updateGunControl(deltaTime) {
         accumulator += deltaTime;
         let delta = deltaTime * speed;
@@ -1415,8 +1488,7 @@ function Gun() {
                 if (coolCount) {
                     fire();
                     coolCount--;
-                }
-                else {
+                } else {
                     coolRestCount--;
                     if (coolRestCount == 0) {
                         coolCount = cool;
@@ -1433,6 +1505,7 @@ function Gun() {
             switchWeapon();
         }
     }
+
     function onKeyUp(evt) {
         switch (event.key) {
             case "a":
@@ -1449,6 +1522,7 @@ function Gun() {
                 pressR = false;
         }
     }
+
     function onKeyDown(evt) {
         switch (evt.key) {
             case "a":
@@ -1464,6 +1538,7 @@ function Gun() {
                 pressR = true;
         }
     }
+
     function focusGame() {
         let game = window.parent.document.querySelector(".game");
         game.focus();
@@ -1485,14 +1560,17 @@ function CollideGroup() {
         removeElemtFromArray.call(group, obj);
     }
 }
+
 function updateLastPosition() {
     this.lastPosition.copy(this.position);
 }
+
 function updateLast() {
     this.lastPosition.copy(this.position);
     this.lastRotation.copy(this.rotation);
     this.lastScale.copy(this.scale);
 }
+
 function Collide() {
     let bullets;
     let satellites;
@@ -1536,6 +1614,7 @@ function Collide() {
 
     let zero = new THREE.Vector3();
     let up = new THREE.Vector3(0, 1, 0);
+
     function bullet_enemy(group) {
         if (bullets.length == 0 || group.length == 0) return;
 
@@ -1606,13 +1685,17 @@ function Collide() {
         bullet_enemy(satellites);
         //update lastPosition
         let i;
-        i = bullets.length; while (i--) { updateLastPosition.call(bullets[i]); }
-        i = satellites.length; while (i--) { updateLastPosition.call(satellites[i].scene); }
-        i = helicopters.length; while (i--) { updateLast.call(helicopters[i].scene); }
+        i = bullets.length;
+        while (i--) { updateLastPosition.call(bullets[i]); }
+        i = satellites.length;
+        while (i--) { updateLastPosition.call(satellites[i].scene); }
+        i = helicopters.length;
+        while (i--) { updateLast.call(helicopters[i].scene); }
     }
 
 
 }
+
 function facePoint(v1, v2, p) {
     return (p.x - v1.x) * (v2.y - v1.y) - (p.y - v1.y) * (v2.x - v1.x) < 0;
 }
@@ -1621,21 +1704,24 @@ function facePoint(v1, v2, p) {
 let camCord;
 let wireGroup = [];
 let wire = false;
-
+function subscribeTestReady() {
+    window.parent.subscribeTestReady(inittest)
+}
 function inittest() {
-    let cam3DBtn = document.querySelector(".cam3d");
-    let cam2DBtn = document.querySelector(".cam2d");
+
+    let cam3DBtn = window.parent.getTestControls(".cam3d")
+    let cam2DBtn = window.parent.getTestControls(".cam2d");
     cam3DBtn.addEventListener("click", toCam3D);
     cam2DBtn.addEventListener("click", toCam2D);
-    let resetBtn = document.querySelector(".reset");
+    let resetBtn = window.parent.getTestControls(".reset");
     resetBtn.addEventListener("click", resetCam);
-    camCord = document.querySelector(".camCord");
+    camCord = window.parent.getTestControls(".camCord");
 
-    let wireBtn = document.querySelector(".wire");
+    let wireBtn = window.parent.getTestControls(".wire");
     wireBtn.addEventListener('click', changeToWire);
-    let play = document.querySelector(".play");
+    let play = window.parent.getTestControls(".play");
     play.addEventListener("click", testAnimation);
-    let soundSlider = document.querySelector(".soundVolumn input")
+    let soundSlider = window.parent.getTestControls(".soundVolumn input")
     soundSlider.oninput = function () {
         SoundEffect.setVolume(this.value / 100);
     }
@@ -1653,12 +1739,16 @@ function inittest() {
         tween.stop();
     }, 1000);
 
+
+    RenderList.push(renderTest);
 }
 
 
 function testAnimation() {
-    resetAllAndPlay.call(testExplode);
+    Effect.create("groundExplode").place(new THREE.Vector3(200,200,0));
+    // resetAllAndPlay.call(testExplode);
 }
+
 function changeToWire(evt) {
     if (evt)
         evt.stopPropagation();
@@ -1670,9 +1760,11 @@ function changeToWire(evt) {
     wire = !wire;
 
 }
+
 function renderTest() {
     camCord.textContent = camera.position.x.toFixed(2) + "," + camera.position.y.toFixed(2) + "," + camera.position.z.toFixed(2) + "|" + camera.zoom.toFixed(2);
 }
+
 function resetCam() {
     control3D.reset();
     control2D.reset();
@@ -1684,6 +1776,7 @@ function toCam3D() {
     control2D.enabled = false;
     control3D.enabled = true;
 }
+
 function toCam2D() {
     camera = camera2D;
     camera.updateProjectionMatrix();

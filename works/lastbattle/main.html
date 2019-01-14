@@ -5,17 +5,68 @@
     <title>lastbattle</title>
     <link rel="stylesheet" href="/works/styles.css">
     <link rel="stylesheet" href="/works/content.css">
-    <link rel="stylesheet" href="/works/lastbattle/main.css">
+    <style>
+        .game {
+            width: 640px;
+            height: 480px;
+            background-color: #646464;
+        }
+
+        .test {
+            width: 640px;
+            height: 480px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="content">
         <h1>Last Battle</h1>
         <iframe class="game" src="/works/lastbattle/scene/begin.html" frameborder="0"></iframe>
-        <iframe class="helper" src="/works/lastbattle/scene/begin_control" frameborder="0"></iframe>
     </div>
 
-    <script src="/works/lastbattle/main.js"></script>
+    <script>
+        let content = document.querySelector(".content");
+        let game = document.querySelector(".game");
+
+
+        function loadGameScene() {
+            game.style.visibility = "hidden";
+            game.src = "/works/lastbattle/scene/game.html"
+            game.onload = finishLoad;
+            createTest();
+        }
+        function finishLoad(evt) {
+            let game = evt.currentTarget;
+            game.style.visibility = "visible";
+
+        }
+
+
+        let test;
+        let testReady = [];//subscribers
+        function subscribeTestReady(fun) {
+            if (test) fun();
+            else
+                testReady.push(fun);
+        }
+        function createTest() {
+            test = document.createElement('iframe');
+            test.src = "/works/lastbattle/scene/test.html";
+            test.frameBorder=0;
+            test.classList.add("test");
+            test.onload = function () {
+                for (let i = 0; i < testReady.length; i++) {
+                    let fun = testReady[i];
+                    fun();
+                }
+            }
+            content.appendChild(test)
+        }
+        function getTestControls(name) {
+            return test.contentDocument.querySelector(name);
+        }
+    </script>
 </body>
 
 </html>

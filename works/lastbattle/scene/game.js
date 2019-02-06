@@ -1606,7 +1606,7 @@ function Gun() {
         range: 600,
         duration: 2000,
         size: 2,
-        sound: "cannon.mp3",
+        sound: "Cannon.mp3",
         volume: 0.2,
         cool: -1,
         coolrest: 1,
@@ -1656,7 +1656,7 @@ function Gun() {
         return gunTower.position;
     }
     let folder = "/assets/lastBattle/";
-    loader.load(folder + "guntower.gltf", loadOk);
+    loader.load(folder + "gunTower.gltf", loadOk);
 
     function loadOk(gt) {
         canDisplayWire.call(gt);

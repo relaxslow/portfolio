@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="/lib/three.js"></script>
+    <script src="/lib/WebGL.js"></script>
+    <script src="/lib/GLTFLoader.js"></script>
+    <script src="/lib/Tween.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .head {
+            width: 100%;
+            height: 34px;
+            background-color: #ad0000;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 34px;
+            color: wheat;
+            font-size: 0.8em;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .container {
+            width: 100%;
+            height: 248px;
+            overflow: hidden;
+        }
+
+        .totalScore {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            left: 107px;
+            top: 210px;
+            width: 169px;
+            height: 50px;
+            border-top: black 1px solid;
+            font-size: 0.8em;
+        }
+
+        .restart {
+            position: absolute;
+            left: 141px;
+            top: 237px;
+            background-color: #00a08a;
+            width: 100px;
+            height: 30px;
+            border: none;
+            color: #d4d4d4;
+            cursor: pointer;
+        }
+
+        .restart:focus {
+            outline: none;
+        }
+
+        .restart:hover {
+            color: white;
+        }
+
+        .destroyedNum {
+            position: absolute;
+            top: 70px;
+            right: 105px;
+            color: #000000;
+            text-align: right;
+        }
+
+        .X {
+            position: absolute;
+            top: 73px;
+            left: 186px;
+            font-size: 1em;
+            font-family: monospace;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="head">GAME OVER</div>
+    <div class="container">
+        <canvas class="scene"></canvas>
+    </div>
+    <div class="X">X</div>
+    <div class="destroyedNum">1000</div>
+    <div class="X">X</div>
+    <div class="destroyedNum">1000</div>
+    <div class="X">X</div>
+    <div class="destroyedNum">1000</div>
+    <div class="totalScore">
+        <p>TOTAL SCORE:</p>
+        <div class="total">1000</div>
+    </div>
+    <button class="restart">Restart</button>
+    <script>
+        let container;
+        let scene, camera, renderer;
+        let loader;
+        function main() {
+            init();
+            animate();
+        }
+        function init() {
+            container = document.querySelector(".container");
+            var frustumSize = 500;
+            var aspect = container.clientWidth / container.clientHeight;
+            camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 1, 1000);
+            camera.position.set(0, 0, 200);
+
+            //webgl renderer 
+            scene = new THREE.Scene();
+            let canvas = document.querySelector(".scene")
+            let context = canvas.getContext('webgl2');
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, context: context });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setClearColor(0x777777, 0);
+            // container.appendChild(renderer.domElement);
+
+
+            window.addEventListener('resize', onWindowResize, false);
+            clock = new THREE.Clock();
+
+           
+            let data=window.parent.getStatisticalData();
+            let folder = "/assets/lastBattle/";
+
+            let posData = {//x,y,scaleX,scaleY
+                "helicopter": [-150, 150, 0.8, 0.8],
+                "satellite": [-150, 50, 0.7, 0.7],
+                "walkingBomb": [-150, -70, 1, 1]
+            }
+            loader = new THREE.GLTFLoader();
+            for (key in posData) {
+                let name = key;
+                loader.load(folder + name + '.gltf', loadok);
+                function loadok(gltf) {
+                    scene.add(gltf.scene);
+                    let pos = posData[name];
+                    gltf.scene.position.set(pos[0], pos[1], 0);
+                    gltf.scene.scale.set(pos[2], pos[3], 1);
+                }
+            }
+
+            let Xs = document.querySelectorAll(".X");
+            let numbers = document.querySelectorAll(".destroyedNum")
+            let i = 0; let spaceY = 50; let beginY = 73;
+            while (i < Xs.length) {
+                let X = Xs[i];
+                X.style.top = beginY + i * spaceY + "px";
+                numbers[i].style.top = beginY + i * spaceY + "px";
+                animateNum(numbers[i], data[i]);
+                i++;
+            }
+            let total=document.querySelector(".total");
+            animateNum(total,data[3])
+
+        }
+        function animateNum(elem, value) {
+            let param = { num: 0 };
+            elem.tween = new TWEEN.Tween(param)
+                .to({ num: value }, 2000)
+                .start()
+                .onUpdate(function () {
+                    elem.textContent = param.num.toFixed(0) ;
+                })
+                
+        }
+        function onWindowResize() {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            var delta = clock.getDelta();
+            TWEEN.update();
+            render();
+        }
+        function render() {
+            renderer.render(scene, camera);
+
+        }
+        main();
+    </script>
+</body>
+
+</html>

@@ -461,7 +461,7 @@ let subRoutine = {
         // readHtmlFile("./iframes/transparentBackground/transparent.html", res);
 
         //portfolio
-        // readHtmlFile("./client/portfolio/index.html", res);
+        readHtmlFile("./client/portfolio/index.html", res);
         // readHtmlFile("./client/portfolio/works/animatedLine/main.html", res);
 
 
@@ -522,10 +522,12 @@ let subRoutine = {
         // readHtmlFile("./threejsExample/f06-ray/main.html", res);
         // readHtmlFile("./threejsExample/f06-rayMath/main.html", res);
         // readHtmlFile("./threejsExample/f07-collideTest/main.html", res);
+        // readHtmlFile("./threejsExample/f08-animationSystem/main.html", res);
+      
 
 
         //lastBattle
-        readHtmlFile("./works/lastBattle/main.html", res);
+        // readHtmlFile("./works/lastBattle/main.html", res);
 
 
         // readHtmlFile("./iframes/webgl/draw/main.html", res);

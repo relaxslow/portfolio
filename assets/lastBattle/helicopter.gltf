@@ -45,13 +45,13 @@
             "componentType" : 5126,
             "count" : 4,
             "max" : [
-                16.735393524169922,
-                6.612764835357666,
+                27.21782112121582,
+                1.8820756673812866,
                 0.0
             ],
             "min" : [
-                -6.983975410461426,
-                -12.1756010055542,
+                -27.21782112121582,
+                -1.8820756673812866,
                 0.0
             ],
             "type" : "VEC3"
@@ -101,13 +101,13 @@
             "componentType" : 5126,
             "count" : 4,
             "max" : [
-                25.94498062133789,
-                27.21782112121582,
+                16.735393524169922,
+                6.612764835357666,
                 0.0
             ],
             "min" : [
-                -25.94498062133789,
-                -16.63216209411621,
+                -6.983975410461426,
+                -12.1756010055542,
                 0.0
             ],
             "type" : "VEC3"
@@ -157,13 +157,13 @@
             "componentType" : 5126,
             "count" : 4,
             "max" : [
+                25.94498062133789,
                 27.21782112121582,
-                1.8820756673812866,
                 0.0
             ],
             "min" : [
-                -27.21782112121582,
-                -1.8820756673812866,
+                -25.94498062133789,
+                -16.63216209411621,
                 0.0
             ],
             "type" : "VEC3"
@@ -171,7 +171,7 @@
         {
             "bufferView" : 12,
             "componentType" : 5126,
-            "count" : 3,
+            "count" : 9,
             "max" : [
                 0.3333333333333333
             ],
@@ -185,16 +185,18 @@
             "componentType" : 5126,
             "count" : 9,
             "max" : [
-                1.0,
-                1.0,
+                0.0,
+                0.7071068286895752,
+                0.0,
                 1.0
             ],
             "min" : [
                 0.0,
                 0.0,
-                0.0
+                0.0,
+                0.7071068286895752
             ],
-            "type" : "VEC3"
+            "type" : "VEC4"
         }
     ],
     "animations" : [
@@ -203,16 +205,16 @@
                 {
                     "sampler" : 0,
                     "target" : {
-                        "node" : 1,
-                        "path" : "scale"
+                        "node" : 2,
+                        "path" : "rotation"
                     }
                 }
             ],
-            "name" : "Plane.001Action.002",
+            "name" : "Plane.001Action.001",
             "samplers" : [
                 {
                     "input" : 12,
-                    "interpolation" : "CUBICSPLINE",
+                    "interpolation" : "LINEAR",
                     "output" : 13
                 }
             ]
@@ -297,18 +299,18 @@
         },
         {
             "buffer" : 0,
-            "byteLength" : 12,
+            "byteLength" : 36,
             "byteOffset" : 336
         },
         {
             "buffer" : 0,
-            "byteLength" : 108,
-            "byteOffset" : 348
+            "byteLength" : 144,
+            "byteOffset" : 372
         }
     ],
     "buffers" : [
         {
-            "byteLength" : 456,
+            "byteLength" : 516,
             "uri" : "helicopter.bin"
         }
     ],
@@ -323,9 +325,9 @@
             "name" : "glass",
             "pbrMetallicRoughness" : {
                 "baseColorFactor" : [
-                    0.2516923226668286,
-                    0.6329720114614368,
-                    0.800000011920929,
+                    0.27546635270118713,
+                    0.6899804472923279,
+                    0.871355414390564,
                     1.0
                 ],
                 "metallicFactor" : 0.0,
@@ -339,9 +341,9 @@
             "name" : "red",
             "pbrMetallicRoughness" : {
                 "baseColorFactor" : [
-                    0.800000011920929,
-                    0.08649317155023173,
-                    0.035828334626977654,
+                    0.752931535243988,
+                    0.08347737789154053,
+                    0.03521668538451195,
                     1.0
                 ],
                 "metallicFactor" : 0.0,
@@ -355,9 +357,9 @@
             "name" : "white",
             "pbrMetallicRoughness" : {
                 "baseColorFactor" : [
-                    0.800000011920929,
-                    0.800000011920929,
-                    0.800000011920929,
+                    0.9169371128082275,
+                    0.9169371128082275,
+                    0.9169371128082275,
                     1.0
                 ],
                 "metallicFactor" : 0.0,
@@ -379,7 +381,7 @@
             ]
         },
         {
-            "name" : "Plane.003",
+            "name" : "Plane.002",
             "primitives" : [
                 {
                     "attributes" : {
@@ -403,14 +405,14 @@
             ]
         },
         {
-            "name" : "Plane.001",
+            "name" : "Plane.003",
             "primitives" : [
                 {
                     "attributes" : {
                         "POSITION" : 7
                     },
                     "indices" : 6,
-                    "material" : 1
+                    "material" : 2
                 }
             ]
         },
@@ -427,21 +429,24 @@
             ]
         },
         {
-            "name" : "Plane.002",
+            "name" : "Plane.001",
             "primitives" : [
                 {
                     "attributes" : {
                         "POSITION" : 11
                     },
                     "indices" : 10,
-                    "material" : 2
+                    "material" : 1
                 }
             ]
         }
     ],
     "nodes" : [
         {
-            "mesh" : 3,
+            "name" : "BezierCurve"
+        },
+        {
+            "mesh" : 5,
             "name" : "Plane",
             "translation" : [
                 1.4089324474334717,
@@ -450,7 +455,7 @@
             ]
         },
         {
-            "mesh" : 5,
+            "mesh" : 1,
             "name" : "Plane.001",
             "translation" : [
                 2.120821952819824,
@@ -459,7 +464,7 @@
             ]
         },
         {
-            "mesh" : 1,
+            "mesh" : 3,
             "name" : "Plane.002",
             "translation" : [
                 -36.872684478759766,
@@ -500,12 +505,13 @@
         {
             "name" : "Scene",
             "nodes" : [
-                3,
-                5,
+                0,
                 4,
+                6,
+                5,
+                3,
                 2,
-                1,
-                0
+                1
             ]
         }
     ]

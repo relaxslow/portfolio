@@ -1,3 +1,13 @@
+let destroyHelicopter = 0, destroySatellite = 0, destroyWalkingBomb = 0;
+window.getStatisticalData = function () {
+    return [
+        destroyHelicopter,
+        destroySatellite,
+        destroyWalkingBomb,
+        score
+    ];
+
+}
 let container;
 let scene, camera, renderer;
 let camera2D, camera3D;
@@ -9,7 +19,7 @@ let loader;
 let clock;
 //object groups
 let group_bLines; //boundingBox line
-// update groups
+// update groups    
 let needUpdate;
 let collideUpdate;
 
@@ -34,6 +44,8 @@ function UpdateGroup() {
 }
 
 function removeElemtFromArray(elem) {
+    let index = this.indexOf(elem);
+    if (index == -1) return;
     this.splice(this.indexOf(elem), 1);
 }
 function RenderList() {
@@ -135,7 +147,6 @@ function animate() {
     collideUpdate.update(delta);
 
     control3D.update();
-
     RenderList.render();
 
 }
@@ -291,7 +302,7 @@ function mouseUp(event) {
 }
 
 
-
+let hq;
 function initMesh() {
     var gridHelper = new THREE.GridHelper(1000, 10);
     scene.add(gridHelper);
@@ -300,13 +311,23 @@ function initMesh() {
     scene.add(gridHelper);
 
     loader = new THREE.GLTFLoader();
-    new Border(-320, 320, 480, 0);
+    // new Border(-320, 320, 480, 0);
     new Gun();
+
     new SatelliteMaker();
     new Effect();
-    new Helicopter();
-    new WalkingBomb();
-
+    new HelicopterMaker();
+    new WalkingBombMaker();
+    hq = new EnemyHeadquater();
+}
+function EnemyHeadquater() {
+    let command = "attack";
+    EnemyHeadquater.prototype.getCommand = function () {
+        return command;
+    }
+    EnemyHeadquater.prototype.setCommand = function (value) {
+        command = value;
+    }
 }
 // let testExplode;
 function Effect() {
@@ -346,6 +367,7 @@ function Effect() {
                 if (clip.name.indexOf(name) !== -1) {
                     src.animations.push(clip);
                 }
+
             }
             src.sound = SoundEffect.add(effects[i].sound, function (sound) {
                 sound.setLoop(false);
@@ -357,6 +379,33 @@ function Effect() {
             gltf.scene.remove(sources[name]);
 
             pool[name] = [];
+        }
+
+        let ss = gltf.scene.getObjectByName("ss");
+        ss.visible = false;
+        let groundExplode = sources["groundExplode"];
+        for (let i = 0; i < groundExplode.animations.length; i++) {
+            let clip = groundExplode.animations[i];
+            if (clip.name === "groundExplode_2") {
+
+                var times = [0 / 24, 11 / 24], values = [true, false];
+                var trackName = 'ss.visible';
+                var track = new THREE.BooleanKeyframeTrack(trackName, times, values);
+
+                clip.tracks.push(track);
+                clip.resetDuration();
+
+            }
+            if (clip.name === "groundExplode.002") {
+
+                var times = [0 / 24, 6 / 24, 23 / 24], values = [false, true, false];
+                var trackName = 'Plane.012.visible';
+                var track = new THREE.BooleanKeyframeTrack(trackName, times, values);
+
+                clip.tracks.push(track);
+                clip.resetDuration();
+
+            }
         }
 
 
@@ -390,11 +439,17 @@ function Effect() {
                 needUpdate.remove(effect.mixer);
                 effect.mixer.removeEventListener('finished', finish);
             }
-
+            let count = 0;
             function finish(evt) {
-                effect.reclaim();
+                count++;
+                if (count >= effect.animations.length)
+                    effect.reclaim();
             }
             effect.place = function beginExplode(pos) {
+                effect.placeXY(pos.x, pos.y);
+            }
+            effect.placeXY = function placeXY(x, y) {
+                count = 0;
                 effect.scene.name = "effect" + id++;
                 effect.mixer.name = "mixer_" + effect.scene.name;
                 effect.name = "root_" + effect.scene.name;
@@ -404,11 +459,10 @@ function Effect() {
                 scene.add(effect.scene);
 
                 effect.scene.scale.set(source.scale, source.scale, 1);
-                effect.scene.position.set(pos.x, pos.y, 10);
+                effect.scene.position.set(x, y, 10);
                 resetAllAndPlay.call(effect);
                 SoundEffect.replay(effect.sound);
             }
-
 
         }
 
@@ -419,7 +473,10 @@ function Effect() {
 
 
 }
-
+function loopAndGone(action) {
+    action.setLoop(THREE.LoopRepeat);
+    action.clampWhenFinished = true;
+}
 function loopOnceStopAtLastFrame(action) {
     action.setLoop(THREE.LoopOnce);
     action.clampWhenFinished = true;
@@ -429,11 +486,14 @@ function loopOnce(action) {
     action.setLoop(THREE.LoopOnce);
     action.clampWhenFinished = false;
 }
-
+function loopOnceAndGone(action) {
+    action.setLoop(THREE.LoopOnce);
+    action.clampWhenFinished = true;
+}
 function setLoopOnce() {
     for (let key in this.actions) {
         let action = this.actions[key];
-        loopOnce(action);
+        loopOnceAndGone(action);
     }
 }
 
@@ -458,25 +518,69 @@ function initAction() {
     }
 }
 
+function stopAllAction() {
+    for (let key in this.actions) {
+        let action = this.actions[key];
+        action.stopFading();
+        action.stop();
+
+    }
+}
 function resetAndPlay(name) {
     let action = this.actions[name];
-    // action.reset();
+    //     fadeToAction(name,2);
+    action.stop();
     action.play();
 }
+function fadeToAction(name, duration) {
+    this.previousAction = this.activeAction;
+    this.activeAction = this.actions[name];
+    if (this.previousAction && this.previousAction !== this.activeAction) {
 
+        this.previousAction.fadeOut(duration);
+    }
+    this.activeAction
+        .reset()
+        .setEffectiveTimeScale(1)
+        .setEffectiveWeight(1)
+        .fadeIn(duration)
+        .play();
+}
 function resetAllAndPlay() {
     for (let key in this.actions) {
         let action = this.actions[key];
-        action.reset();
+        action.stop();
         action.play();
     }
 }
-
-function damage(value, intersetPoint) {
+function defaultDamage(value, intersetPoint, effectName) {
     this.hp -= value;
-    Effect.create("spark").place(intersetPoint);
-    if (this.hp <= 0)
-        explode.call(this);
+    if (this.hp <= 0) {
+        Effect.create(effectName).place(this.scene.position);
+        this.reclaim();
+    }
+    else
+        Effect.create("spark").place(intersetPoint);
+}
+
+let score = 0;
+let score_ui = document.querySelector(".score");
+function addScore(value) {
+
+    score += value;
+    score_ui.textContent = score;
+    jumpNumber(score_ui, 1.5, 1);
+
+
+}
+function damage(value, intersetPoint, partName) {
+    if (this.damage) //custom damage function
+        this.damage(value, intersetPoint, partName);
+    else {//default damage function
+        defaultDamage.call(this, value, intersetPoint, "explode");
+        addScore(1);
+    }
+
 }
 
 function groundExplode() {
@@ -489,6 +593,98 @@ function explode() {
 }
 
 function SatelliteMaker() {
+    function Satellite() {
+        sat = cloneGltf(source);
+        sat.mixer = new THREE.AnimationMixer(sat.scene);
+        initAction.call(sat);
+        setLoopOnce.call(sat);
+        canDisplayWire.call(sat);
+        initBBox();
+
+        sat.getType = function () {
+            return type;
+        }
+        sat.reclaim = function () {
+            pool.push(sat);
+            scene.remove(sat.scene);
+            needUpdate.remove(sat.mixer);
+            live.remove(sat);
+
+            sat.scene.bBox.hide();
+            clearInterval(this.flashInterval);
+            //                 sat.tween.kill();
+            sat.tween.stop();
+        }
+        sat.place = function (x, y) {
+            sat.scene.name = sat.type + id++;
+            sat.mixer.name = "mixer_" + sat.scene.name;
+            sat.name = "root_" + sat.scene.name;
+            needUpdate.push(sat.mixer);
+            scene.add(sat.scene);
+            live.push(sat);
+
+            sat.scene.position.set(x, y, 0);
+            sat.scene.scale.set(0.4, 0.4, 0.4);
+            //set init transform befoe update last
+            updateLast.call(sat.scene);
+            sat.hp = 10;
+            sat.flashInterval = setInterval(function () {
+                sat.flash();
+                SoundEffect.replay(sound);
+            }, 3000)
+
+
+            activeBBox();
+
+        }
+        function activeBBox() {
+            // sat.scene.bBox.show();
+            sat.scene.bBox.update();
+            sat.BBoxUpdate = { name: "updateBBox_" + sat.name }
+            sat.BBoxUpdate.update = function (delta) {
+                sat.scene.bBox.update();
+            }
+            needUpdate.push(sat.BBoxUpdate);
+        }
+
+        sat.flash = function satelliteFlash() {
+            resetAllAndPlay.call(sat);
+        }
+        sat.launch = function satelliteLaunch() {
+            sat.place(500, 450, 0);
+            let goal = -500;
+            let duration = 5000;
+            sat.tween = new TWEEN.Tween(sat.scene.position)
+                .to({ x: goal }, duration)
+                .start()
+                .onComplete(function () {
+                    sat.reclaim();
+                });
+
+        }
+        sat.getType = function () {
+            return type;
+        }
+        function initBBox() {
+            initLast.call(sat.scene);
+            //BBox
+            let points = [
+                [26, -29],
+                [-20, -29],
+                [-25, 24],
+                [30, 29],
+
+            ];
+            let bBox = new BBox(points);
+            bBox.attach(sat.scene);
+        }
+        sat.damage = function (value, intersetPoint, partName) {
+            addScore(100);
+            defaultDamage.call(sat, value, intersetPoint, "explode");
+            destroySatellite++;
+        }
+        return sat;
+    }
     let type = "satellite";
     let source;
     loader.load('/assets/lastBattle/satellite.gltf', loadSatOk);
@@ -521,82 +717,9 @@ function SatelliteMaker() {
                 num = maxNum;
                 return null;
             }
-            sat = cloneGltf(source);
-            sat.mixer = new THREE.AnimationMixer(sat.scene);
-            initAction.call(sat);
-            setLoopOnce.call(sat);
-            canDisplayWire.call(sat);
-            sat.scene.lastPosition = new THREE.Vector3();
-            sat.scene.lastRotation = new THREE.Vector3();
-            sat.scene.lastScale = new THREE.Vector3();
-            sat.getType = function () {
-                return type;
-            }
-            sat.reclaim = function () {
-                pool.push(sat);
-                scene.remove(sat.scene);
-                needUpdate.remove(sat.mixer);
-                live.remove(sat);
-
-                sat.scene.bBox.hide();
-                clearInterval(this.flashInterval);
-                //                 sat.tween.kill();
-                sat.tween.stop();
-            }
-            sat.place = function (x, y) {
-                sat.scene.name = sat.type + id++;
-                sat.mixer.name = "mixer_" + sat.scene.name;
-                sat.name = "root_" + sat.scene.name;
-                needUpdate.push(sat.mixer);
-                scene.add(sat.scene);
-                live.push(sat);
-
-                sat.scene.position.set(x, y, 0);
-                sat.scene.scale.set(0.4, 0.4, 0.4);
-                //set init transform befoe update last
-                updateLast.call(sat.scene);
-                sat.hp = 10;
-                sat.flashInterval = setInterval(function () {
-                    sat.flash();
-                    SoundEffect.replay(sound);
-                }, 3000)
-
-
-
-                sat.scene.bBox.show();
-                sat.scene.bBox.update();
-            }
-
-
-            sat.flash = function satelliteFlash() {
-                resetAllAndPlay.call(sat);
-            }
-            sat.launch = function satelliteLaunch() {
-                sat.place(500, 450, 0);
-                let goal = -500;
-                let duration = 5000;
-                sat.tween = new TWEEN.Tween(sat.scene.position)
-                    .to({ x: goal }, duration)
-                    .start()
-                    .onUpdate(function (obj) {
-                        sat.scene.bBox.update();
-                    })
-                    .onComplete(function () {
-                        sat.reclaim();
-                    });
-
-            }
+            sat = new Satellite();
         }
-        //BBox
-        let points = [
-            [26, -29],
-            [-20, -29],
-            [-25, 24],
-            [30, 29],
 
-        ];
-        let bBox = new BBox(points);
-        bBox.attach(sat.scene);
         return sat;
 
     }
@@ -604,7 +727,7 @@ function SatelliteMaker() {
 
     let sound = SoundEffect.add("camera-shutter.mp3", function (sound) {
         sound.setLoop(false);
-        sound.setMaxVolume(0.05);
+        sound.setVolume(0.01);
     })
     //scheduler
     // placeOne();
@@ -633,10 +756,137 @@ function SatelliteMaker() {
     }
 }
 
+function MultiBBox(datas) {
+    BBox.id = 0;
+    let lineId = 0;
+    let segments = [];
+    let parts = { status: {} };
+    let bLines = {};
+    let backup = {};
+    let material = new THREE.LineBasicMaterial({
+        color: 0xff0000,
+        depthTest: false
+    });
+    for (let i = 0; i < datas.length; i++) {
+        let data = datas[i];//one data one line
+        let points = data.points;
+        var geometry = new THREE.Geometry();
+        let part = [];
+        for (let i = 0; i < points.length; i++) {
+            let p1, p2;
+            p1 = new THREE.Vector3(points[i][0], points[i][1], 0);
+            geometry.vertices.push(p1);
+            if (i != points.length - 1) {
+                p2 = new THREE.Vector3(points[i + 1][0], points[i + 1][1], 0);
+            } else {
+                if (data.type == 0) {
+                    p2 = new THREE.Vector3(points[0][0], points[0][1], 0);
+                }
+                else if (data.type == 1) {
+                    continue;
+                }
+            }
+            let line = [];
+            line.push(p1, p2);
+            line.name = lineId++;
+            line.partName = data.name;
+            // segments.push(line);
+            part.push(line)
+
+        }
+        if (data.type == 0) {
+            geometry.vertices.push(new THREE.Vector3(points[0][0], points[0][1], 0));
+        }
+
+
+        let bLine = new THREE.Line(geometry, material);
+        bLine.renderOrder = 1;
+        bLine.matrixAutoUpdate = false;
+        bLine.name = "BBox" + BBox.id++;
+        bLines[data.name] = bLine;
+        backup[data.name] = bLine;
+        parts[data.name] = part;
+        parts.status[data.name] = 0;
+    }
+
+    this.show = function () {
+        for (let key in bLines) {
+            const bLine = bLines[key];
+            scene.add(bLine);
+        }
+
+    }
+    this.hide = function () {
+        for (let key in bLines) {
+            const bLine = bLines[key];
+            scene.remove(bLine);
+        }
+
+
+    }
+
+    this.attach = function (obj) {
+        this.host = obj;
+        obj.bBox = this;
+        for (let key in bLines) {
+            const bLine = bLines[key];
+            bLine.name += "-" + obj.name;
+        }
+
+
+    }
+    this.update = function () {
+        this.host.updateMatrixWorld(); //host must has matrix
+        for (let key in bLines) {
+            const bLine = bLines[key];
+            bLine.matrix.copy(this.host.matrixWorld);
+        }
+
+    }
+    this.getSgmt = function () {
+        return segments;
+    }
+    this.addPart = function (partName) {
+        if (parts.status[partName] == 1) return;
+        let part = parts[partName];
+        let i = 0;
+        while (i < part.length) {
+            let line = part[i];
+            segments.push(line);
+            i++;
+        }
+
+        bLines[partName] = backup[partName];
+        // scene.add(bLines[partName]);
+        parts.status[partName] = 1;
+    }
+    this.removePart = function (partName) {
+        if (parts.status[partName] == 0) return;
+        let part = parts[partName];
+        let i = part.length;
+        while (i--) {
+            let line = part[i];
+            removeElemtFromArray.call(segments, line);
+        }
+        scene.remove(bLines[partName])
+        delete bLines[partName];
+        parts.status[partName] = 0;
+    }
+    this.clearPart = function () {
+        segments.length = 0;
+        for (let key in parts.status) {
+            parts.status[key] = 0;
+            scene.remove(bLines[key]);
+            delete bLines[key];
+        }
+
+
+    }
+}
 function BBox(points) {
     BBox.id = 0;
     let segments = [];
-    var material = new THREE.LineBasicMaterial({
+    let material = new THREE.LineBasicMaterial({
         color: 0xff0000,
         depthTest: false
     });
@@ -689,7 +939,102 @@ function randomRange(min, max) {
     return min + Math.random() * (max - min);
 }
 
-function Helicopter() {
+function HelicopterMaker() {
+    function Helicopter() {
+        let helicopter = cloneGltf(source);
+        helicopter.mixer = new THREE.AnimationMixer(helicopter.scene);
+        initAction.call(helicopter);
+        canDisplayWire.call(helicopter);
+        initBBox();
+
+        helicopter.getType = function () {
+            return type;
+        }
+        helicopter.reclaim = function () {
+            pool.push(helicopter);
+            scene.remove(helicopter.scene);
+            needUpdate.remove(helicopter.mixer);
+            live.remove(helicopter);
+
+            helicopter.tween.stop();
+            helicopter.deactiveBBox();
+            helicopter.stopDropBomb();
+        }
+        helicopter.placexy = function (x, y) {
+            helicopter.scene.name = type + id++;
+            helicopter.mixer.name = "mixer_" + helicopter.scene.name;
+            helicopter.name = "root_" + helicopter.scene.name;
+            needUpdate.push(helicopter.mixer);
+            scene.add(helicopter.scene);
+            live.push(helicopter);
+
+            helicopter.hp = 2;
+            helicopter.scene.position.set(x, y, 0);
+
+            updateLast.call(helicopter.scene);
+            resetAllAndPlay.call(helicopter);
+            helicopter.activeBBox();
+            if (hq.getCommand() === "attack")
+                helicopter.beginDropBomb();
+        }
+        helicopter.activeBBox = function () {
+            // helicopter.scene.bBox.show();
+            helicopter.scene.bBox.update();
+            helicopter.BBoxUpdate = { name: "updateBBox_" + helicopter.name }
+            helicopter.BBoxUpdate.update = function (delta) {
+                helicopter.scene.bBox.update();
+            }
+            needUpdate.push(helicopter.BBoxUpdate);
+
+        }
+        helicopter.deactiveBBox = function () {
+            helicopter.scene.bBox.hide();
+            needUpdate.remove(helicopter.BBoxUpdate);
+        }
+
+        helicopter.beginDropBomb = function () {
+            helicopter.dropBombUpdate = { name: "updateDropBomb_" + helicopter.name };
+            needUpdate.push(helicopter.dropBombUpdate);
+            helicopter.dropBombUpdate.update = function (delta) {
+                countDown -= delta;
+                if (countDown <= 0) {
+                    countDown = randomRange(0.5, 6);
+                    if (!remain) return;
+                    if (helicopter.scene.position.x > max || helicopter.scene.position.x < min) return;
+                    WalkingBombMaker.drop(helicopter.scene.position.x, helicopter.scene.position.y);
+                    remain--;
+                }
+            }
+            let max = 300;
+            let min = -300;
+            let num = 2;
+            let remain = num;
+            let countDown = randomRange(0.5, 3);
+        }
+        helicopter.stopDropBomb = function () {
+            needUpdate.remove(helicopter.dropBombUpdate);
+        }
+        function initBBox() {
+            initLast.call(helicopter.scene)
+
+            //BBox
+            let points = [
+                [20, -17],
+                [-17, -15],
+                [-42, 11],
+                [-42, 35],
+                [29, 37]
+            ];
+            let bBox = new BBox(points);
+            bBox.attach(helicopter.scene);
+        }
+        helicopter.damage = function (value, intersetPoint, partName) {
+            addScore(2);
+            defaultDamage.call(helicopter, value, intersetPoint, "explode");
+            destroyHelicopter++;
+        }
+        return helicopter;
+    }
     let type = "helicopter";
     loader.load('/assets/lastBattle/helicopter.gltf', loadok);
     let source;
@@ -698,79 +1043,25 @@ function Helicopter() {
         source = src;
     }
     let pool = [];
-    Helicopter.getPool = function getHelicopterPool() {
+    HelicopterMaker.getPool = function getHelicopterPool() {
         return pool;
     }
     let live = new CollideGroup();
-    Helicopter.getLiving = function () {
+    HelicopterMaker.getLiving = function () {
         return live.get();
     }
 
     let id = 0;
-    Helicopter.create = function createHelicopter() {
+    HelicopterMaker.create = function createHelicopter() {
         if (!source) return null;
         let helicopter;
         if (pool.length > 0) {
             helicopter = pool.pop();
         } else {
-            helicopter = cloneGltf(source);
-            helicopter.mixer = new THREE.AnimationMixer(helicopter.scene);
-            initAction.call(helicopter);
-            canDisplayWire.call(helicopter);
-            helicopter.scene.lastPosition = new THREE.Vector3();
-            helicopter.scene.lastRotation = new THREE.Vector3();
-            helicopter.scene.lastScale = new THREE.Vector3();
-            helicopter.getType = function () {
-                return type;
-            }
-            helicopter.reclaim = function () {
-                pool.push(helicopter);
-                scene.remove(helicopter.scene);
-                needUpdate.remove(helicopter.mixer);
-                live.remove(helicopter);
-
-                helicopter.scene.bBox.hide();
-                helicopter.tween.stop();
-                needUpdate.remove(helicopter);
-            }
-            helicopter.placexy = function (x, y) {
-                helicopter.scene.name = type + id++;
-                helicopter.mixer.name = "mixer_" + helicopter.scene.name;
-                helicopter.name = "root_" + helicopter.scene.name;
-                needUpdate.push(helicopter.mixer);
-                scene.add(helicopter.scene);
-                live.push(helicopter);
-
-                helicopter.hp = 3;
-                helicopter.scene.position.set(x, y, 0);
-                updateLast.call(helicopter.scene);
-                resetAllAndPlay.call(helicopter);
-
-
-                helicopter.scene.bBox.show();
-                helicopter.scene.bBox.update();
-
-                helicopter.update = function () {
-                    helicopter.scene.bBox.update();
-                }
-                needUpdate.push(helicopter);
-            }
+            helicopter = new Helicopter();
         }
-        //BBox
-        let points = [
-            [20, -17],
-            [-17, -15],
-            [-42, 11],
-            [-42, 35],
-            [29, 37]
-        ];
-        let bBox = new BBox(points);
-        bBox.attach(helicopter.scene);
         return helicopter;
     }
-
-
-
 
     let sound = SoundEffect.add("helicopter.mp3", function (sound) {
         sound.setLoop(true);
@@ -783,7 +1074,7 @@ function Helicopter() {
     randomOnBothSize();
 
     function randomOnBothSize() {
-        needUpdate.push(Helicopter);
+        needUpdate.push(HelicopterMaker);
         let minInterval = 1;
         let maxInterval = 3;
         let randomNext = randomRange(minInterval, maxInterval);
@@ -795,13 +1086,16 @@ function Helicopter() {
         let areaHei = 300;
         let max = 10;
         let scale = 0.4;
-        Helicopter.update = function (delta) {
+
+
+
+        HelicopterMaker.update = function (delta) {
             if (source == null) return;
-            if (Helicopter.getLiving().length >= max) return;
+            if (HelicopterMaker.getLiving().length >= max) return;
             randomNext = randomNext - delta;
             if (randomNext <= 0) {
                 randomNext = randomRange(minInterval, maxInterval);
-                let helicopter = Helicopter.create();
+                let helicopter = HelicopterMaker.create();
                 let randomSide = Math.round(Math.random()); //1/right or 0/left
                 let beginPoint = areaTopLeft[randomSide];
                 let leftOrRight = beginPoint[2]
@@ -813,12 +1107,14 @@ function Helicopter() {
                 let targetX = flyDist * leftOrRight;
                 helicopter.placexy(x, y);
                 let param = { posX: x };
+
                 helicopter.tween = new TWEEN.Tween(param)
                     .to({ posX: x + targetX }, 10000)
                     // .repeat(Infinity)
                     .start()
                     .onUpdate(function (obj) {
                         helicopter.scene.position.x = param.posX;
+
                     })
                     .onComplete(function (obj) {
                         helicopter.reclaim();
@@ -826,9 +1122,10 @@ function Helicopter() {
 
 
 
+
             }
             //sound
-            let livenum = Helicopter.getLiving().length;
+            let livenum = HelicopterMaker.getLiving().length;
             if (livenum > 0 && sound.isPlaying == false) {
                 sound.play();
             } else if (livenum <= 0 && sound.isPlaying == true) {
@@ -840,7 +1137,7 @@ function Helicopter() {
     }
 
     function oneLToR() {
-        let helicopter = Helicopter.create();
+        let helicopter = HelicopterMaker.create();
         helicopter.scene.scale.set(0.5, 0.5, 0.5);
         helicopter.place(new THREE.Vector3(-200, 200, 0));
 
@@ -867,12 +1164,18 @@ function Helicopter() {
     }
 
     function test() {
-        let helicopter = Helicopter.create();
+        let helicopter = HelicopterMaker.create();
         helicopter.scene.scale.set(0.5, 0.5, 0.5);
         helicopter.place(new THREE.Vector3(200, 200, 0));
 
     }
-
+    HelicopterMaker.stopAllDropBomb = function () {
+        let living = live.get();
+        for (let i = 0; i < living.length; i++) {
+            let helicopter = living[i];
+            helicopter.stopDropBomb();
+        }
+    }
 
 }
 
@@ -891,12 +1194,197 @@ function runAfterLoadOk(fun) {
     }
 }
 
-function WalkingBomb() {
+// function WalkingBomb() {
+
+// }
+function WalkingBombMaker() {
+    function WalkingBomb(source) {
+        let walkingBomb = cloneGltf(source);
+        walkingBomb.mixer = new THREE.AnimationMixer(walkingBomb.scene);
+        initAction.call(walkingBomb);
+        loopOnceStopAtLastFrame(walkingBomb.actions["normal"]);
+        loopOnceStopAtLastFrame(walkingBomb.actions["parachuteOpen"]);
+        loopOnceStopAtLastFrame(walkingBomb.actions["parachuteClose"]);
+        loopOnceStopAtLastFrame(walkingBomb.actions["standUp"]);
+        loopAndGone(walkingBomb.actions["walking"])
+        canDisplayWire.call(walkingBomb);
+        initBBox();
+
+        walkingBomb.reclaim = function () {
+            stopAllAction.call(walkingBomb);
+
+            pool.push(walkingBomb);
+            // walkingBomb.mixer.stopAllAction();
+            needUpdate.remove(walkingBomb.mixer);
+            live.remove(walkingBomb);
+            scene.remove(walkingBomb.scene);
+
+            clearTimeout(walkingBomb.timer);
+            walkingBomb.tween.stop();
+            walkingBomb.deactiveBBox();
+            id--;
+
+        }
+
+        walkingBomb.constantSpeedFall = function constantSpeedFall() {
+            let duration = walkingBomb.scene.position.y / parachuteOnSpeed * 1000;
+            walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
+                .to({ y: 0 }, duration)
+                .start()
+                .onComplete(function () {
+                    walkingBomb.closeParachute();
+                });
+        };
+        walkingBomb.openParachute = function bombOpenParachute() {
+            fadeToAction.call(walkingBomb, "parachuteOpen", 0.3);
+            walkingBomb.tween.stop();
+            //slowDown
+            walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
+                .to({ y: walkingBomb.scene.position.y - 30 }, 500)
+                .start()
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .onComplete(function () {
+                    walkingBomb.scene.bBox.addPart("parachute");
+                    walkingBomb.constantSpeedFall();
+                })
+
+
+
+
+        };
+        walkingBomb.closeParachute = function bombCloseParachute() {
+            walkingBomb.scene.bBox.removePart("parachute");
+            fadeToAction.call(walkingBomb, "parachuteClose", 0.5);
+            fadeToAction.call(walkingBomb, "standUp", 0.5);
+
+            walkingBomb.timer = setTimeout(function () {
+                if (hq.getCommand() === "attack") {
+                    let duration = Math.abs(walkingBomb.scene.position.x) / walkSpeed * 1000;
+                    fadeToAction.call(walkingBomb, "walking", 0.5);
+                    walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
+                        .to({ x: 0 }, duration)
+                        .start()
+                        .onUpdate(function () {
+                            if (walkingBomb.scene.position.distanceToSquared(Gun.getPosition()) <= 30 * 30) {
+                                groundExplode.call(walkingBomb);
+                                Gun.reduceLife(20);
+                            }
+                        })
+                }
+            }, 500)
+
+
+
+        };
+        walkingBomb.placexy = function (x, y) {
+            walkingBomb.scene.name = type + id++;
+            walkingBomb.mixer.name = "mixer_" + walkingBomb.scene.name;
+            walkingBomb.name = "root_" + walkingBomb.scene.name;
+            needUpdate.push(walkingBomb.mixer);
+            scene.add(walkingBomb.scene);
+            live.push(walkingBomb);
+
+            walkingBomb.hp = 1;
+            walkingBomb.scene.position.set(x, y, 0);
+            walkingBomb.scene.scale.set(0.3, 0.3, 1);
+            walkingBomb.scene.updateMatrixWorld();
+            updateLast.call(walkingBomb.scene);
+            walkingBomb.activeBBox();
+        };
+        walkingBomb.damage = function (value, intersetPoint, partName) {
+            if (partName === "bomb") {
+                let effectName;
+                if (walkingBomb.scene.position.y > 0)
+                    effectName = "explode";
+                else
+                    effectName = "groundExplode";
+                defaultDamage.call(walkingBomb, value, intersetPoint, effectName)
+                addScore(1);
+            } else if (partName === "parachute") {
+                walkingBomb.tween.stop();
+                let duration = walkingBomb.scene.position.y / freefallSpeed * 1000;
+                walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)//fall
+                    .to({ y: 0 }, duration)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .start()
+                    .onUpdate(function () {
+                        if (walkingBomb.scene.position.y <= 0) {
+                            groundExplode.call(walkingBomb);
+                        }
+                    })
+                walkingBomb.scene.bBox.removePart("parachute");
+
+                fadeToAction.call(walkingBomb, "normal", 0.1);
+                addScore(1);
+            }
+            destroyWalkingBomb++;
+        }
+
+        function initBBox() {
+            initLast.call(walkingBomb.scene);
+            let points = [
+                {
+                    name: "bomb",
+                    type: 0,
+                    points: [
+                        [14, -1],
+                        [-15, -1],
+                        [-15, 44],
+                        [0, 54],
+                        [14, 44]
+                    ]
+                },
+                {
+                    name: "parachute",
+                    type: 1,
+                    points: [
+                        [-16, 39],
+                        [-68, 93],
+                        [64, 93],
+                        [13, 39]
+                    ]
+                }
+
+            ]
+
+            let bBox = new MultiBBox(points);
+            let boneRoot = walkingBomb.scene.getObjectByName("Armature_root");
+            bBox.attach(boneRoot);
+
+            walkingBomb.scene.bBox = bBox; //testCollide
+
+        }
+
+        walkingBomb.activeBBox = function () {
+            walkingBomb.scene.bBox.clearPart();
+            walkingBomb.scene.bBox.addPart("bomb");
+
+            walkingBomb.scene.bBox.update();
+            // walkingBomb.scene.bBox.show();
+            walkingBomb.BBoxUpdate = { name: "updateBBox_" + walkingBomb.name }
+            //update BBox
+            walkingBomb.BBoxUpdate.update = function () {
+                walkingBomb.scene.bBox.update();
+            }
+            needUpdate.push(walkingBomb.BBoxUpdate);
+        }
+        walkingBomb.deactiveBBox = function () {
+            walkingBomb.scene.bBox.hide();
+            needUpdate.remove(walkingBomb.BBoxUpdate);
+
+        }
+
+        walkingBomb.getType = function () {
+            return type;
+        }
+
+        return walkingBomb;
+    }
     let folder = "/assets/lastBattle/";
     let type = "walkingBomb";
     loader.load(folder + type + ".gltf", loadOk);
     let source;
-    WalkingBomb.getSrc = function () {
+    WalkingBombMaker.getSrc = function () {
         return source;
     }
 
@@ -905,143 +1393,39 @@ function WalkingBomb() {
 
     }
     let pool = [];
-    WalkingBomb.getPool = function getWalkingBombPool() {
+    WalkingBombMaker.getPool = function getWalkingBombPool() {
         return pool;
     }
     let live = new CollideGroup();
-    WalkingBomb.getLiving = function () {
+    WalkingBombMaker.getLiving = function () {
         return live.get();
     }
     let id = 0;
-    WalkingBomb.create = function createWalkingBomb() {
+    WalkingBombMaker.getTotal = function () {
+        return id;
+    }
+    WalkingBombMaker.create = function createWalkingBomb() {
         if (!source) return null;
         let walkingBomb;
         if (pool.length > 0) {
             walkingBomb = pool.pop();
         } else {
-            walkingBomb = cloneGltf(source);
-            walkingBomb.mixer = new THREE.AnimationMixer(walkingBomb.scene);
-            initAction.call(walkingBomb);
-            loopOnceStopAtLastFrame(walkingBomb.actions["normal"]);
-            loopOnceStopAtLastFrame(walkingBomb.actions["parachuteOpen"]);
-            loopOnceStopAtLastFrame(walkingBomb.actions["parachuteClose"]);
-            loopOnceStopAtLastFrame(walkingBomb.actions["standUp"]);
-
-            canDisplayWire.call(walkingBomb);
-            walkingBomb.scene.lastPosition = new THREE.Vector3();
-            walkingBomb.scene.lastRotation = new THREE.Vector3();
-            walkingBomb.scene.lastScale = new THREE.Vector3();
-            walkingBomb.reclaim = function () {
-                pool.push(walkingBomb);
-                scene.remove(walkingBomb.scene);
-                needUpdate.remove(walkingBomb.mixer);
-                live.remove(walkingBomb);
-
-                walkingBomb.bBox.hide();
-                needUpdate.remove(walkingBomb);
-                walkingBomb.tween.stop();
-
-            }
-
-            walkingBomb.constantSpeedFall = function fallWithParachute() {
-                let duration = walkingBomb.scene.position.y / parachuteOnSpeed * 1000;
-                walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
-                    .to({ y: 0 }, duration)
-                    .start()
-                    .onComplete(function () {
-                        walkingBomb.closeParachute();
-                    });
-            };
-            walkingBomb.openParachute = function bombOpenParachute() {
-                fadeToAction.call(walkingBomb, "parachuteOpen", 0.3);
-                walkingBomb.tween.stop();
-                //slowDown
-                walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
-                    .to({ y: walkingBomb.scene.position.y - 30 }, 500)
-                    .start()
-                    .easing(TWEEN.Easing.Quadratic.Out)
-                    .onComplete(function () {
-                        walkingBomb.constantSpeedFall();
-                    })
-
-
-
-
-            };
-            walkingBomb.closeParachute = function bombCloseParachute() {
-                fadeToAction.call(walkingBomb, "parachuteClose", 0.5);
-                fadeToAction.call(walkingBomb, "standUp", 0.5);
-                setTimeout(function () {
-                    let duration = Math.abs(walkingBomb.scene.position.x) / walkSpeed * 1000;
-                    fadeToAction.call(walkingBomb, "walking", 0.5);
-                    walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
-                        .to({ x: 0 }, duration)
-                        .start()
-                        .onUpdate(function () {
-                            if (walkingBomb.scene.position.distanceToSquared(Gun.getPosition()) <= 30 * 30)
-                                groundExplode.call(walkingBomb);
-
-                        })
-                        .onComplete(function () {
-
-                            // walkingBomb.closeParachute();
-                        })
-                }, 1000)
-                // resetAndPlay.call(walkingBomb, "standUp");
-
-                // resetAndPlay.call(walkingBomb, "walking");
-
-
-            };
-            walkingBomb.placexy = function (x, y) {
-                walkingBomb.scene.name = type + id++;
-                walkingBomb.mixer.name = "mixer_" + walkingBomb.scene.name;
-                walkingBomb.name = "root_" + walkingBomb.scene.name;
-                needUpdate.push(walkingBomb.mixer);
-                scene.add(walkingBomb.scene);
-                live.push(walkingBomb);
-
-                walkingBomb.hp = 3;
-                walkingBomb.scene.position.set(x, y, 0);
-                walkingBomb.scene.scale.set(0.3, 0.3, 1);
-                walkingBomb.scene.updateMatrixWorld();
-
-                updateLast.call(walkingBomb.scene);
-
-
-                walkingBomb.bBox = bBox;
-                walkingBomb.bBox.show();
-
-                //update BBox
-                walkingBomb.update = function () {
-                    walkingBomb.bBox.update();
-                }
-                needUpdate.push(walkingBomb);
-            };
+            walkingBomb = new WalkingBomb(source);
         }
-        let points = [
-            [15, -1],
-            [-15, -1],
-            [-15, 44],
-            [0, 54],
-            [15, 44]
-        ];
-        let bBox = new BBox(points);
-        let body = walkingBomb.scene.getObjectByName("Armature_root");
-        bBox.attach(body);
         return walkingBomb;
     }
-    let freefallSpeed = 200;
-    let parachuteOnSpeed = 30;
-    let walkSpeed = 30;
+    const freefallSpeed = 200;
+    const parachuteOnSpeed = 30;
+    const walkSpeed = 30;
 
-    function drop(x, y) {
+    WalkingBombMaker.drop = function (x, y) {
         let duration = y / freefallSpeed * 1000;
         let openY = 50 + Math.random() * (y - 50);
-        let walkingBomb = WalkingBomb.create();
+        let walkingBomb = WalkingBombMaker.create();
         walkingBomb.placexy(x, y);
         walkingBomb.tween = new TWEEN.Tween(walkingBomb.scene.position)
             .to({ y: 0 }, duration)
+            .easing(TWEEN.Easing.Quadratic.In)
             .start()
             .onUpdate(function () {
                 if (walkingBomb.scene.position.y <= openY) {
@@ -1049,32 +1433,39 @@ function WalkingBomb() {
                 }
             })
         fadeToAction.call(walkingBomb, "normal", 0.2);
+        // resetAllAndPlay.call(walkingBomb, "normal");
+    }
+    WalkingBombMaker.stopAllOnGround = function () {
+        let living = live.get();
+        for (let i = 0; i < living.length; i++) {
+            let walkingBomb = living[i];
+            if (walkingBomb.scene.position.y <= 0) {
+                walkingBomb.tween.stop();
+                fadeToAction.call(walkingBomb, "standUpPos", 0.1);
+            }
+            clearTimeout(walkingBomb.timer);
+        }
+    }
+
+    function loopDrop() {
+        setInterval(function () {
+            WalkingBombMaker.drop(-200, 300);
+        }, 3000);
     }
 
     function test() {
-        // let walkingBomb = WalkingBomb.create();
+        // let walkingBomb = WalkingBombMaker.create();
         // walkingBomb.placexy(200, 200);
         // resetAllAndPlay();
-        drop(200, 300);
+        WalkingBombMaker.drop(200, 300);
 
     }
-    runAfterLoadOk.call(WalkingBomb, test);
+    // runAfterLoadOk.call(WalkingBombMaker, test);
+    // loopDrop();
+
 }
 
-function fadeToAction(name, duration) {
-    this.previousAction = this.activeAction;
-    this.activeAction = this.actions[name];
-    if (this.previousAction && this.previousAction !== this.activeAction) {
 
-        this.previousAction.fadeOut(duration);
-    }
-    this.activeAction
-        .reset()
-        .setEffectiveTimeScale(1)
-        .setEffectiveWeight(1)
-        .fadeIn(duration)
-        .play();
-}
 
 function BulletsMaker() {
     //pool
@@ -1202,7 +1593,7 @@ function Gun() {
         size: 1.2,
         sound: "MachineGun.mp3",
         volume: 0.05,
-        cool: 7,
+        cool: 16,
         coolrest: 2,
         damage: {
             "helicopter": 1,
@@ -1231,10 +1622,12 @@ function Gun() {
             let weapon = weaponParams[i]
             let weaponName = weapon.name;
             if (weaponName === currentWeapon) {
-                return weapon.damage[name];
+                if (weapon.damage[name])
+                    return weapon.damage[name];
+                else return 1;
             }
         }
-        return null;
+        return 1;
     }
 
     function getWeaponParam(searchName) {
@@ -1467,7 +1860,6 @@ function Gun() {
     // keys.j = false;
     // keys.r = false;
     let accumulator = 0;
-
     function updateGunControl(deltaTime) {
         accumulator += deltaTime;
         let delta = deltaTime * speed;
@@ -1546,6 +1938,74 @@ function Gun() {
     document.addEventListener("click", focusGame, false);
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
+    let life = 100;
+    Gun.getLife = function () {
+        return life;
+    }
+    Gun.addLife = function (value) {
+        life += value;
+    }
+    let life_ui = document.querySelector(".life");
+
+    Gun.reduceLife = function (value) {
+        life -= value;
+        life_ui.textContent = life;
+        jumpNumber(life_ui, 1.5, 1);
+        if (life <= 0) {
+            Gun.die();
+        }
+    }
+    Gun.die = function () {
+        beginExplode();
+        gameOver();
+    }
+    function beginExplode() {
+        Gun.update = gunExplode;
+        let count = 0;
+        let n = 0;
+        function gunExplode(delta) {
+            count += delta
+            if ((n == 0 && count >= 0.1) ||
+                (n == 1 && count >= 0.3) ||
+                (n == 2 && count >= 0.8)) {
+                let randomX = randomRange(-10, 10);
+                let randomY = randomRange(0, 20);
+                Effect.create("explode").placeXY(randomX, randomY);
+                n++;
+            }
+            if (count >= 1)
+                needUpdate.remove(Gun);
+        }
+    }
+
+}
+function jumpNumber(elem, big, normal) {
+    elem.style.transform = `scale(${big})`;
+
+    let param = { scale: big };
+    if (elem.tween) elem.tween.stop();
+    elem.tween = new TWEEN.Tween(param)
+        .to({ scale: normal }, 300)
+        .start()
+        .onUpdate(function () {
+            elem.style.transform = `scale(${param.scale})`;
+        })
+}
+function gameOver() {
+    hq.setCommand("stop");
+    WalkingBombMaker.stopAllOnGround();
+    HelicopterMaker.stopAllDropBomb();
+    popupGameOverPanel();
+}
+function popupGameOverPanel() {
+    let panel = document.createElement('iframe');
+    panel.src = "/works/lastbattle/panel/gameover.html";
+    panel.frameBorder = 0;
+    panel.classList.add("panel");
+    // panel.onload = function () {
+
+    // }
+    document.body.appendChild(panel);
 }
 //testcollide
 function CollideGroup() {
@@ -1564,33 +2024,69 @@ function CollideGroup() {
 function updateLastPosition() {
     this.lastPosition.copy(this.position);
 }
-
+let worldLoc = new THREE.Vector3();
+let worldScl = new THREE.Vector3();
+let worldQua = new THREE.Quaternion();
+function updateLastGlobal() {
+    let target = this.bBox.host;
+    target.matrixWorld.decompose(worldLoc, worldQua, worldScl);
+    worldLoc.z = 0;
+    worldScl.z = 1;
+    // worldQua.
+    this.lastPosition.copy(worldLoc);
+    this.lastScale.copy(worldScl);
+    this.lastQuaternion.copy(worldQua);
+}
 function updateLast() {
-    this.lastPosition.copy(this.position);
-    this.lastRotation.copy(this.rotation);
-    this.lastScale.copy(this.scale);
+    this.lastPosition.copy(this.bBox.host.position);
+    this.lastScale.copy(this.bBox.host.scale);
+    this.lastQuaternion.copy(this.bBox.host.quaternion);
+}
+function initLast() {
+    this.lastPosition = new THREE.Vector3();
+    this.lastQuaternion = new THREE.Quaternion();
+    this.lastScale = new THREE.Vector3();
 }
 
 function Collide() {
     let bullets;
     let satellites;
     let helicopters;
+    let walkingBombs;
     let checkAvailable = {};
     collideUpdate.push(checkAvailable);
     //init
     checkAvailable.update = function () {
+        if (!BulletsMaker.getLiving) return;
+        if (!SatelliteMaker.getLiving) return;
+        if (!HelicopterMaker.getLiving) return;
+        if (!WalkingBombMaker.getLiving) return;
 
-        if (BulletsMaker.getLiving &&
-            SatelliteMaker.getLiving &&
-            Helicopter.getLiving) {
-            bullets = BulletsMaker.getLiving();
-            satellites = SatelliteMaker.getLiving();
-            helicopters = Helicopter.getLiving();
-            collideUpdate.remove(checkAvailable);
-            collideUpdate.push(Collide);
-        }
+        bullets = BulletsMaker.getLiving();
+        satellites = SatelliteMaker.getLiving();
+        helicopters = HelicopterMaker.getLiving();
+        walkingBombs = WalkingBombMaker.getLiving();
+
+        collideUpdate.remove(checkAvailable);
+        collideUpdate.push(Collide);
+
     }
+    Collide.update = function testCollide(delta) {
+        bullet_enemy(helicopters);
+        bullet_enemy(satellites);
+        bullet_enemy(walkingBombs);
 
+        //update lastPosition
+        let i;
+        i = bullets.length;
+        while (i--) { updateLastPosition.call(bullets[i]); }
+        i = satellites.length;
+        while (i--) { updateLastPosition.call(satellites[i].scene); }
+        i = helicopters.length;
+        while (i--) { updateLast.call(helicopters[i].scene); }
+        i = walkingBombs.length;
+        while (i--) { updateLastGlobal.call(walkingBombs[i].scene) }
+    }
     let d1;
     let d1vec = new THREE.Vector3();
     let d2;
@@ -1605,13 +2101,12 @@ function Collide() {
     let v1 = new THREE.Vector3();
     let v2 = new THREE.Vector3();
     let deltaPos = new THREE.Vector3();
-    let deltaRot;
     let deltaScl = new THREE.Vector3();
-    let quaternion = new THREE.Quaternion();
-    let axisZ = new THREE.Vector3(0, 0, 1);
+    let deltaQua = new THREE.Quaternion();
     let matrix = new THREE.Matrix4();
     let ray = new THREE.Ray();
 
+    let axisZ = new THREE.Vector3(0, 0, 1);
     let zero = new THREE.Vector3();
     let up = new THREE.Vector3(0, 1, 0);
 
@@ -1626,15 +2121,16 @@ function Collide() {
 
             let j = group.length;
             while (j--) {
-                let host = group[j];
-                let enemy = host.scene;
+                let enemyRoot = group[j];
+                let enemy = enemyRoot.scene;
                 //delta matrix
                 deltaPos.subVectors(enemy.position, enemy.lastPosition);
-                deltaRot = enemy.rotation.z - enemy.lastRotation.z;
                 deltaScl.copy(enemy.scale);
                 deltaScl.divide(enemy.lastScale);
-                quaternion.setFromAxisAngle(axisZ, deltaRot);
-                matrix.compose(deltaPos, quaternion, deltaScl);
+                deltaQua.copy(enemy.lastQuaternion);
+                deltaQua.inverse();
+                deltaQua.premultiply(enemy.quaternion);
+                matrix.compose(deltaPos, deltaQua, deltaScl);
 
                 offset.subVectors(bullet.lastPosition, enemy.lastPosition)
                 offset.applyMatrix4(matrix);
@@ -1665,9 +2161,9 @@ function Collide() {
                         d1 = ray.origin.clone().sub(intersetPoint).lengthSq();
                         if (d1 <= d2) {
                             BulletsMaker.reclaim(bullet);
-                            let damageValue = Gun.getDamageValue(host.getType());
-                            damage.call(host, damageValue, intersetPoint);
-                            // host.reclaim();
+                            let damageValue = Gun.getDamageValue(enemyRoot.getType());
+                            damage.call(enemyRoot, damageValue, intersetPoint, sgmt.partName);
+                            // enemyRoot.reclaim();
                             hit = true;
                             break;
 
@@ -1679,21 +2175,6 @@ function Collide() {
             // console.log('--------------')
         }
     }
-
-    Collide.update = function testCollide(delta) {
-        bullet_enemy(helicopters);
-        bullet_enemy(satellites);
-        //update lastPosition
-        let i;
-        i = bullets.length;
-        while (i--) { updateLastPosition.call(bullets[i]); }
-        i = satellites.length;
-        while (i--) { updateLastPosition.call(satellites[i].scene); }
-        i = helicopters.length;
-        while (i--) { updateLast.call(helicopters[i].scene); }
-    }
-
-
 }
 
 function facePoint(v1, v2, p) {
@@ -1708,7 +2189,6 @@ function subscribeTestReady() {
     window.parent.subscribeTestReady(inittest)
 }
 function inittest() {
-
     let cam3DBtn = window.parent.getTestControls(".cam3d")
     let cam2DBtn = window.parent.getTestControls(".cam2d");
     cam3DBtn.addEventListener("click", toCam3D);
@@ -1745,8 +2225,9 @@ function inittest() {
 
 
 function testAnimation() {
-    Effect.create("groundExplode").place(new THREE.Vector3(200,200,0));
+    // Effect.create("explode").place(new THREE.Vector3(0, 200, 0));
     // resetAllAndPlay.call(testExplode);
+    addScore(1);
 }
 
 function changeToWire(evt) {

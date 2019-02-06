@@ -73,8 +73,15 @@ function init() {
     bBox = new THREE.Line(geometry, material);
     bBox.renderOrder = 1;
     bBox.lastPosition = new THREE.Vector3();
-    bBox.lastRotation = new THREE.Vector3();
+    // bBox.lastRotation = new THREE.Vector3();
     bBox.lastScale = new THREE.Vector3();
+    bBox.lastQuaternion=new THREE.Quaternion();
+    bBox.updateLast=function(){
+        bBox.lastPosition.copy(bBox.position);
+        // bBox.lastRotation.copy(bBox.rotation);
+        bBox.lastScale.copy(bBox.scale);
+        bBox.lastQuaternion.copy(bBox.quaternion);
+    }
 
 
     scene.add(bBox);
@@ -196,7 +203,7 @@ let v2 = new THREE.Vector3();
 let deltaPos = new THREE.Vector3();
 let deltaRot;
 let deltaScl = new THREE.Vector3();
-let quaternion = new THREE.Quaternion();
+let deltaQua = new THREE.Quaternion();
 let axisZ = new THREE.Vector3(0, 0, 1);
 let matrix = new THREE.Matrix4();
 let zero = new THREE.Vector3();
@@ -215,11 +222,14 @@ function collideTest() {
 
         //delta Matrix
         deltaPos.subVectors(bBox.position, bBox.lastPosition);
-        deltaRot = bBox.rotation.z - bBox.lastRotation.z;
+        // deltaRot = bBox.rotation.z - bBox.lastRotation.z;
         deltaScl.copy(bBox.scale);
         deltaScl.divide(bBox.lastScale);
-        quaternion.setFromAxisAngle(axisZ, deltaRot);
-        matrix.compose(deltaPos, quaternion, deltaScl);
+        // quaternion.setFromAxisAngle(axisZ, deltaRot);
+        deltaQua.copy(bBox.lastQuaternion);
+        deltaQua.inverse();
+        deltaQua.premultiply(bBox.quaternion ) ;
+        matrix.compose(deltaPos, deltaQua, deltaScl);
 
         //offset last postion
         offset.subVectors(bullet.lastPosition, bBox.lastPosition)
@@ -262,9 +272,7 @@ function updatelast() {
         bullets[i].lastPosition.copy(bullets[i].position);
     }
 
-    bBox.lastPosition.copy(bBox.position);
-    bBox.lastRotation.copy(bBox.rotation);
-    bBox.lastScale.copy(bBox.scale);
+    bBox.updateLast();
 
 }
 function facePoint(v1, v2, p) {

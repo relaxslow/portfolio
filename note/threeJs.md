@@ -55,6 +55,24 @@ Now compute the “new” position of the bullet for this simulation step and th
 If d1 <= d2, you have a hit.
 A working example of this code is presented in the following demo of Yuka 1, a library of developing game AI. The API is similar to three.js, so it should be no problem use the code as a template.
 
+#multiply and premultiply
+  let matrixA=new THREE.Matrix4();
+    matrixA.set(
+        1,2,3,4,
+        5,6,7,8,
+        9,10,11,12,
+        13,14,15,16
+    )
+    let matrixB=new THREE.Matrix4();
+    matrixB.set(
+        17,18,19,20,
+        21,22,23,24,
+        25,26,27,28,
+        29,30,31,32
+    );
+    matrixA.premultiply(matrixB);//matrixB*matrixA
+    matrixA.multiply(matrixB);//matrixA*matrixB
+
 # import gltf
 - overview
 action 1<->1 clip

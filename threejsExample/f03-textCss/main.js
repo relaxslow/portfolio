@@ -64,6 +64,7 @@ function initText() {
   text.style.color="white";
   var label = new THREE.CSS2DObject(text);
   label.position.set(0, 1, 0);
+  // label.scale.set(2,2,1);
   mesh.add(label);
 }
 

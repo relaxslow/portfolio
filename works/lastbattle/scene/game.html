@@ -3,6 +3,7 @@
 
 <head>
     <title>gameScene</title>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     <script src="/lib/three.js"></script>
     <script src="/lib/WebGL.js"></script>
     <script src="/lib/TrackballControls.js"></script>
@@ -15,6 +16,7 @@
         body {
             margin: 0;
             padding: 0;
+            /* pointer-events: none; */
         }
 
         .container {
@@ -24,20 +26,52 @@
             overflow: hidden;
         }
 
+
+        .lifeBox,
         .scoreBox {
+            display: flex;
             position: absolute;
-            left: 287px;
+            top: 5px;
+            color: red;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .lifeBox {
+            left: 10px;
+        }
+
+        .scoreBox {
+            right: 10px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            width: 379px;
+            height: 282px;
+            background-color: #c5c3b4;
+            left: 130px;
+            top: 90px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
 
-        <div class="scoreBox">SCORE: <span class="score">999999</span></div>
+    <div class="container">
+        <div class="lifeBox">LIFE: <div class="life">100</div>
+        </div>
+        <div class="scoreBox">SCORE: <div class="score">0</div>
+        </div>
         <canvas class="scene"></canvas>
 
     </div>
+
+
+    <!-- <iframe class="panel"src="/works/lastbattle/panel/gameover.html" frameborder="0"></iframe> -->
 
     <script src="/works/lastbattle/scene/game.js"></script>
 </body>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>animation system</title>
+    <!-- <link rel="stylesheet" href="/threejsExample/f07-collideTest/main.css"> -->
+    <script src="//cdn.rawgit.com/mrdoob/three.js/master/build/three.js"></script>
+    <script src="https://threejs.org/examples/js/controls/TrackballControls.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/17.2.0/Tween.min.js"></script>
+
+</head>
+
+<body>
+    <canvas class="scene"></canvas>
+
+    <script>
+        function main() {
+            init();
+            animate();
+        }
+        let scene, camera, renderer;
+        let controls;
+        let mixer, clock;
+        function init() {
+            clock = new THREE.Clock();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.z = 500;
+            camera.position.y = 0;
+            control3D = new THREE.TrackballControls(camera);
+            control3D.rotateSpeed = 1.0;
+            control3D.zoomSpeed = 1.2;
+            control3D.panSpeed = 0.8;
+            control3D.noZoom = false;
+            control3D.noPan = false;
+            control3D.staticMoving = true;
+            control3D.dynamicDampingFactor = 0.3;
+            control3D.target.set(0, 0, 0);
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            let canvas = document.querySelector(".scene")
+            let context = canvas.getContext('webgl2');
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                context: context
+            });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            window.addEventListener('resize', onWindowResize, false);
+
+            //grid
+            gridHelper = new THREE.GridHelper(1000, 10);
+            gridHelper.rotation.x = Math.PI / 2;
+            scene.add(gridHelper);
+
+
+            var texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/crate.gif');
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            var material = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                depthTest: false,
+                // map: texture
+            });
+            var geometry = new THREE.PlaneGeometry(100, 100);
+            var plane = new THREE.Mesh(geometry, material);
+            scene.add(plane);
+
+            // var offset = new THREE.VectorKeyframeTrack('.offset', [0, 1], [0, 0, 1, 1])
+            // var clip = new THREE.AnimationClip('texture_animation', 1, [offset]);
+            // mixer = new THREE.AnimationMixer(texture);
+
+            // var clipAction = mixer.clipAction(clip);
+            // // clipAction.setLoop(THREE.loopOnce);
+            // clipAction.setLoop(THREE.LoopOnce);
+            // // clipAction.clampWhenFinished = false;
+            // clipAction.play();
+
+            let changeColor = new THREE.VectorKeyframeTrack(
+                '.material.color',
+                [
+                    0,
+                    5
+                ],
+                [
+                    1, 0, 0,
+                    1, 1, 0
+                ]);
+            let clip = new THREE.AnimationClip('color_animation', 5, [changeColor]);
+            mixer = new THREE.AnimationMixer(plane);
+            var clipAction = mixer.clipAction(clip);
+            clipAction.setLoop(THREE.LoopOnce);
+            clipAction.clampWhenFinished = true;
+            clipAction.play();
+        }
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        function render() {
+            renderer.render(scene, camera);
+        }
+        function animate() {
+            requestAnimationFrame(animate);
+            TWEEN.update();
+
+            var delta = clock.getDelta();
+            if (mixer) {
+                mixer.update(delta);
+            }
+
+            control3D.update();
+            render();
+        }
+        main();
+    </script>
+</body>
+
+</html>
